@@ -1,5 +1,4 @@
 ## Unsequenced ⏲
-#### Pomodoro-esq Timer/Activity Organizer
 
 ----
 __Todo/Inventory__
