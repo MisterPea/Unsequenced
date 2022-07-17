@@ -7,7 +7,7 @@ __Todo/Inventory__
 * [ ] Task Blocks
 * [ ] Add a Task (Modal)
 * [ ] Now Playing
-* [ ] Settings
+* [x] Settings
 
 **Subscreens**
 * [ ] Create New Task Block
@@ -15,6 +15,8 @@ __Todo/Inventory__
 * [ ] Edit TaskBlock > Confirm Deletion
 
 **Components**
+* [x] Color breakout for light/dark mode
+* [x] Header Icons
 * [ ] List Item for Task Block
 * [ ] List Item for Task (Integrated progress)
 * [ ] Pop Over (Create/Edit/Delete) Task Block
