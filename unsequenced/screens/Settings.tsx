@@ -34,12 +34,14 @@ export default function Settings() {
           screenMode={mode}
           toggleFunc={handleScreenModeToggle}
           switchValue={mode === 'dark'}
+          testID="lightDarkModeBtn"
         />
         <SettingsToggleGroup
           title="QUIET MODE"
           screenMode={mode}
           toggleFunc={handleQuietModeToggle}
           switchValue={isQuiet}
+          testID="quietModeBtn"
         />
       </View>
     </View>

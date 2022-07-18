@@ -23,9 +23,12 @@ export default function AppEntry() {
   const statusBarStyle = mode === 'dark' ? 'light' : 'dark';
   const Stack = createNativeStackNavigator();
 
-  function SettingsButton({ nav }:{nav:NavProps}) {
+  function SettingsButton({ testID, nav }:{testID:string, nav:NavProps}) {
     return (
-      <Pressable onPress={() => nav.navigate('Settings')}>
+      <Pressable
+        testID={testID}
+        onPress={() => nav.navigate('Settings')}
+      >
         <MaterialIcons
           name="settings"
           size={24}
@@ -54,21 +57,21 @@ export default function AppEntry() {
             name="Task Blocks"
             component={TaskBlocks}
             options={({ navigation }) => ({
-              headerRight: () => <SettingsButton nav={navigation} />,
+              headerRight: () => <SettingsButton testID="taskBlockSettings" nav={navigation} />,
             })}
           />
           <Stack.Screen
             name="Add a Task"
             component={AddTask}
             options={({ navigation }) => ({
-              headerRight: () => <SettingsButton nav={navigation} />,
+              headerRight: () => <SettingsButton testID="addTaskSettings" nav={navigation} />,
             })}
           />
           <Stack.Screen
             name="Now Playing"
             component={NowPlaying}
             options={({ navigation }) => ({
-              headerRight: () => <SettingsButton nav={navigation} />,
+              headerRight: () => <SettingsButton testID="nowPlayingSettings" nav={navigation} />,
             })}
           />
           <Stack.Screen
