@@ -1,21 +1,13 @@
 import React from 'react';
-import {
-  Button, StyleSheet, Text, View,
-} from 'react-native';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { toggleScreenMode } from '../redux/screenMode';
+import { StyleSheet, Text, View } from 'react-native';
+import { useAppSelector } from '../redux/hooks';
 import HeaderIcon from '../components/HeaderIcon';
 import TaskBlockIcon from '../components/icons/TaskBlockIcon';
 
 import colors from '../constants/GlobalStyles';
 
 export default function TaskBlocks() {
-  const dispatch = useAppDispatch();
   const { mode } = useAppSelector((state) => state.screenMode);
-
-  function handleToggle() {
-    dispatch(toggleScreenMode());
-  }
 
   return (
     <View style={[taskBlockView(mode).container]}>
