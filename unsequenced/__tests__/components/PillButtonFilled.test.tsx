@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import PillButtonFilled from '../../components/PillButtonFilled';
+import PillButton from '../../components/PillButton';
 
-describe('PillButtonFilled Component', () => {
+describe('PillButton Component', () => {
   it('Should render the component without crashing', () => {
     render(
-      <PillButtonFilled
+      <PillButton
         label="Test Button"
         size="lg"
         colors={{ text: '#ffffff', background: '#000000' }}
@@ -16,7 +16,7 @@ describe('PillButtonFilled Component', () => {
   it('Should call a function on a click', async () => {
     const spyFunc = jest.fn();
     const { findByTestId } = render(
-      <PillButtonFilled
+      <PillButton
         label="Test Button"
         size="lg"
         colors={{ text: '#ffffff', background: '#000000' }}

@@ -11,6 +11,7 @@ const colors:{[key:string]:any} = {
   textBoxBorder: { dark: 'rgb(112, 112, 112)', light: 'rgb(112, 112, 112)' },
   textOne: { dark: 'rgb(255, 255, 255)', light: 'rgb(0, 0, 0)' },
   textTwo: { dark: 'rgb(170, 190, 202)', light: 'rgb(82, 120, 142)' },
+  placeholderText: { dark: 'rgb(96, 127, 145)', light: 'rgb(183, 197, 206)' },
   greenBtn: { dark: 'rgb(39, 164, 98)', light: 'rgb(39, 164, 98)' },
   confirmBtnBG: { dark: 'rgb(255, 255, 255)', light: 'rgb(0, 0, 0)' },
   confirmBtnText: { dark: 'rgb(0, 0, 0)', light: 'rgb(255, 255, 255)' },

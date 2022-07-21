@@ -27,15 +27,31 @@ function populateStore() {
   });
 }
 
+// to appease TaskBlocks prop
+const stumpNav:any = {
+  navigate: () => {},
+};
+
 describe('TaskBlocks.tsx', () => {
   it('Renders the component', () => {
-    render(<Provider store={mockStoreInstance}><TaskBlocks /></Provider>);
+    render(<Provider store={mockStoreInstance}><TaskBlocks navigation={stumpNav} /></Provider>);
   });
 
   it('Should have render 3 taskBlocks', () => {
     populateStore();
-    render(<Provider store={mockStoreInstance}><TaskBlocks /></Provider>);
+    render(<Provider store={mockStoreInstance}><TaskBlocks navigation={stumpNav} /></Provider>);
     const elements = screen.getAllByTestId('taskBlockListItem');
     expect(elements).toHaveLength(3);
+  });
+
+  it('Should render a "Create New Task Block" button', () => {
+    const { findByTestId } = render(
+      <Provider store={mockStoreInstance}>
+        <TaskBlocks navigation={stumpNav} />
+      </Provider>,
+    );
+
+    const button = findByTestId('pillButtonFilledId');
+    expect(button).toBeDefined();
   });
 });

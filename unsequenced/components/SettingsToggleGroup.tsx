@@ -1,16 +1,14 @@
 /* eslint-disable max-len */
 import React from 'react';
-import {
-  View,
+import { View,
   Switch,
   Text,
-  StyleSheet,
-} from 'react-native';
+  StyleSheet } from 'react-native';
 import colors from '../constants/GlobalStyles';
 
 export default function SettingsToggleGroup({
-  title, screenMode, toggleFunc, switchValue,
-}:{title:string, screenMode:string, toggleFunc: ()=> void, switchValue:boolean}) {
+  title, screenMode, toggleFunc, switchValue, testID,
+}:{title:string, screenMode:string, toggleFunc: ()=> void, switchValue:boolean, testID: string}) {
   return (
     <View style={settingsScreen(screenMode).componentWrapper}>
       <View style={settingsScreen(screenMode).switchWrapper}>
@@ -19,6 +17,7 @@ export default function SettingsToggleGroup({
           value={switchValue}
           onValueChange={toggleFunc}
           trackColor={{ true: colors.topBar[screenMode] }}
+          testID={testID}
         />
       </View>
     </View>
