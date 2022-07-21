@@ -1,8 +1,7 @@
+/* eslint-disable max-len */
 import { configureStore } from '@reduxjs/toolkit';
 import store from '../../redux/store';
-import taskBlockReducer, {
-  addTaskBlock, removeTaskBlock, updateTaskBlock, addTask, removeTask, updateTask,
-} from '../../redux/taskBlocks';
+import taskBlockReducer, { addTaskBlock, removeTaskBlock, updateTaskBlock, addTask, removeTask, updateTask } from '../../redux/taskBlocks';
 import { Task, TaskBlock } from '../../constants/types';
 
 const dataOne:TaskBlock = {
