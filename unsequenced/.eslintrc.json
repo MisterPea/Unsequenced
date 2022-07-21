@@ -46,7 +46,34 @@
         ],
         "react/prop-types": "off",
         "react/require-default-props": "off",
-        "no-undef": "off"
+        "no-undef": "off",
+        "object-curly-newline": [
+            "error",
+            {
+                "ImportDeclaration": "never",
+                "ExportDeclaration": {
+                    "multiline": true,
+                    "minProperties": 5
+                }
+            }
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 120,
+                "ignoreComments": true,
+                "ignoreUrls": true,
+                "ignoreTemplateLiterals": true,
+                "ignoreStrings": true
+            }
+        ],
+        "react/jsx-no-bind": [
+            "error",
+            {
+                "allowFunctions": true,
+                "allowBind": true
+            }
+        ]
     },
     "settings": {
         "import/resolver": {

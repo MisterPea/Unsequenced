@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { SvgXml } from 'react-native-svg';
 
-function TaskBlockIcon({ size = 30, color = '#000000' }:{size:number, color:string}) {
+export default function TaskBlockIcon({ size = 30, color = '#000000' }:{size:number, color:string}) {
   const xml:string = `<svg
   xmlns='http://www.w3.org/2000/svg'
   width='${size}'
@@ -16,5 +16,3 @@ function TaskBlockIcon({ size = 30, color = '#000000' }:{size:number, color:stri
     <SvgXml xml={xml} />
   );
 }
-
-export default TaskBlockIcon;
