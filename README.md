@@ -1,61 +1,46 @@
 ## Unsequenced ⏲
 
+___Todo/Inventory___
 ----
-__Todo/Inventory__
-
-**Screens**
-* [ ] Task Blocks
-    * [ ] UI
-    * [ ] Logic
-* [ ] Add a Task (Modal)
-    * [ ] UI
-    * [ ] Logic
-* [ ] Now Playing
-    * [ ] UI
-    * [ ] Logic
-* [ ] Settings
-    * [x] Light/Dark Mode
-        * [x] UI
-        * [x] Logic
-    * [ ] Quiet Mode
-        * [x] UI
-        * [ ] Logic
-
+**Screens** 
+| Screen | UI | Logic |
+|:---------|:------:|:-----:|
+| Task Blocks | &check; |  |
+| Create New Task Block | &check; |  |
+| Add A Task (*Modal*)  |  |  |
+| Now Playing |  |  |
+| Settings: *Light/Dark Mode* | &check; | &check; |
+| Settings: *Quiet Mode* | &check; |  |
+____
 **Sub-Screens**
-* [ ] Create New Task Block
-    * [x] UI
-    * [ ] Logic
-* [ ] Edit Task Block
-    * [ ] UI
-    * [ ] Logic
-* [ ] Edit TaskBlock > Confirm Deletion
-    * [ ] UI
-    * [ ] Logic
+
+| Sub-Screen | UI | Logic |
+|:---------|:------:|:-----:| 
+| Create New Task Block | &check; |  |
+| Edit Task Block |  |  |
+| Edit Task Block > Confirm Delete |  |  |
+___________
+
 
 **Components**
-* [x] Color breakout for light/dark mode
-* [x] Header Icons
-* [ ] List Item for Task Block
-    * [x] UI
-    * [ ] Logic
-* [ ] List Item for Task (Integrated progress)
-* [ ] Header Icon (Round)
-    * [x] Header Icon Wrapper
-    * [x] Task Blocks
-    * [x] Settings
-    * [x] Create New Task Block
-    * [ ] Edit
-    * [ ] Add Task
-* [ ] Pill Buttons
-    * [ ] Small
-    * [x] Medium
-    * [x] Large
-* [ ] Round Buttons with Icons
-    * [ ] Play
-    * [ ] Add
-    * [ ] Options
-    * [ ] Stop/Close
-* [ ] Progress Bar
-* [x] Switch with Text
-* [x] Check box with check
-* [ ] Controlled input with checks
+| Component | Complete |
+|:---------|:------:|
+| Color breakout for light/dark mode | &check; |
+| Header Icon: *Wrapper* | &check; |
+| Header Icon: *Task Blocks* | &check; |
+| Header Icon: *Settings* | &check; |
+| Header Icon: *Create New Task Block* | &check; |
+| Header Icon: *Edit* | &check; |
+| Header Icon: *Add Task* | &check; |
+| List Item for Task Block |  |
+| List Item for Task |  | 
+| Pill Buttons | &check; |
+| Round Button: *Play* |  |
+| Round Button: *Add* |  |
+| Round Button: *Options* |  |
+| Round Button: *Stop/Close* |  |
+| Progress Bar |  |
+| Switch with Text | &check; |
+| Checkbox with text | &check; |
+| Controlled Input with Checks |  |
+
