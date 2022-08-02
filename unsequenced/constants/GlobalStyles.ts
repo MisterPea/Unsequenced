@@ -1,38 +1,161 @@
-const colors:{[key:string]:any} = {
-  background: { dark: 'rgb(0, 0, 0)', light: 'rgb(227, 218, 198)' },
-  backgroundOverlay: { dark: 'rgba(0, 0, 0, 0.81)', light: 'rgba(227, 218, 198, 0.81)' },
-  backArrow: { dark: 'rgb(147, 213, 205)', light: 'rgb(82, 120, 142)' },
-  topBar: { dark: 'rgb(82, 120, 142)', light: 'rgb(152, 201, 195)' },
-  iconMainBG: { dark: 'rgb(82, 120, 142)', light: 'rgb(255, 255, 255)' },
-  iconMainFG: { dark: 'rgb(255, 255, 255)', light: 'rgb(0, 0, 0)' },
-  iconModalBG: { dark: 'rgb(255, 255, 255)', light: 'rgb(0, 0, 0)' },
-  iconModalFG: { dark: 'rgb(82, 120, 142)', light: 'rgb(255, 255, 255)' },
-  textBox: { dark: 'rgb(53, 83, 101)', light: 'rgb(255, 255, 255)' },
-  textBoxBorder: { dark: 'rgb(112, 112, 112)', light: 'rgb(112, 112, 112)' },
-  textOne: { dark: 'rgb(255, 255, 255)', light: 'rgb(0, 0, 0)' },
-  textTwo: { dark: 'rgb(170, 190, 202)', light: 'rgb(82, 120, 142)' },
-  placeholderText: { dark: 'rgb(96, 127, 145)', light: 'rgb(183, 197, 206)' },
-  greenBtn: { dark: 'rgb(39, 164, 98)', light: 'rgb(39, 164, 98)' },
-  confirmBtnBG: { dark: 'rgb(255, 255, 255)', light: 'rgb(0, 0, 0)' },
-  confirmBtnText: { dark: 'rgb(0, 0, 0)', light: 'rgb(255, 255, 255)' },
-  cancelBtn1: { dark: 'rgb(255, 255, 255)', light: 'rgb(255, 0, 0)' },
-  cancelBtn2: { dark: 'rgb(255, 255, 255)', light: 'rgb(39, 164, 98)' },
-  dangerBtn: { dark: 'rgb(0, 0, 0)', light: 'rgb(193, 12, 0)' },
-  playingBtn: { dark: 'rgb(137, 185, 208)', light: 'rgb(255, 255, 255)' },
-  playingBtnIcon: { dark: 'rgb(0, 0, 0)', light: 'rgb(0, 0, 0)' },
-  modalAndTaskBlockLi: { dark: 'rgb(82, 120, 142)', light: 'rgb(255, 255, 255)' },
-  taskListItem: { dark: 'rgb(53, 83, 101)', light: 'rgb(255, 255, 255)' },
-  listItemBorder: { dark: 'rgb(255, 255, 255)', light: 'rgb(0,0,0)' },
-  slideDeleteBG: { dark: 'rgb(212, 0, 0)', light: 'rgb(212, 0, 0)' },
-  slideDeleteIcon: { dark: 'rgb(255, 255, 255)', light: 'rgb(255, 255, 255)' },
-  slideRenameBG: { dark: 'rgb(132, 175, 199)', light: 'rgb(132, 175, 199)' },
-  slideRenameIcon: { dark: 'rgb(53, 83, 101)', light: 'rgb(53, 83, 101)' },
-  slideDuplicateBG: { dark: 'rgb(227, 218, 198)', light: 'rgb(227, 218, 198)' },
-  slideDuplicateIcon: { dark: 'rgb(227, 218, 198)', light: 'rgb(227, 218, 198)' },
-  playGradientTop: { dark: 'rgb(82, 120, 142)', light: 'rgb(152, 201, 195)' },
-  playGradientBtm: { dark: 'rgb(38, 63, 78)', light: 'rgb(131, 178, 164)' },
-  playProgressBG: { dark: 'rgb(0, 0, 0)', light: 'rgb(255, 255, 255)' },
-  playProgressBar: { dark: 'rgb(132, 175, 194)', light: 'rgb(0, 0, 0)' },
+import { Dimensions } from 'react-native';
+
+const defintions = [
+  'background', 'settingsGear',
+  'title', 'subTitle',
+  'cancelButton', 'confirmBtn',
+  'confirmText', 'taskListItemBG',
+  'taskListItemText', 'createNewTaskBtn',
+  'createNewTaskText', 'backgroundOverlay',
+  'bottomSheetBG', 'inputBG',
+  'inputBorder', 'inputText',
+  'placeholder', 'unselectOptionBorder',
+  'unselectOptionFill', 'unselectOptionText',
+  'selectedOptionBorder', 'selectedOptionFill',
+  'selectedOptionText', 'blockName',
+  'taskInputBG', 'taskInputBorder',
+  'roundButtonBG', 'roundButtonBorder',
+  'roundButtonIcon', 'roundCloseBtnBG',
+  'roundCloseBtnIcon', 'barBackground',
+  'barCompleteAmt', 'listItemBorder',
+  'editOpenBG', 'editOpenInputBg',
+  'editOpenCancelBtn', 'editOpenConfirmBG',
+  'editOpenConfirmText',
+];
+
+const { fontScale } = Dimensions.get('window');
+const fontAdj = Number(((1 - fontScale) + 1).toFixed(2));
+// const fontAdj = 1;
+
+export const colors:{[key:string]:any} = {
+  background: { light: 'rgb(242,234,216)', dark: 'hsl(214, 15%, 10%)' },
+  settingsGear: { light: 'rgb(0,0,0)', dark: 'rgb(191,191,191)' },
+  title: { light: 'rgb(0,151,235)', dark: 'rgb(220,252,52)' },
+  subTitle: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  cancelButton: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  confirmBtn: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  confirmText: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
+  disabled: { light: '#666666', dark: '#9c9c9c' },
+
+  // Task Blocks
+  taskListItemBG: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
+  taskListItemText: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  createNewTaskBtn: { light: 'rgb(63,150,93)', dark: 'hsl(187, 73%, 45%)' },
+  createNewTaskText: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
+
+  // Create New Task Block
+  backgroundOverlay: { light: 'rgba(0,0,0,0.7)', dark: 'rgba(0,0,0,0.7)' },
+  bottomSheetBG: { light: 'rgb(255,255,255)', dark: 'rgb(45,52,61)' },
+  inputBG: { light: 'rgb(224,224,224)', dark: 'rgb(73,77,88)' },
+  inputBorder: { light: 'rgb(112,112,112)', dark: 'rgb(73,77,88)' },
+  inputText: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  placeholder: { light: 'rgba(0,0,0,0.5)', dark: 'rgba(255,255,255,0.5)' },
+  unselectOptionBorder: { light: 'rgba(112,112,112,1)', dark: 'rgb(71,209,226)' },
+  unselectOptionFill: { light: 'rgba(112,112,112,0)', dark: 'rgba(71,209,226,0)' },
+  unselectOptionText: { light: 'rgb(112,112,112)', dark: 'rgb(255,255,255)' },
+  selectedOptionBorder: { light: 'rgba(63,150,193,0)', dark: 'rgb(71,209,226,0)' },
+  selectedOptionFill: { light: 'rgb(63,150,93)', dark: 'rgb(71,209,226)' },
+  selectedOptionText: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
+
+  // Add Tasks
+  blockName: { light: 'rgb(227,219,203)', dark: 'rgb(55,61,71)' },
+  taskInputBG: { light: 'rgb(255,255,255)', dark: 'rgb(73,77,88)' },
+  taskInputBorder: { light: 'rgb(112,112,112)', dark: 'rgb(112,112,112)' },
+  iconCircle: { light: 'rgb(212,207,193)', dark: 'rgb(106,111,120)' },
+  iconPencil: { light: 'rgb(0,0,0)', dark: 'rgb(179,181,185)' },
+
+  // Play Tasks
+  roundButtonBG: { light: 'rgb(255,255,255)', dark: 'rgba(0,0,0,0)' },
+  roundButtonBorder: { light: 'rgba(255,255,255,0)', dark: 'rgb(255,255,255)' },
+  roundButtonIcon: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  roundCloseBtnBG: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  roundCloseBtnIcon: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
+  barBackground: { light: 'rgb(255,255,255)', dark: 'hsl(0, 0%, 25%)' },
+  barCompleteAmt: { light: 'rgb(40,140,225)', dark: 'rgb(220,252,52)' },
+  listItemBorder: { light: 'rgb(0,0,0)', dark: 'rgb(201,201,201)' },
+  shadowColor: { light: 'rgba(0,0,0,1)', dark: 'rgba(0,0,0,0)' },
+
+  // Play Task
+  editOpenBG: { light: 'rgb(249,247,241)', dark: 'rgb(255,255,255)' },
+  editOpenInputBg: { light: 'rgb(227,219,203)', dark: 'rgb(227,228,230)' },
+  editOpenCancelBtn: { light: 'rgb(0,0,0)', dark: 'rgb(0,0,0)' },
+  editOpenConfirmBG: { light: 'rgb(255,255,255)', dark: 'rgb(255,255,255)' },
+  editOpenConfirmText: { light: 'rgb(0,0,0)', dark: 'rgb(0,0,0)' },
+
+  // Settings
+  settingsTitle: { light: 'rgb(0,0,0)', dark: 'rgb(220,252,52)' },
+  settingsTextMain: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  settingsTextNote: { light: 'rgb(112,112,112)', dark: 'rgb(255,255,255)' },
+  settingsCheck: { light: 'rgb(63,150,193)', dark: 'rgb(220,252,52)' },
+  settingsLine: { light: 'rgb(213,213,204)', dark: 'rgb(73,73,70)' },
+  settingsBoxes: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
+
+  slideAddTask: { light: 'rgb(63,150,93)', dark: 'rgb(71,209,226)' },
+  slideAddTaskText: { light: 'rgb(255,255,255)', dark: 'hsl(210, 13%, 20%)' },
+  slideEditTask: { light: 'hsl(42, 20%, 80%)', dark: 'hsl(210, 13%, 20%)' },
+  slideEditTaskText: { light: 'hsl(210, 13%, 20%)', dark: 'rgb(71,209,226)' },
+
 };
 
-export default colors;
+interface FamilySize {
+  fontSize:number;
+  fontFamily?:string;
+}
+
+export const font:{[key:string]:FamilySize} = {
+  header: {
+    fontSize: Math.ceil(26 * fontAdj),
+    fontFamily: 'Rubik_700Bold',
+  },
+  subHead: {
+    fontSize: Math.ceil(12 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  liTitle: {
+    fontSize: Math.ceil(18 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  liSubTitle: {
+    fontSize: Math.ceil(12 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  inputTitle: {
+    fontSize: Math.ceil(12 * fontAdj),
+    fontFamily: 'Rubik_500Medium',
+  },
+  input: {
+    fontSize: Math.ceil(17 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  largeButton: {
+    fontSize: Math.ceil(18 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  optionSelect: {
+    fontSize: Math.ceil(15 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  cancelConfirm: {
+    fontSize: Math.ceil(15 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  taskBlockAddTask: {
+    fontSize: Math.ceil(18 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  settingsTitle: {
+    fontSize: Math.ceil(16 * fontAdj),
+    fontFamily: 'Rubik_500Medium',
+  },
+  settingsTextOne: {
+    fontSize: Math.ceil(12 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  settingsTextTwo: {
+    fontSize: Math.ceil(12 * fontAdj),
+    fontFamily: 'Rubik_700Bold',
+  },
+  backButton: {
+    fontSize: Math.ceil(40 * fontAdj),
+  },
+};
