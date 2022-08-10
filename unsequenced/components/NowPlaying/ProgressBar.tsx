@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
-import { colors, font } from '../constants/GlobalStyles';
+import { colors, font } from '../../constants/GlobalStyles';
 
 type ProgressObject = {
   completed: number,

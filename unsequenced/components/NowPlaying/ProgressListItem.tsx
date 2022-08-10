@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Text, View, StyleSheet, Animated } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
-import { colors, font } from '../constants/GlobalStyles';
+import { colors, font } from '../../constants/GlobalStyles';
 
 interface TimeProp {
   completed: number;
@@ -15,20 +15,33 @@ interface ProgressListItemProps {
 }
 
 export default function ProgressListItem({ mode, title, time }:ProgressListItemProps) {
-  const [percentage, setPercentage] = useState<number>(0);
+  const percentage = useRef(new Animated.Value(time.completed)).current;
 
   useEffect(() => {
-    const percentComplete = 100 - ((time.completed / time.total) * 100);
-    setPercentage(percentComplete);
+    load(time.completed);
   }, [time.completed]);
+
+  function load(count:number) {
+    Animated.timing(percentage, {
+      toValue: count,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }
+
+  const widthPercent = percentage.interpolate({
+    inputRange: [0, time.total],
+    outputRange: ['100%', '0%'],
+    extrapolate: 'clamp',
+  });
 
   return (
     <View style={listItem(mode).container}>
-      <View style={listItem(mode, percentage).progressContainer} />
+      <Animated.View style={[listItem(mode).progressContainer, { width: widthPercent }]} />
       <View style={listItem(mode).textWrapper}>
-        <View style={listItem(mode).leftSide}>
+        <View>
           <Text style={listItem(mode).title}>{title}</Text>
-          <Text style={listItem(mode).timeInfo}>{`${time.completed} min of ${time.total} min complete`}</Text>
+          {time.total > 0 && <Text style={listItem(mode).timeInfo}>{`${time.completed} min of ${time.total} min complete`}</Text>}
         </View>
         <View>
           <EvilIcons name="chevron-right" size={30} color={colors.disabled[mode]} />
@@ -38,13 +51,13 @@ export default function ProgressListItem({ mode, title, time }:ProgressListItemP
   );
 }
 
-const listItem = (mode:string, percent?:number) => StyleSheet.create({
+const listItem = (mode:string) => StyleSheet.create({
   container: {
     height: 62,
-    backgroundColor: colors.background[mode],
-    borderTopColor: colors.settingsTextMain[mode],
+    backgroundColor: colors.progressBackground[mode],
+    borderTopColor: colors.progressBorder[mode],
     borderTopWidth: 1,
-    borderBottomColor: colors.settingsTextMain[mode],
+    borderBottomColor: colors.progressBorder[mode],
     borderBottomWidth: 1,
     marginHorizontal: 1,
     marginVertical: 2,
@@ -53,7 +66,6 @@ const listItem = (mode:string, percent?:number) => StyleSheet.create({
     backgroundColor: colors.taskListItemBG[mode],
     height: 62,
     top: -1,
-    width: `${percent}%`,
     alignSelf: 'flex-end',
   },
   textWrapper: {
@@ -63,7 +75,6 @@ const listItem = (mode:string, percent?:number) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    // flex: 1,
   },
   title: {
     fontFamily: font.liTitle.fontFamily,
