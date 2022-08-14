@@ -183,7 +183,7 @@ export default function NowPlayingItem(props: RenderItemProps) {
         leftOpenValue={editTask ? 0.1 : 75}
         stopLeftSwipe={editTask ? 0.1 : 200}
         rightOpenValue={editTask ? -0.1 : -135}
-        stopRightSwipe={editTask ? -0.1 : -137}
+        stopRightSwipe={editTask ? -0.1 : -135}
         closeOnRowPress
         swipeGestureBegan={postRow}
         swipeGestureEnded={resumeScroll}
