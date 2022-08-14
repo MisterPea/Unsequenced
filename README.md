@@ -3,6 +3,7 @@
 ___Todo/Inventory___
 
 **Cases/Needs**
+* Check for Task edit to see if change has been made.
 * CTA for no Task Blocks.
 * Changed task time to value less than completed. Right now, if we go from ```30 min of 50 min complete```, to a total of 20 min it will be ```30 min of 20 min complete```, which is impossible.
 * A way to reset a timer that is partially completed.
