@@ -13,11 +13,13 @@ import { colors } from '../../constants/GlobalStyles';
 import { markTaskComplete, duplicateTask, removeTask } from '../../redux/taskBlocks';
 import AddEditTask from './AddEditTask';
 
-function HiddenRow(props:HiddenRowNowPlayingProps) {
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+
+function HiddenRow(props: HiddenRowNowPlayingProps) {
   const { swipeAnimatedValue, item, id, closeRow, setEditTask } = props;
   const dispatch = useDispatch();
 
-  UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+
 
   function deleteScale() {
     return swipeAnimatedValue!.interpolate({
@@ -41,18 +43,21 @@ function HiddenRow(props:HiddenRowNowPlayingProps) {
   }
 
   function handleDuplicateTask() {
+    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     haptic.light();
     closeRow();
     dispatch(duplicateTask({ id, taskId: item.id }));
   }
 
   function handleDelete() {
+    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     haptic.warning();
     closeRow();
     dispatch(removeTask({ id, taskId: item.id }));
   }
 
   function handleOpenEdit() {
+    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     haptic.light();
     closeRow();
     setEditTask({ isEdit: true, itemId: item.id });
@@ -67,8 +72,10 @@ function HiddenRow(props:HiddenRowNowPlayingProps) {
           <Animated.View style={[styles().icon, styles().delete]}>
             <Animated.View style={[
               { opacity: deleteScale() },
-              { transform: [{ scale: deleteScale() },
-                { translateX: widthMax() }] },
+              {
+                transform: [{ scale: deleteScale() },
+                { translateX: widthMax() }]
+              },
             ]}
             >
               <MaterialCommunityIcons name="delete" size={26} color="white" />
@@ -95,16 +102,16 @@ function HiddenRow(props:HiddenRowNowPlayingProps) {
           </View>
         </Pressable>
         {item.completed !== item.amount
-        && (
-        <Pressable
-          style={[styles().iconWrapper]}
-          onPress={handleMarkTaskComplete}
-        >
-          <View style={[styles().icon, styles().done]}>
-            <AntDesign name="checkcircleo" size={20} color="#ffffff" />
-          </View>
-        </Pressable>
-        )}
+          && (
+            <Pressable
+              style={[styles().iconWrapper]}
+              onPress={handleMarkTaskComplete}
+            >
+              <View style={[styles().icon, styles().done]}>
+                <AntDesign name="checkcircleo" size={20} color="#ffffff" />
+              </View>
+            </Pressable>
+          )}
       </View>
     </View>
   );
@@ -112,10 +119,12 @@ function HiddenRow(props:HiddenRowNowPlayingProps) {
 /**
  * Root of list item
  */
-export default function NowPlayingItem(props:RenderItemProps) {
-  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+export default function NowPlayingItem(props: RenderItemProps) {
+
 
   const { item, drag, isActive, swipeRef, setEnableScroll, mode, id, setEditTask, editTask } = props;
+
+ 
 
   useEffect(() => {
     // We check to see if we're in add/edit mode. If so, we call the close method incase any slider is open.
@@ -124,10 +133,10 @@ export default function NowPlayingItem(props:RenderItemProps) {
     }
   }, [editTask]);
   // This allows us to store the reference for the closeRow() at the top-est level for where we need it.
-  let ref:RefProps;
+  let ref: RefProps;
 
   // We parse the ref here, and make it usable to closeRowAction (which closes the row)
-  function onLoad(refFromSwipe:any) {
+  function onLoad(refFromSwipe: any) {
     if (refFromSwipe) {
       ref = refFromSwipe;
     }
@@ -174,7 +183,7 @@ export default function NowPlayingItem(props:RenderItemProps) {
         leftOpenValue={editTask ? 0.1 : 75}
         stopLeftSwipe={editTask ? 0.1 : 200}
         rightOpenValue={editTask ? -0.1 : -135}
-        stopRightSwipe={editTask ? -0.1 : -137}
+        stopRightSwipe={editTask ? -0.1 : -135}
         closeOnRowPress
         swipeGestureBegan={postRow}
         swipeGestureEnded={resumeScroll}

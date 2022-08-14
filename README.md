@@ -1,6 +1,18 @@
 ## Unsequenced ⏲
 
-### Todo/Inventory
+___Todo/Inventory___
+
+**Cases/Needs**
+* CTA for no Task Blocks.
+* Changed task time to value less than completed. Right now, if we go from ```30 min of 50 min complete```, to a total of 20 min it will be ```30 min of 20 min complete```, which is impossible.
+* A way to reset a timer that is partially completed.
+* Swipe to delete for Tasks
+* Close swipe on Task Blocks if another action (edit/add Task Block) is initiated.
+* Convert Create New Task Block button to a plus (+) sign.
+* Sounds
+* Logic for playing.
+
+----
 |  Screens  | UI  | Logic  | | Sub-Screens  | UI  | Logic  |
 | :----- | :-----: | :-----: | :------- | :------| :------: | :------: |
 | Task Blocks  | ✓  | ✓ || Edit Task Block  | ✓ | ✓ |
@@ -10,6 +22,8 @@
 |  Settings: *Quiet Mode* |  ✓ | ✓ || Delete Task | ✓  | ✓  |
 ||||											 | Duplicate Task | ✓| ✓|
 ||||											 | Mark Task Complete | ✓| ✓|
+||||                       | Reset Time For Task |  |  |
+||||                       | Swipe To Delete Task | ✓ |  |
 
 | Component | Complete |
 | :--------  | :------:|
@@ -22,4 +36,5 @@
 | Timer for Tasks |  |
 | Activity Loaders |  |
 | Connection to SQLite |  |
+
 

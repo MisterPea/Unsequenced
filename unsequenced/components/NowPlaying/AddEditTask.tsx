@@ -7,6 +7,7 @@ import PillButton from '../PillButton';
 import { colors } from '../../constants/GlobalStyles';
 import { Task, TaskUpdate } from '../../constants/types';
 import { setKeyboardOffset } from '../../redux/keyboardOffset';
+import haptic from '../helpers/haptic';
 
 type EditTask = {
   isEdit: boolean,
@@ -165,10 +166,12 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   }
 
   function handleCancelEdit() {
+    haptic.light();
     animateClosed(finishClosing);
   }
 
   function handleUpdateTask() {
+    haptic.success();
     const update:TaskUpdate = {
       title: taskName,
       amount: Number(duration),
@@ -228,6 +231,11 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             value={taskName}
             callback={setTaskName}
             screenMode={mode}
+            inputStyle={{
+              backgroundColor:colors.playEditInputBG[mode],
+              color:colors.inputText[mode],
+              borderColor: colors.inputBorder[mode],
+            }}
           />
         </View>
         <View style={editDialogStyles().inputDuration}>
@@ -239,6 +247,11 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             callback={handleUpdateDuration}
             screenMode={mode}
             maxLength={3}
+            inputStyle={{
+              backgroundColor:colors.playEditInputBG[mode],
+              color:colors.inputText[mode],
+              borderColor: colors.inputBorder[mode],
+            }}
           />
         </View>
       </Animated.View>
@@ -250,9 +263,9 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             label="Cancel"
             size="md"
             action={handleCancelEdit}
-            colors={{ text: '#000',
+            colors={{ text: colors.inputText[mode],
               background: '#00000000',
-              border: '#000000' }}
+              border: colors.inputText[mode]}}
           />
         </View>
         <View style={editDialogStyles().button}>
@@ -261,9 +274,9 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             size="md"
             action={handleUpdateTask}
             disabled={!entriesAreValid}
-            colors={{ text: !entriesAreValid ? 'hsl(234, 0%, 90%)' : '#fff',
-              background: !entriesAreValid ? '#00000060' : '#000',
-              border: '#00000000' }}
+            colors={{ text: !entriesAreValid ? colors.createNewTaskText[mode] : colors.createNewTaskText[mode],
+              background: !entriesAreValid ? colors.inputText[mode] : colors.inputText[mode],
+              border: colors.inputBorder[mode] }}
           />
         </View>
       </Animated.View>
@@ -283,7 +296,6 @@ const editDialogStyles = (mode?:string) => StyleSheet.create({
   },
   textInputWrapper: {
     flexDirection: 'row',
-    // marginTop: -70,
   },
   inputTask: {
     flex: 2,
@@ -292,7 +304,6 @@ const editDialogStyles = (mode?:string) => StyleSheet.create({
     flex: 1,
   },
   buttonWrapper: {
-    // marginTop: 15,
     flexDirection: 'row',
     alignSelf: 'center',
     justifyContent: 'space-between',

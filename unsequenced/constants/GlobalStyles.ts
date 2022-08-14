@@ -77,6 +77,7 @@ export const colors: { [key: string]: any; } = {
   barCompleteAmt: { light: 'hsl(208, 76%, 52%)', dark: 'rgb(220,252,52)' },
   listItemBorder: { light: 'rgb(0,0,0)', dark: 'rgb(201,201,201)' },
   shadowColor: { light: 'rgba(0,0,0,1)', dark: 'rgba(0,0,0,0)' },
+  playEditInputBG: { light: 'hsl(0, 0%, 96%)', dark: 'hsl(220, 11%, 20%)' },
 
   // Play Task
   editOpenBG: { light: 'rgb(249,247,241)', dark: 'rgb(255,255,255)' },
