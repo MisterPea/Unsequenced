@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
-import { Pressable, StyleSheet, View, Animated, LayoutAnimation } from 'react-native';
+import { Pressable, StyleSheet, View, Animated, LayoutAnimation, UIManager } from 'react-native';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -15,6 +16,8 @@ import AddEditTask from './AddEditTask';
 function HiddenRow(props:HiddenRowNowPlayingProps) {
   const { swipeAnimatedValue, item, id, closeRow, setEditTask } = props;
   const dispatch = useDispatch();
+
+  UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
   function deleteScale() {
     return swipeAnimatedValue!.interpolate({

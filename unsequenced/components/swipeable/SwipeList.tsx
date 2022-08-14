@@ -1,40 +1,54 @@
 import React from 'react';
-import { View, Animated, StyleSheet, Pressable, Alert } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Animated, StyleSheet, Pressable, Alert, LayoutAnimation } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useNavigation } from '@react-navigation/native';
 import TaskBlockListItem from '../TaskBlockListItem';
 import { TaskBlock } from '../../constants/types';
 import { colors } from '../../constants/GlobalStyles';
 import haptic from '../helpers/haptic';
+import { useDispatch } from 'react-redux';
+import { removeTaskBlock } from '../../redux/taskBlocks';
 
-let screenMode:string;
+let screenMode: string;
 
-function HiddenItemWithActions(props) {
+interface HiddenItemProps {
+  [key: string]: any;
+}
+
+interface SwipeListProps {
+  data: TaskBlock[];
+  mode: string;
+  leftStatusChg: () => void;
+}
+
+function HiddenItemWithActions(props: HiddenItemProps) {
+
   const { data, rowMap, swipeAnimatedValue } = props;
   const navigation = useNavigation();
-
-  function handleAddTasks() {
-    haptic.select();
-    navigation.navigate('Add a Task', { id: data.item.id, title: data.item.title });
-  }
+  const dispatch = useDispatch();
 
   function handleEditTaskBlock() {
     haptic.select();
     rowMap[data.item.id].closeRow();
-    navigation.navigate('TaskBlocksNavigator', { screen: 'createNewTaskBlock',
+    navigation.navigate('TaskBlocksNavigator', {
+      screen: 'createNewTaskBlock',
       params: {
         title: data.item.title,
         id: data.item.id,
         autoplay: data.item.autoplay,
         breaks: data.item.breaks,
-      } });
+      }
+    });
   }
 
   function deleteConfirmed() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     haptic.success();
+    dispatch(removeTaskBlock({ id: data.item.id }));
   }
 
+  // Method to confirm you want to delete a task block
   function handleDeleteTaskBlock() {
     haptic.warning();
     rowMap[data.item.id].closeRow();
@@ -44,7 +58,6 @@ function HiddenItemWithActions(props) {
       [
         {
           text: 'Cancel',
-
         },
         {
           text: 'Delete', onPress: deleteConfirmed, style: 'destructive',
@@ -91,17 +104,10 @@ function HiddenItemWithActions(props) {
       }]}
       >
         <Pressable
-          onPress={handleAddTasks}
-        >
-          <View style={styles(screenMode).rowAdd}>
-            <MaterialIcons name="add-task" size={24} color={colors.slideAddTaskText[screenMode]} />
-          </View>
-        </Pressable>
-        <Pressable
           onPress={handleEditTaskBlock}
         >
           <View style={styles(screenMode).rowEdit}>
-            <MaterialCommunityIcons name="folder-edit-outline" size={24} color={colors.slideEditTaskText[screenMode]} />
+            <MaterialCommunityIcons name="folder-edit-outline" size={24} color={colors.slideAddTaskText[screenMode]} />
           </View>
         </Pressable>
       </Animated.View>
@@ -109,7 +115,7 @@ function HiddenItemWithActions(props) {
   );
 }
 
-function RenderHiddenItem(data, rowMap) {
+function RenderHiddenItem(data: TaskBlock[], rowMap: [key: string]) {
   return (
     <HiddenItemWithActions
       data={data}
@@ -118,13 +124,13 @@ function RenderHiddenItem(data, rowMap) {
   );
 }
 
-export default function SwipeList({ data, mode, leftStatusChg }) {
+export default function SwipeList({ data, mode, leftStatusChg }: SwipeListProps) {
   screenMode = mode;
-  function renderItem(item) {
+  function renderItem(item: any) {
     return <TaskBlockListItem item={item} mode={mode} />;
   }
 
-  function extractKey(item:TaskBlock) {
+  function extractKey(item: TaskBlock) {
     return item.id;
   }
 
@@ -133,6 +139,7 @@ export default function SwipeList({ data, mode, leftStatusChg }) {
   }
 
   return (
+
     <SwipeListView
       data={data}
       renderItem={renderItem}
@@ -140,20 +147,20 @@ export default function SwipeList({ data, mode, leftStatusChg }) {
       keyExtractor={extractKey}
       leftOpenValue={75}
       stopLeftSwipe={75}
-      // leftActivationValue={76}
       onLeftActionStatusChange={leftStatusChg}
-      rightOpenValue={-100}
-      stopRightSwipe={-100}
+      rightOpenValue={-75}
+      stopRightSwipe={-75}
       closeOnRowBeginSwipe
       onRowOpen={rowOpen}
       friction={100}
       tension={100}
       testID="swipeListItem"
     />
+
   );
 }
 
-const styles = (mode:string) => StyleSheet.create({
+const styles = (mode: string) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -170,20 +177,11 @@ const styles = (mode:string) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  rowAdd: {
-    width: 50,
-    height: 62,
-    marginTop: 1,
-    marginRight: 1,
-    backgroundColor: colors.slideAddTask[mode],
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   rowEdit: {
-    width: 55,
+    width: 76,
     height: 62,
     marginTop: 1,
-    backgroundColor: colors.slideEditTask[mode],
+    backgroundColor: colors.slideAddTask[mode],
     justifyContent: 'center',
     alignItems: 'center',
     paddingLeft: 5,

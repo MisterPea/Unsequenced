@@ -13,7 +13,7 @@ const taskBlockSlice = createSlice({
   },
   reducers: {
     addTaskBlock: (state: { blocks: TaskBlock[]; }, action: { payload: TaskBlock }) => {
-      state.blocks.push(action.payload);
+      state.blocks.unshift(action.payload);
     },
     removeTaskBlock: (state:{blocks: TaskBlock[]}, action:{payload: {id:string}}) => {
       const index = state.blocks.findIndex((block) => block.id === action.payload.id);

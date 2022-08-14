@@ -1,15 +1,17 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Animated, Easing } from 'react-native';
 import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-import { SwipeRow } from 'react-native-swipe-list-view';
+import DraggableFlatList from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import { colors, font } from '../constants/GlobalStyles';
-import { MainTaskBlocksNavProps, TaskBlockRouteProps, UseSelectorProps, ScreenProp, Task } from '../constants/types';
+import { MainTaskBlocksNavProps, TaskBlockRouteProps, UseSelectorProps, ScreenProp, Task, RenderItemProps, EditingTask } from '../constants/types';
 import haptic from '../components/helpers/haptic';
-import ProgressListItem from '../components/ProgressListItem';
-import { reorderTasks } from '../redux/taskBlocks';
+import { reorderTasks, addTask } from '../redux/taskBlocks';
+import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
+import ProgressBar from '../components/NowPlaying/ProgressBar';
 
 type Route = TaskBlockRouteProps;
 type MainNav = MainTaskBlocksNavProps;
@@ -20,24 +22,27 @@ interface AddTaskProps {
 }
 
 interface RouteParamsProps {
-  id:string;
-  mode?:string;
-  title:string;
+  id: string;
+  mode?: string;
+  title: string;
 }
 
 interface SlideObj {
-  close:() => void;
-  id:string;
+  close: () => void;
+  id: string;
 }
 
-export default function NowPlaying({ route, navigation }:AddTaskProps) {
-  const { id, title }:RouteParamsProps = route.params!;
-  const { screenMode, taskBlocks }:UseSelectorProps = useSelector((state) => state!);
-  const { mode }:ScreenProp = screenMode!;
+export default function NowPlaying({ route, navigation }: AddTaskProps) {
+  const { id, title }: RouteParamsProps = route.params!;
+  const { screenMode, taskBlocks, keyboardOffset }: UseSelectorProps = useSelector((state) => state!);
+  const { mode }: ScreenProp = screenMode!;
+  const { offset } = keyboardOffset;
   const [tasksLocal, setTasksLocal] = useState<Task[]>([]);
   const [progress, setProgress] = useState({ total: 0, completed: 0, percent: 0 });
   const [enableScroll, setEnableScroll] = useState(true);
-  const swipeRefVar = useRef<SlideObj|undefined>();
+  const [editTask, setEditTask] = useState<EditingTask | undefined>(undefined);
+  const swipeRef = useRef<SlideObj | undefined>();
+  const keyboardOffsetAnimation = useRef(new Animated.Value(0)).current;
 
   const dispatch = useDispatch();
 
@@ -45,13 +50,57 @@ export default function NowPlaying({ route, navigation }:AddTaskProps) {
     // We only need to initiate the tasksLocal on load. Thereafter we handle it
     // through onDragEnd, where we also update the store.
     if (tasksLocal.length === 0) {
-      const index:number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
+      console.log('WRONG');
+      const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
       if (index > -1) {
         setTasksLocal(taskBlocks!.blocks[index].tasks);
-        calculateProgress(taskBlocks!.blocks[index].tasks);
       }
     }
   }, [taskBlocks]);
+
+  useEffect(() => {
+    // This useEffect runs on subsequent updates.
+    // It allows us to handle the state from the parent and not have to call useSelector from the child.
+    if (tasksLocal.length > 0) {
+      console.log("RIGHT");
+      const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
+      if (index > -1) {
+        setTasksLocal(taskBlocks!.blocks[index].tasks);
+      }
+    }
+  }, [taskBlocks]);
+
+  useEffect(() => {
+    // We calculate progress bar status here. It's possible to combine this and the previous
+    // useEffect, but this is a little easier to read and keep our concerns separate.
+    const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
+    if (index > -1) {
+      calculateProgress(taskBlocks!.blocks[index].tasks);
+    }
+  }, [tasksLocal, taskBlocks]);
+
+  useEffect(() => {
+    animateKeyboardOffset(offset);
+  }, [offset]);
+
+  // Method to animate keyboard offset
+  function animateKeyboardOffset(offsetValue: number) {
+    Animated.timing(keyboardOffsetAnimation, {
+      toValue: offsetValue,
+      duration: 300,
+      easing: Easing.bezier(0.63, 0.04, 0.35, 0.99),
+      useNativeDriver: false,
+    }).start();
+  }
+
+  // Method to calculate progress bar completion.
+  function calculateProgress(tasks: Task[]) {
+    const totalTime = tasks.reduce((prev: number, curr: Task) => curr.amount + prev, 0);
+    const completedTime = tasks.reduce((prev: number, curr: Task) => curr.completed + prev, 0);
+    const barPercentage = (((completedTime / totalTime) - 1) * 100) + 100;
+
+    setProgress({ total: totalTime, completed: completedTime, percent: barPercentage });
+  }
 
   function handleBackButtonPress() {
     haptic.select();
@@ -63,15 +112,7 @@ export default function NowPlaying({ route, navigation }:AddTaskProps) {
     navigation.navigate('Settings');
   }
 
-  function calculateProgress(tasks:Task[]) {
-    const totalTime = tasks.reduce((prev:number, curr:Task) => curr.amount + prev, 0);
-    const completedTime = tasks.reduce((prev:number, curr:Task) => curr.completed + prev, 0);
-    const barPercentage = (((completedTime / totalTime) - 1) * 100) + 100;
-
-    setProgress({ total: totalTime, completed: completedTime, percent: barPercentage });
-  }
-
-  function extractKey(item:Task) {
+  function extractKey(item: Task) {
     return item.id;
   }
 
@@ -79,92 +120,75 @@ export default function NowPlaying({ route, navigation }:AddTaskProps) {
     haptic.select();
   }
 
+  /**
+   * Method to create a new task. Called from the 'plus' button
+   */
   function handleAddTask() {
     haptic.select();
+
+    const taskId = `${title}${Math.random().toString(36).replace(/[^\w\s']|_/g, '')}`;
+    const task = { id: taskId, title: '', amount: 0, completed: 0 };
+    dispatch(addTask({ id, task }));
+    setEditTask({ isEdit: false, itemId: taskId });
   }
 
   function handleStop() {
     haptic.warning();
   }
 
-  function onDragEnd({ data }:{data:Task[]}) {
+  function onDragEnd({ data }: { data: Task[]; }) {
     haptic.light();
     setTasksLocal(data);
     dispatch(reorderTasks({ id, updatedOrder: data }));
   }
 
+  // function decrement() {
+  //   const update = [...tasksLocal];
+  //   const newInfo = { title: tasksLocal[0].title,
+  //     id: tasksLocal[0].id,
+  //     completed: tasksLocal[0].completed + 1,
+  //     amount: tasksLocal[0].amount };
+  //   update.splice(0, 1, newInfo);
+
+  //   onDragEnd({ data: update });
+  // }
+
   function onDragStart() {
     haptic.medium();
-    if (swipeRefVar.current !== undefined) {
-      swipeRefVar.current.close();
+    if (swipeRef.current !== undefined) {
+      swipeRef.current.close();
     }
   }
 
-  interface RefProps {
-    [key:string]:any
-  }
-
-  function RenderItem({ item, drag, isActive }:{item:Task, isActive:boolean, drag:()=>void}) {
-    let ref:RefProps;
-
-    // We parse the ref here, and make it usable to closeRowAction
-    function onLoad(refFromSwipe:object) {
-      if (refFromSwipe) {
-        ref = refFromSwipe;
-      }
-    }
-
-    function closeRowAction() {
-      if (ref) {
-        ref.closeRow();
-      }
-    }
-
-    /**
-     * Method to close a previously opened swiped list item
-     * We store the id along with the close method in swipeRefVar.
-     * If we see the same id, it means that it's being closed manually.
-     */
-    function postRow() {
-      setEnableScroll(false);
-      if (swipeRefVar.current !== undefined) {
-        if (swipeRefVar.current.id !== item.id) {
-          swipeRefVar.current.close();
-        } else {
-          swipeRefVar.current = undefined;
-        }
-      }
-      swipeRefVar.current = { id: item.id, close: closeRowAction };
-    }
-
-    function resumeScroll() {
-      setEnableScroll(true);
-    }
-
+  /**
+   * Component rendered by the DraggableFlatlist component
+   * This is an intermediary component to allow the passing of other props
+   * to the NowPlayingItem, which is a list item component.
+   */
+  function RenderItem({ drag, item, isActive }: RenderItemProps) {
     return (
-      <ScaleDecorator>
-        <SwipeRow
-          ref={onLoad}
-          leftOpenValue={100}
-          closeOnRowPress
-          swipeGestureBegan={postRow}
-          swipeGestureEnded={resumeScroll}
-          friction={20}
-          tension={100}
-        >
-          <View>
-            <Text>Hidden</Text>
-          </View>
-          <Pressable onLongPress={drag} disabled={isActive}>
-            <ProgressListItem title={item.title} time={{ total: item.amount, completed: item.completed }} mode={mode} />
-          </Pressable>
-        </SwipeRow>
-      </ScaleDecorator>
+      <NowPlayingItem
+        item={item}
+        drag={drag}
+        swipeRef={swipeRef}
+        setEnableScroll={setEnableScroll}
+        isActive={isActive}
+        mode={mode}
+        id={id}
+        closeSwipeBar={onDragStart}
+        setEditTask={setEditTask}
+        editTask={editTask}
+      />
     );
   }
 
   return (
-    <View style={[styles(mode).container]}>
+    <Animated.View style={[styles(mode).container, {
+      transform: [{
+        translateY: keyboardOffsetAnimation,
+      }],
+    }]}
+    >
       <View style={styles(mode).headerView}>
         <Pressable
           onPress={handleBackButtonPress}
@@ -190,13 +214,7 @@ export default function NowPlaying({ route, navigation }:AddTaskProps) {
       <Text testID="taskBlockTitle" style={styles(mode).headerText} numberOfLines={1}>
         {title && title.toUpperCase()}
       </Text>
-      <View style={styles(mode).progressWrapper}>
-        <View style={styles(mode).progressBar} />
-        <View style={[styles(mode).completeAmt, { width: `${progress.percent}%` }]} />
-      </View>
-      <View>
-        <Text style={styles(mode).completeText}>{`${progress.completed} of ${progress.total} minutes completed`}</Text>
-      </View>
+      <ProgressBar mode={mode} progress={progress} />
       {/* Three Navigation Buttons */}
       <View style={styles(mode).navWrapper}>
         <Pressable
@@ -234,12 +252,17 @@ export default function NowPlaying({ route, navigation }:AddTaskProps) {
           </View>
         </Pressable>
       </View>
-      <View style={{ flex: 1 }}>
-        { tasksLocal.length === 0
-          ? <Text style={{ textAlign: 'center' }}>Add some tasks</Text>
+
+      {/* This is our component to render the draggable list
+          The addition of GestureHandlerRootView is to fix the inability
+          to drag on Android */}
+      <GestureHandlerRootView style={{ flex: 1, height: '100%', width: '100%' }}>
+        {tasksLocal.length === 0
+          ? <Text style={styles(mode).addTasksText}>Add some tasks</Text>
           : (
             <DraggableFlatList
               data={tasksLocal}
+              extraData={taskBlocks}
               renderItem={RenderItem}
               keyExtractor={extractKey}
               onDragEnd={onDragEnd}
@@ -248,8 +271,8 @@ export default function NowPlaying({ route, navigation }:AddTaskProps) {
               scrollEnabled={enableScroll}
             />
           )}
-      </View>
-    </View>
+      </GestureHandlerRootView>
+    </Animated.View>
   );
 }
 
@@ -258,6 +281,15 @@ const styles = (mode: string) => StyleSheet.create({
     backgroundColor: colors.background[mode],
     flex: 1,
     paddingTop: 25,
+    width: '100%',
+    height: '100%',
+  },
+  addTasksText: {
+    textAlign: 'center',
+    color: colors.subTitle[mode],
+    fontFamily: font.liTitle.fontFamily,
+    fontSize: font.liTitle.fontSize,
+    marginTop: 10,
   },
   headerView: {
     marginTop: 35,

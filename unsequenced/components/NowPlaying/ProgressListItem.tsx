@@ -40,7 +40,7 @@ export default function ProgressListItem({ mode, title, time }:ProgressListItemP
       <Animated.View style={[listItem(mode).progressContainer, { width: widthPercent }]} />
       <View style={listItem(mode).textWrapper}>
         <View>
-          <Text style={listItem(mode).title}>{title}</Text>
+          <Text numberOfLines={1} style={listItem(mode).title}>{title}</Text>
           {time.total > 0 && <Text style={listItem(mode).timeInfo}>{`${time.completed} min of ${time.total} min complete`}</Text>}
         </View>
         <View>

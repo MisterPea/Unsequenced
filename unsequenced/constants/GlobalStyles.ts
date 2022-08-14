@@ -1,6 +1,6 @@
 import { Dimensions } from 'react-native';
 
-const defintions = [
+const definitions = [
   'background', 'settingsGear',
   'title', 'subTitle',
   'cancelButton', 'confirmBtn',
@@ -27,8 +27,10 @@ const { fontScale } = Dimensions.get('window');
 const fontAdj = Number(((1 - fontScale) + 1).toFixed(2));
 // const fontAdj = 1;
 
-export const colors:{[key:string]:any} = {
+export const colors: { [key: string]: any; } = {
   background: { light: 'rgb(242,234,216)', dark: 'hsl(214, 15%, 10%)' },
+  progressBackground: { light: '#ece5d3', dark: 'hsl(214, 15%, 20%)' },
+  progressBorder: { light: '#b7b1a1', dark: 'hsl(214, 15%, 30%)' },
   settingsGear: { light: 'rgb(0,0,0)', dark: 'rgb(191,191,191)' },
   title: { light: 'rgb(0,151,235)', dark: 'rgb(220,252,52)' },
   subTitle: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
@@ -56,6 +58,7 @@ export const colors:{[key:string]:any} = {
   selectedOptionBorder: { light: 'rgba(63,150,193,0)', dark: 'rgb(71,209,226,0)' },
   selectedOptionFill: { light: 'rgb(63,150,93)', dark: 'rgb(71,209,226)' },
   selectedOptionText: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
+  tabFill: { light: '#cacaca', dark: '#404c59' },
 
   // Add Tasks
   blockName: { light: 'rgb(227,219,203)', dark: 'rgb(55,61,71)' },
@@ -71,7 +74,7 @@ export const colors:{[key:string]:any} = {
   roundCloseBtnBG: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
   roundCloseBtnIcon: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
   barBackground: { light: 'rgb(255,255,255)', dark: 'hsl(0, 0%, 25%)' },
-  barCompleteAmt: { light: 'rgb(40,140,225)', dark: 'rgb(220,252,52)' },
+  barCompleteAmt: { light: 'hsl(208, 76%, 52%)', dark: 'rgb(220,252,52)' },
   listItemBorder: { light: 'rgb(0,0,0)', dark: 'rgb(201,201,201)' },
   shadowColor: { light: 'rgba(0,0,0,1)', dark: 'rgba(0,0,0,0)' },
 
@@ -98,11 +101,11 @@ export const colors:{[key:string]:any} = {
 };
 
 interface FamilySize {
-  fontSize:number;
-  fontFamily?:string;
+  fontSize: number;
+  fontFamily?: string;
 }
 
-export const font:{[key:string]:FamilySize} = {
+export const font: { [key: string]: FamilySize; } = {
   header: {
     fontSize: Math.ceil(26 * fontAdj),
     fontFamily: 'Rubik_700Bold',

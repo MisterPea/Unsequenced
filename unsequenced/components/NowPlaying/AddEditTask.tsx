@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Animated, Easing, Keyboard } from 'react-native';
+import { View, StyleSheet, Animated, Easing, Keyboard, Platform, EmitterSubscription } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { removeTask, updateTask } from '../../redux/taskBlocks';
 import InputField from '../InputField';
@@ -7,9 +7,6 @@ import PillButton from '../PillButton';
 import { colors } from '../../constants/GlobalStyles';
 import { Task, TaskUpdate } from '../../constants/types';
 import { setKeyboardOffset } from '../../redux/keyboardOffset';
-
-// Descending view for editing task.
-// This appears when we edit or add a task
 
 type EditTask = {
   isEdit: boolean,
@@ -24,6 +21,8 @@ interface AddEditTaskProps {
   id: string;
 }
 
+// Descending view for editing task.
+// This appears when we edit or add a task
 export default function AddEditTask(this: any, props: AddEditTaskProps) {
   const { setEditTask, editTask, item, mode, id } = props;
   const [taskName, setTaskName] = useState<string>(item.title || '');
@@ -31,6 +30,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   const [entriesAreValid, setEntriesAreValid] = useState<boolean>(false);
   const [itemHeight, setItemHeight] = useState<number|undefined>(undefined);
   const [keyboardHeight, setKeyboardHeight] = useState<number|undefined>(undefined);
+  const addEditSubmitted = useRef<boolean>(false);
   const dispatch = useDispatch();
 
   const animateTextInput = useRef(new Animated.Value(0)).current;
@@ -41,18 +41,27 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
 
   useEffect(() => {
     animateOpen();
-    const willShow = Keyboard.addListener('keyboardWillShow', ({ endCoordinates }) => handleKeyboardHeight(endCoordinates.screenY));
-    const willHide = Keyboard.addListener('keyboardWillHide', ({ endCoordinates }) => handleKeyboardHeight(endCoordinates.screenY));
+    let show: EmitterSubscription;
+    let hide: EmitterSubscription;
+    if (Platform.OS === 'ios') {
+      show = Keyboard.addListener('keyboardWillShow', ({ endCoordinates }) => handleKeyboardHeight(endCoordinates.screenY));
+      hide = Keyboard.addListener('keyboardWillHide', ({ endCoordinates }) => handleKeyboardHeight(endCoordinates.screenY));
+    }
     return () => {
-      willShow.remove();
-      willHide.remove();
-      checkIfAbortedAddition();
+      if (Platform.OS === 'ios') {
+        show.remove();
+        hide.remove();
+      }
+      // If we haven't submitted we need to check for a task that's
+      // been created and not submitted. If there is one, we remove it.
+      if (addEditSubmitted.current === false) {
+        checkIfAbortedAddition();
+      }
     };
   }, []);
 
   useEffect(() => {
     if (keyboardHeight && itemHeight) {
-      // console.log('>>', (keyboardHeight - (itemHeight + 137)));
       const difference = keyboardHeight - (itemHeight + 137);
       const offset = Math.min(0, difference);
       dispatch(setKeyboardOffset({ offset }));
@@ -150,7 +159,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   function checkIfAbortedAddition() {
     // We're saying, if we're adding a task, but canceling the naming, then
     // we will delete that empty, non-named task.
-    if (editTask.isEdit === false && item.amount === 0) {
+    if (editTask.isEdit === false) {
       dispatch(removeTask({ id, taskId: item.id }));
     }
   }
@@ -165,6 +174,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
       amount: Number(duration),
     };
     dispatch(updateTask({ id, taskId: item.id, update }));
+    addEditSubmitted.current = true;
     animateClosed(finishClosing);
   }
 

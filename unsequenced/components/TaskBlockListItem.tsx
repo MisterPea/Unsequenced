@@ -1,13 +1,29 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, LayoutAnimation} from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
-import { TaskBlock } from '../constants/types';
+import { useNavigation } from '@react-navigation/native';
+import { colors, font } from '../constants/GlobalStyles';
+import haptic from './helpers/haptic';
 
-export default function TaskBlockListItem({ item }:{item:TaskBlock}) {
+interface TaskBlockProps {
+  item:undefined;
+  mode:string;
+}
+
+interface Current {
+  amount: number
+}
+
+export default function TaskBlockListItem(props:TaskBlockProps) {
+  const navigation = useNavigation();
+
+  const { item } = props.item;
+  const { mode } = props;
   const { title, tasks } = item;
 
   function totalTime() {
-    const timeMinutes = tasks.reduce((prev, curr) => prev + curr.amount, 0) || 0;
+    const timeMinutes = tasks.reduce((prev:number, curr:Current) => prev + curr.amount, 0) || 0;
     if (timeMinutes <= 60) {
       if (timeMinutes === 60) {
         return '1 hour';
@@ -15,31 +31,39 @@ export default function TaskBlockListItem({ item }:{item:TaskBlock}) {
       return `${timeMinutes} minutes`;
     }
     return `${Math.round((timeMinutes / 60) * 10 ** 1) / 10 ** 1} hours`;
-    // return `${Math.round(((timeMinutes / 60) * 100) / 100)} hours`;
   }
 
+  function handleOnPress() {
+    haptic.light();
+    navigation.navigate('Now Playing', { id: item.id, title: item.title });
+  }
   return (
-    <View
-      style={styles().container}
-      testID="taskBlockListItem"
+    <Pressable
+      onPress={handleOnPress}
+      testID={`taskBlock-${item.title}`}
     >
-      <View style={styles().leftSide}>
-        <Text style={styles().title}>{title}</Text>
-        <Text style={styles().time}>{totalTime()}</Text>
-      </View>
-      <View>
-        <EvilIcons name="chevron-right" size={30} color="black" />
-      </View>
-    </View>
+      <Animated.View
+        style={styles(mode).container}
+        testID="taskBlockListItem"
+      >
+        <View style={styles(mode).leftSide}>
+          <Text style={styles(mode).title}>{title}</Text>
+          <Text style={styles(mode).time}>{totalTime()}</Text>
+        </View>
+        <View>
+          <EvilIcons name="chevron-right" size={30} color={colors.disabled[mode]} />
+        </View>
+      </Animated.View>
+    </Pressable>
   );
 }
 
-const styles = () => StyleSheet.create({
+const styles = (mode:string) => StyleSheet.create({
   container: {
-    height: 68,
-    backgroundColor: '#ffffff',
-    marginHorizontal: 4,
-    marginVertical: 2,
+    height: 62,
+    backgroundColor: colors.taskListItemBG[mode],
+    marginHorizontal: 1,
+    marginVertical: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -49,11 +73,13 @@ const styles = () => StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 20,
+    fontFamily: font.liTitle.fontFamily,
+    fontSize: font.liTitle.fontSize,
+    color: colors.taskListItemText[mode],
   },
   time: {
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 15,
+    fontFamily: font.liSubTitle.fontFamily,
+    fontSize: font.liSubTitle.fontSize,
+    color: colors.taskListItemText[mode],
   },
 });
