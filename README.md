@@ -38,4 +38,3 @@ ___Todo/Inventory___
 | Connection to SQLite |  |
 
 
-
