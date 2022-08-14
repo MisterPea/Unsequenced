@@ -1,27 +1,47 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, ViewStyle } from 'react-native';
-import colors from '../constants/GlobalStyles';
+import { colors, font } from '../constants/GlobalStyles';
+
+interface InputStyle extends ViewStyle {
+  color?:string
+}
 
 interface InputProps {
   screenMode: string;
   label:string;
   placeholder?:string;
-  value: string;
+  value: undefined|string;
   callback:React.Dispatch<React.SetStateAction<string>>;
-  style?: ViewStyle
+  inputStyle?: InputStyle;
+  viewStyle?: ViewStyle;
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad' | 'decimal-pad';
+  maxLength?: number;
 }
 
-export default function InputField({ screenMode, label, placeholder, value, callback, style }:InputProps) {
+export default function InputField({
+  screenMode,
+  label,
+  placeholder,
+  value,
+  callback,
+  inputStyle,
+  viewStyle,
+  keyboardType,
+  maxLength,
+}:InputProps) {
   return (
-    <View style={styles(screenMode).container}>
+    <View style={[styles(screenMode).container, viewStyle]}>
       <Text style={styles(screenMode).ctaText}>{label}</Text>
       <TextInput
-        style={[styles(screenMode).input, style]}
+        keyboardType={keyboardType}
+        keyboardAppearance={screenMode}
+        style={[styles(screenMode).input, inputStyle]}
         onChangeText={callback}
         placeholder={placeholder}
         value={value}
-        autoCapitalize="words"
-        placeholderTextColor={colors.placeholderText[screenMode]}
+        autoCapitalize="sentences"
+        placeholderTextColor={colors.placeholder[screenMode]}
+        maxLength={maxLength}
       />
     </View>
   );
@@ -32,21 +52,21 @@ const styles = (screenMode :string) => StyleSheet.create({
     marginHorizontal: 20,
   },
   ctaText: {
-    fontSize: 12,
-    fontFamily: 'Roboto_500Medium',
+    fontSize: font.inputTitle.fontSize,
+    fontFamily: font.inputTitle.fontFamily,
     marginLeft: 6,
     marginBottom: 2,
-    color: colors.textOne[screenMode],
+    color: colors.taskListItemText[screenMode],
   },
   input: {
-    fontSize: 19,
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: font.input.fontFamily,
+    fontSize: font.input.fontSize,
     borderWidth: 0.5,
-    borderColor: colors.textBoxBorder[screenMode],
-    padding: 10,
-    backgroundColor: colors.textBox[screenMode],
-    maxWidth: 250,
-    borderRadius: 8,
-    color: colors.textOne[screenMode],
+    // borderColor: colors.textBoxBorder[screenMode],
+    padding: 7,
+    // backgroundColor: colors.textBox[screenMode],
+    // maxWidth: 250,
+    borderRadius: 4,
+    // color: colors.textOne[screenMode],
   },
 });

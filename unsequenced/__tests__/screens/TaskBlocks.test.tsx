@@ -9,6 +9,10 @@ import quietModeReducer from '../../redux/quietMode';
 import DATA from '../../constants/DATA';
 import { TaskBlock } from '../../constants/types';
 
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: jest.fn(),
+}));
+
 function mockStore() {
   const store = configureStore({
     reducer: {
@@ -28,17 +32,20 @@ function populateStore() {
 }
 
 // to appease TaskBlocks prop
-const stumpNav:any = {
-  navigate: () => {},
-};
 
 describe('TaskBlocks.tsx', () => {
+  const stumpNav:any = {
+    navigation: {
+      navigate: () => {},
+    },
+  };
+
   it('Renders the component', () => {
     render(<Provider store={mockStoreInstance}><TaskBlocks navigation={stumpNav} /></Provider>);
   });
 
   it('Should have render 3 taskBlocks', () => {
-    populateStore();
+    // populateStore();
     render(<Provider store={mockStoreInstance}><TaskBlocks navigation={stumpNav} /></Provider>);
     const elements = screen.getAllByTestId('taskBlockListItem');
     expect(elements).toHaveLength(3);

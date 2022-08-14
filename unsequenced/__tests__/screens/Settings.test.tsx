@@ -24,8 +24,7 @@ describe('Settings component', () => {
   it('Toggles the mode from "light" to "dark"', () => {
     const { getByTestId } = render(component);
     const darkModeBtn = getByTestId('lightDarkModeBtn');
-
-    fireEvent(darkModeBtn, 'valueChange', 'true');
+    fireEvent(darkModeBtn, 'press');
 
     const screenState = store.getState().screenMode.mode;
     expect(screenState).toBe('dark');
@@ -41,7 +40,7 @@ describe('Settings component', () => {
     const { getByTestId } = render(component);
     const isQuietBtn = getByTestId('quietModeBtn');
 
-    fireEvent(isQuietBtn, 'valueChange', 'true');
+    fireEvent(isQuietBtn, 'press');
 
     const quietState = store.getState().quietMode.isQuiet;
     expect(quietState).toBeTruthy();

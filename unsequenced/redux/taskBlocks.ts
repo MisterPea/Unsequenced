@@ -13,7 +13,7 @@ const taskBlockSlice = createSlice({
   },
   reducers: {
     addTaskBlock: (state: { blocks: TaskBlock[]; }, action: { payload: TaskBlock }) => {
-      state.blocks.push(action.payload);
+      state.blocks.unshift(action.payload);
     },
     removeTaskBlock: (state:{blocks: TaskBlock[]}, action:{payload: {id:string}}) => {
       const index = state.blocks.findIndex((block) => block.id === action.payload.id);
@@ -39,7 +39,7 @@ const taskBlockSlice = createSlice({
     addTask: (state:{blocks:TaskBlock[]}, action:{payload:{id:string, task:Task}}) => {
       const index = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (index > -1) {
-        state.blocks[index].tasks.push(action.payload.task);
+        state.blocks[index].tasks.unshift(action.payload.task);
       }
     },
     removeTask: (state:{blocks:TaskBlock[]}, action:{payload:{id:string, taskId: string}}) => {
@@ -53,14 +53,54 @@ const taskBlockSlice = createSlice({
       const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (taskBlockIndex > -1) {
         const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
-        const { title, amount, isBreak } = action.payload.update;
+        const { title, amount, completed } = action.payload.update;
         const newRecord = {
           id: action.payload.taskId,
           title: title || state.blocks[taskBlockIndex].tasks[taskIndex].title,
           amount: amount || state.blocks[taskBlockIndex].tasks[taskIndex].amount,
-          isBreak: isBreak === undefined ? state.blocks[taskBlockIndex].tasks[taskIndex].isBreak : isBreak,
+          completed: completed || state.blocks[taskBlockIndex].tasks[taskIndex].completed,
         };
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
+      }
+    },
+    reorderTasks: (state:{blocks:TaskBlock[]}, action:{payload:{id:string, updatedOrder:Task[]}}) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const deleteAmount = state.blocks[taskBlockIndex].tasks.length;
+        state.blocks[taskBlockIndex].tasks.splice(0, deleteAmount, ...action.payload.updatedOrder);
+      }
+    },
+    toggleBreak: (state:{blocks:TaskBlock[]}, action:{payload:{id:string}}) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const currentBlock = state.blocks[taskBlockIndex];
+        currentBlock.breaks = !currentBlock.breaks;
+      }
+    },
+    toggleAutoplay: (state:{blocks:TaskBlock[]}, action:{payload:{id:string}}) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const currentBlock = state.blocks[taskBlockIndex];
+        currentBlock.autoplay = !currentBlock.autoplay;
+      }
+    },
+    markTaskComplete: (state:{blocks:TaskBlock[]}, action:{payload:{id:string, taskId: string}}) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
+        const amt = state.blocks[taskBlockIndex].tasks[taskIndex].amount;
+        const newRecord = { ...state.blocks[taskBlockIndex].tasks[taskIndex], completed: amt };
+        state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
+      }
+    },
+    duplicateTask: (state:{blocks:TaskBlock[]}, action:{payload:{id:string, taskId: string}}) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const { title } = state.blocks[taskBlockIndex];
+        const newId = `${title}${Math.random().toString(36).replace(/[^\w\s']|_/g, '')}`;
+        const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
+        const duplicateRecord = { ...state.blocks[taskBlockIndex].tasks[taskIndex], id: newId, completed: 0 };
+        state.blocks[taskBlockIndex].tasks.unshift(duplicateRecord);
       }
     },
   },
@@ -68,5 +108,15 @@ const taskBlockSlice = createSlice({
 
 export default taskBlockSlice.reducer;
 export const {
-  addTaskBlock, removeTaskBlock, updateTaskBlock, addTask, removeTask, updateTask,
+  addTaskBlock,
+  removeTaskBlock,
+  updateTaskBlock,
+  addTask,
+  removeTask,
+  updateTask,
+  toggleAutoplay,
+  toggleBreak,
+  reorderTasks,
+  markTaskComplete,
+  duplicateTask,
 } = taskBlockSlice.actions;

@@ -14,23 +14,19 @@ describe('AppEntry.tsx', () => {
       </Provider>,
     );
   });
+});
 
-  it('Renders settings button', () => {
-    const component = <Provider store={store}><AppEntry /></Provider>;
-    const { getByTestId } = render(component);
-    const settingsBtn = getByTestId('taskBlockSettings');
+describe('Settings Route', () => {
+  it('Navigates to the Settings screen on button click', async () => {
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <AppEntry />
+      </Provider>,
+    );
 
-    expect(settingsBtn).toBeTruthy();
-  });
-
-  it('Takes you to settings page on button click', async () => {
-    const component = <Provider store={store}><AppEntry /></Provider>;
-    const { getByTestId } = render(component);
-    const settingsBtn = getByTestId('taskBlockSettings');
-
+    const settingsBtn = getByTestId('settingsBtn');
     fireEvent(settingsBtn, 'press');
-    const settingsText = await screen.findByText('LIGHT/DARK MODE');
-
+    const settingsText = await screen.findByText('Light Mode');
     expect(settingsText).toBeTruthy();
   });
 });

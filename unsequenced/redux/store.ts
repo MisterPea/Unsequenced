@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import taskBlockReducer from './taskBlocks';
 import screenModeReducer from './screenMode';
 import quietModeReducer from './quietMode';
+import keyboardOffsetReducer from './keyboardOffset';
 
 const store = configureStore({
   reducer: {
     taskBlocks: taskBlockReducer,
     screenMode: screenModeReducer,
     quietMode: quietModeReducer,
+    keyboardOffset: keyboardOffsetReducer,
   },
 });
 

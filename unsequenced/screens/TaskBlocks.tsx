@@ -1,46 +1,91 @@
-import React from 'react';
-import { FlatList, StyleSheet, Text, View, SafeAreaView } from 'react-native';
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable react/no-unstable-nested-components */
+import React, { useEffect } from 'react';
+import { Pressable, StyleSheet, Text, View, SafeAreaView, LayoutAnimation } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '../redux/hooks';
-import HeaderIcon from '../components/HeaderIcon';
-import TaskBlockIcon from '../components/icons/TaskBlockIcon';
-import TaskBlockListItem from '../components/TaskBlockListItem';
-import { TaskBlock, TaskBlockNavProps } from '../constants/types';
-import colors from '../constants/GlobalStyles';
+import { TaskBlockNavProps } from '../constants/types';
+import { colors, font } from '../constants/GlobalStyles';
 import PillButton from '../components/PillButton';
+import SwipeList from '../components/swipeable/SwipeList';
+import haptic from '../components/helpers/haptic';
+import { useDispatch } from 'react-redux';
+import { addTaskBlock, updateTaskBlock } from '../redux/taskBlocks';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function TaskBlocks({ navigation }:{navigation: TaskBlockNavProps}) {
+export default function TaskBlocks({ route, navigation }: { navigation: TaskBlockNavProps; }) {
+
+  const dispatch = useDispatch();
   const { screenMode, taskBlocks } = useAppSelector((state) => state);
   const { mode } = screenMode;
   const { blocks } = taskBlocks;
 
+  // The reason behind this is that if we perform the update in the modal, the state
+  // changes on this screen and causes a re-render. When we do the update after navigation
+  // to this screen, we avoid that.
+  useFocusEffect(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    if (route.params?.addATaskBlock) {
+      console.log('here!!!')
+      const { addATaskBlock } = route.params;
+      dispatch(addTaskBlock(addATaskBlock));
+      navigation.setParams({ addATaskBlock: undefined });
+
+    } else if (route.params?.editTaskBlock) {
+      console.log('there')
+      const { editTaskBlock } = route.params;
+      dispatch(updateTaskBlock({ id: editTaskBlock.id, update: editTaskBlock.update }));
+      navigation.setParams({ editTaskBlock: undefined });
+    }
+  });
+
+
+
   function handleCreateTaskBlockPress() {
+    haptic.medium();
     navigation.navigate('createNewTaskBlock');
   }
 
-  function extractKey(item:TaskBlock) {
-    return item.id;
+  const onLeftActionStatusChange = () => {
+    console.log('>>>>>>>>>fff>>');
+  };
+
+  function handleSettingsPress() {
+    haptic.select();
+    navigation.navigate('Settings');
   }
 
   return (
-    <View style={[taskBlockView(mode).container]}>
-      <HeaderIcon color={colors.iconMainBG[mode]}>
-        <TaskBlockIcon size={70} color={colors.iconMainFG[mode]} />
-      </HeaderIcon>
-      <View style={taskBlockView(mode).ctaView}>
-        <Text style={taskBlockView(mode).ctaText}>Choose a Task Block</Text>
-        <Text style={taskBlockView(mode).ctaText}>or Create a New One</Text>
+    <View style={[styles(mode).container]}>
+      <View style={styles(mode).headerView}>
+        <View>
+          <Text style={styles(mode).header}>TASK BLOCKS</Text>
+          <Text style={styles(mode).subHeader}>Choose a Task Block or Create a New One</Text>
+        </View>
+        <Pressable
+          testID="settingsBtn"
+          onPress={handleSettingsPress}
+        >
+          <Ionicons
+            name="settings-outline"
+            size={24}
+            color={colors.settingsGear[mode]}
+          />
+        </Pressable>
       </View>
-      <FlatList
+
+      <SwipeList
         data={blocks}
-        renderItem={TaskBlockListItem}
-        keyExtractor={extractKey}
+        mode={mode}
+        leftStatusChg={onLeftActionStatusChange}
       />
-      <SafeAreaView style={taskBlockView(mode).safeView}>
+
+      <SafeAreaView style={styles(mode).safeView}>
         <PillButton
           label="Create New Task Block"
           size="lg"
           shadow
-          colors={{ text: '#ffffff', background: colors.greenBtn[mode], border: 'transparent' }}
+          colors={{ text: colors.confirmText[mode], background: colors.createNewTaskBtn[mode], border: 'transparent' }}
           action={handleCreateTaskBlockPress}
         />
       </SafeAreaView>
@@ -48,22 +93,33 @@ export default function TaskBlocks({ navigation }:{navigation: TaskBlockNavProps
   );
 }
 
-const taskBlockView = (mode: string) => StyleSheet.create({
+const styles = (mode: string) => StyleSheet.create({
   container: {
     backgroundColor: colors.background[mode],
     flex: 1,
     paddingTop: 25,
   },
-  ctaView: {
-    marginVertical: 20,
+  headerView: {
+    marginTop: 35,
+    marginHorizontal: 20,
+    marginBottom: 70,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  ctaText: {
-    textAlign: 'center',
-    color: colors.textOne[mode],
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 15,
+  header: {
+    fontSize: font.header.fontSize,
+    fontFamily: font.header.fontFamily,
+    color: colors.title[mode],
+
+  },
+  subHeader: {
+    fontSize: font.subHead.fontSize,
+    fontFamily: font.subHead.fontFamily,
+    color: colors.subTitle[mode],
   },
   safeView: {
-    marginBottom: 70,
+    alignSelf: 'center',
+    bottom: 70,
+    position: 'absolute',
   },
 });

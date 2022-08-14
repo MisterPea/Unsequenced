@@ -2,15 +2,17 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { PillBtnFilledProps, PillBtnColors } from '../constants/types';
+import { font } from '../constants/GlobalStyles';
 
-export default function PillButton({ label, size, colors, shadow = false, action }: PillBtnFilledProps) {
-  const sizes = { sm: { h: 40, w: 138 }, md: { h: 48, w: 210 }, lg: { h: 58, w: 275 } };
+export default function PillButton({ label, size, colors, shadow = false, action, disabled }: PillBtnFilledProps) {
+  const sizes = { sm: { h: 40, w: 138 }, md: { h: 40, w: 140 }, lg: { h: 50, w: 260 } };
 
   return (
     <Pressable
       onPress={action}
       style={({ pressed }) => pressed && { opacity: 0.9 }}
       testID="pillButtonFilledId"
+      disabled={disabled}
     >
       <View
         style={
@@ -38,8 +40,8 @@ const buttonStyle = (colors: PillBtnColors, dimensions: {h:number, w:number}) =>
   text: {
     color: colors.text,
     textAlign: 'center',
-    fontSize: 20,
-    fontFamily: 'Roboto_400Regular',
+    fontSize: dimensions.w === 260 ? font.largeButton.fontSize : font.cancelConfirm.fontSize,
+    fontFamily: font.largeButton.fontFamily,
   },
   shadow: {
     shadowOpacity: 0.2,
@@ -49,5 +51,6 @@ const buttonStyle = (colors: PillBtnColors, dimensions: {h:number, w:number}) =>
       width: 0,
       height: 6,
     },
+    elevation: 4,
   },
 });

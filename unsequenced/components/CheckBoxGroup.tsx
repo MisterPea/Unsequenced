@@ -1,32 +1,53 @@
 /* eslint-disable max-len */
 import React from 'react';
-import { View,
-  Text,
-  StyleSheet,
-  Pressable } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import colors from '../constants/GlobalStyles';
+import { View, Text, StyleSheet, Pressable, ViewStyle } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { colors, font } from '../constants/GlobalStyles';
 
-export default function CheckBoxGroup({
-  title, screenMode, toggleFunc, switchValue, testID,
-}:{title:string, screenMode:string, toggleFunc: ()=> void, switchValue:boolean, testID: string}) {
+interface CheckBox {
+  title: string;
+  screenMode: string;
+  toggleFunc: () => void;
+  value: boolean;
+  testID: string;
+  extraStyle?: ViewStyle;
+}
+
+export default function CheckBoxGroup({ title, screenMode, toggleFunc, value, testID, extraStyle }: CheckBox) {
+  let fill;
+  let border;
+  let text;
+
+  if (value) {
+    fill = colors.selectedOptionFill[screenMode];
+    border = colors.selectedOptionBorder[screenMode];
+    text = colors.selectedOptionText[screenMode];
+  } else {
+    fill = colors.unselectOptionFill[screenMode];
+    border = colors.unselectOptionBorder[screenMode];
+    text = colors.unselectOptionText[screenMode];
+  }
+
   return (
-    <View style={settingsScreen(screenMode).componentWrapper}>
+    <View
+      style={[
+        settingsScreen.componentWrapper,
+        {
+          backgroundColor: fill,
+          borderColor: border
+        },
+        extraStyle,
+      ]}
+    >
       <Pressable
         onPress={toggleFunc}
         testID={testID}
       >
-        <View style={settingsScreen(screenMode).switchWrapper}>
-          {switchValue
-            ? <AntDesign name="checkcircle" size={20} color={colors.topBar[screenMode] } />
-            : <AntDesign name="checkcircleo" size={20} color="#B6B6B6" />}
-          {/* <Switch
-          value={switchValue}
-          onValueChange={toggleFunc}
-          trackColor={{ true: colors.topBar[screenMode] }}
-          testID={testID}
-        /> */}
-          <Text style={settingsScreen(screenMode).settingTitle}>{title}</Text>
+        <View style={settingsScreen.switchWrapper}>
+          {value
+            ? <MaterialIcons name="check-circle-outline" size={24} color={text} />
+            : <MaterialIcons name="radio-button-unchecked" size={24} color={text} />}
+          <Text style={[settingsScreen.settingTitle, { color: text }]}>{title}</Text>
 
         </View>
       </Pressable>
@@ -34,16 +55,17 @@ export default function CheckBoxGroup({
   );
 }
 
-const settingsScreen = (mode:string) => StyleSheet.create({
+const settingsScreen = StyleSheet.create({
   componentWrapper: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    opacity: 0.95,
+    borderWidth: 1,
+    width: '100%',
+    borderRadius: 100,
   },
   settingTitle: {
-    fontFamily: 'Roboto_400Regular',
-    color: colors.textOne[mode],
-    fontSize: 15,
+    fontFamily: font.optionSelect.fontFamily,
+    fontSize: font.optionSelect.fontSize,
     marginLeft: 5,
   },
   switchWrapper: {

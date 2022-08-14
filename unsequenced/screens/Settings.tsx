@@ -1,65 +1,75 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import HeaderIcon from '../components/HeaderIcon';
-import SettingsIcon from '../components/icons/SettingsIcon';
-import SettingsToggleGroup from '../components/SettingsToggleGroup';
-import colors from '../constants/GlobalStyles';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { EvilIcons } from '@expo/vector-icons';
+import { colors, font } from '../constants/GlobalStyles';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { toggleScreenMode } from '../redux/screenMode';
 import { toggleQuietMode } from '../redux/quietMode';
+import { SettingsNavProps } from '../constants/types';
+import { DarkMode, QuietMode } from '../components/SettingsGroups';
+import haptic from '../components/helpers/haptic';
 
-export default function Settings() {
+export default function Settings({ navigation, route }:{navigation:SettingsNavProps}) {
   const { screenMode, quietMode } = useAppSelector((state) => state);
   const { mode } = screenMode;
   const { isQuiet } = quietMode;
   const dispatch = useAppDispatch();
 
   function handleScreenModeToggle() {
+    haptic.select();
     dispatch(toggleScreenMode());
   }
 
   function handleQuietModeToggle() {
+    haptic.select();
     dispatch(toggleQuietMode());
   }
 
+  function handleBackButtonPress() {
+    haptic.select();
+    navigation.goBack();
+  }
+
   return (
-    <View style={settingsScreen(mode).container}>
-      <HeaderIcon color={colors.iconMainBG[mode]}>
-        <SettingsIcon size={70} color={colors.iconMainFG[mode]} />
-      </HeaderIcon>
-      <View style={settingsScreen(mode).optionsWrapper}>
-        <SettingsToggleGroup
-          title="LIGHT/DARK MODE"
-          screenMode={mode}
-          toggleFunc={handleScreenModeToggle}
-          switchValue={mode === 'dark'}
-          testID="lightDarkModeBtn"
-        />
-        <SettingsToggleGroup
-          title="QUIET MODE"
-          screenMode={mode}
-          toggleFunc={handleQuietModeToggle}
-          switchValue={isQuiet}
-          testID="quietModeBtn"
-        />
+    <View style={styles(mode).container}>
+      <View style={styles(mode).headerView}>
+        <Pressable
+          onPress={handleBackButtonPress}
+        >
+          <EvilIcons
+            style={{ marginLeft: -7 }}
+            name="arrow-left"
+            size={font.backButton.fontSize}
+            color={colors.settingsGear[mode]}
+          />
+        </Pressable>
+        <Text style={styles(mode).headerText}>SETTINGS</Text>
+
       </View>
+      <DarkMode mode={mode} toggle={handleScreenModeToggle} />
+      <QuietMode mode={mode} toggle={handleQuietModeToggle} isQuiet={isQuiet} />
     </View>
   );
 }
 
-const settingsScreen = (mode:string) => StyleSheet.create({
+const styles = (mode:string) => StyleSheet.create({
   container: {
     backgroundColor: colors.background[mode],
     flex: 1,
+    paddingTop: 25,
   },
-  optionsWrapper: {
-    alignItems: 'center',
-    marginHorizontal: 10,
-    borderTopColor: colors.backArrow[mode],
-    borderTopWidth: 0.5,
-    borderBottomColor: colors.backArrow[mode],
-    borderBottomWidth: 0.5,
-    paddingVertical: 15,
+  headerView: {
+    marginTop: 35,
+    marginHorizontal: 20,
+    marginBottom: 18,
   },
+  headerText: {
+    marginTop: 10,
+    fontSize: font.header.fontSize,
+    fontFamily: font.header.fontFamily,
+    color: colors.title[mode],
+    marginLeft: 25,
+  },
+
 });
