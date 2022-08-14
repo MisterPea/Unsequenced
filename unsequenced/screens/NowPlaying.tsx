@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Pressable, Animated, Easing } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation } from 'react-native';
 import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -47,28 +47,15 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // We only need to initiate the tasksLocal on load. Thereafter we handle it
-    // through onDragEnd, where we also update the store.
-    if (tasksLocal.length === 0) {
-      console.log('WRONG');
+ 
       const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
       if (index > -1) {
+        // afik having the layout animation here allows it to 
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setTasksLocal(taskBlocks!.blocks[index].tasks);
       }
-    }
   }, [taskBlocks]);
 
-  useEffect(() => {
-    // This useEffect runs on subsequent updates.
-    // It allows us to handle the state from the parent and not have to call useSelector from the child.
-    if (tasksLocal.length > 0) {
-      console.log("RIGHT");
-      const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
-      if (index > -1) {
-        setTasksLocal(taskBlocks!.blocks[index].tasks);
-      }
-    }
-  }, [taskBlocks]);
 
   useEffect(() => {
     // We calculate progress bar status here. It's possible to combine this and the previous
@@ -141,17 +128,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     setTasksLocal(data);
     dispatch(reorderTasks({ id, updatedOrder: data }));
   }
-
-  // function decrement() {
-  //   const update = [...tasksLocal];
-  //   const newInfo = { title: tasksLocal[0].title,
-  //     id: tasksLocal[0].id,
-  //     completed: tasksLocal[0].completed + 1,
-  //     amount: tasksLocal[0].amount };
-  //   update.splice(0, 1, newInfo);
-
-  //   onDragEnd({ data: update });
-  // }
 
   function onDragStart() {
     haptic.medium();
