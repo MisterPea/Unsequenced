@@ -1,12 +1,11 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet, Text, View, SafeAreaView, LayoutAnimation } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '../redux/hooks';
 import { TaskBlockNavProps } from '../constants/types';
 import { colors, font } from '../constants/GlobalStyles';
-import PillButton from '../components/PillButton';
 import SwipeList from '../components/swipeable/SwipeList';
 import haptic from '../components/helpers/haptic';
 import { useDispatch } from 'react-redux';
@@ -26,20 +25,16 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
   useFocusEffect(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     if (route.params?.addATaskBlock) {
-      console.log('here!!!')
       const { addATaskBlock } = route.params;
       dispatch(addTaskBlock(addATaskBlock));
       navigation.setParams({ addATaskBlock: undefined });
 
     } else if (route.params?.editTaskBlock) {
-      console.log('there')
       const { editTaskBlock } = route.params;
       dispatch(updateTaskBlock({ id: editTaskBlock.id, update: editTaskBlock.update }));
       navigation.setParams({ editTaskBlock: undefined });
     }
   });
-
-
 
   function handleCreateTaskBlockPress() {
     haptic.medium();
@@ -80,14 +75,14 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
         leftStatusChg={onLeftActionStatusChange}
       />
 
-      <SafeAreaView style={styles(mode).safeView}>
-        <PillButton
-          label="Create New Task Block"
-          size="lg"
-          shadow
-          colors={{ text: colors.confirmText[mode], background: colors.createNewTaskBtn[mode], border: 'transparent' }}
-          action={handleCreateTaskBlockPress}
-        />
+      <SafeAreaView>
+        {/* Create New Task Block */}
+        <Pressable
+          onPress={handleCreateTaskBlockPress}
+          style={styles(mode).safePressable}>
+          <View style={styles(mode).safePressableView} />
+          <Ionicons name="ios-add-circle-sharp" size={68} color={colors.createNewTaskBtn[mode]} />
+        </Pressable>
       </SafeAreaView>
     </View>
   );
@@ -117,9 +112,18 @@ const styles = (mode: string) => StyleSheet.create({
     fontFamily: font.subHead.fontFamily,
     color: colors.subTitle[mode],
   },
-  safeView: {
+  safePressable: {
     alignSelf: 'center',
     bottom: 70,
     position: 'absolute',
   },
+  safePressableView: {
+    position: 'absolute',
+    alignSelf: 'center',
+    height: 40,
+    width: 40,
+    borderRadius: 50,
+    marginTop: 15,
+    backgroundColor: colors.confirmText[mode]
+  }
 });
