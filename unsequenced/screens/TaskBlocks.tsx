@@ -3,17 +3,16 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, SafeAreaView, LayoutAnimation } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAppSelector } from '../redux/hooks';
 import { TaskBlockNavProps } from '../constants/types';
 import { colors, font } from '../constants/GlobalStyles';
 import SwipeList from '../components/swipeable/SwipeList';
 import haptic from '../components/helpers/haptic';
-import { useDispatch } from 'react-redux';
 import { addTaskBlock, updateTaskBlock } from '../redux/taskBlocks';
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function TaskBlocks({ route, navigation }: { navigation: TaskBlockNavProps; }) {
-
   const dispatch = useDispatch();
   const { screenMode, taskBlocks } = useAppSelector((state) => state);
   const { mode } = screenMode;
@@ -28,7 +27,6 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
       const { addATaskBlock } = route.params;
       dispatch(addTaskBlock(addATaskBlock));
       navigation.setParams({ addATaskBlock: undefined });
-
     } else if (route.params?.editTaskBlock) {
       const { editTaskBlock } = route.params;
       dispatch(updateTaskBlock({ id: editTaskBlock.id, update: editTaskBlock.update }));
@@ -68,18 +66,26 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
           />
         </Pressable>
       </View>
-
-      <SwipeList
-        data={blocks}
-        mode={mode}
-        leftStatusChg={onLeftActionStatusChange}
-      />
+      {blocks.length === 0
+        ? (
+          <View style={styles(mode).ctaView}>
+            <Text style={styles(mode).ctaText}>You should add a Task Block</Text>
+          </View>
+        )
+        : (
+          <SwipeList
+            data={blocks}
+            mode={mode}
+            leftStatusChg={onLeftActionStatusChange}
+          />
+        )}
 
       <SafeAreaView>
         {/* Create New Task Block */}
         <Pressable
           onPress={handleCreateTaskBlockPress}
-          style={styles(mode).safePressable}>
+          style={styles(mode).safePressable}
+        >
           <View style={styles(mode).safePressableView} />
           <Ionicons name="ios-add-circle-sharp" size={68} color={colors.createNewTaskBtn[mode]} />
         </Pressable>
@@ -117,6 +123,16 @@ const styles = (mode: string) => StyleSheet.create({
     bottom: 70,
     position: 'absolute',
   },
+  ctaView: {
+    flex: 1,
+  },
+  ctaText: {
+    textAlign: 'center',
+    color: colors.subTitle[mode],
+    fontFamily: font.liTitle.fontFamily,
+    fontSize: font.liTitle.fontSize,
+    marginTop: 10,
+  },
   safePressableView: {
     position: 'absolute',
     alignSelf: 'center',
@@ -124,6 +140,6 @@ const styles = (mode: string) => StyleSheet.create({
     width: 40,
     borderRadius: 50,
     marginTop: 15,
-    backgroundColor: colors.confirmText[mode]
-  }
+    backgroundColor: colors.confirmText[mode],
+  },
 });

@@ -47,15 +47,13 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const dispatch = useDispatch();
 
   useEffect(() => {
- 
-      const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
-      if (index > -1) {
-        // afik having the layout animation here allows it to 
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setTasksLocal(taskBlocks!.blocks[index].tasks);
-      }
+    const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
+    if (index > -1) {
+      // afik having the layout animation here allows it to 
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setTasksLocal(taskBlocks!.blocks[index].tasks);
+    }
   }, [taskBlocks]);
-
 
   useEffect(() => {
     // We calculate progress bar status here. It's possible to combine this and the previous

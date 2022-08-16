@@ -15,7 +15,7 @@ type EditTask = {
 };
 
 interface AddEditTaskProps {
-  setEditTask:(value:undefined|string)=>void;
+  setEditTask: (value: undefined | string) => void;
   editTask: EditTask;
   item: Task;
   mode: string;
@@ -29,8 +29,8 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   const [taskName, setTaskName] = useState<string>(item.title || '');
   const [duration, setDuration] = useState<string>(String(item.amount) || '');
   const [entriesAreValid, setEntriesAreValid] = useState<boolean>(false);
-  const [itemHeight, setItemHeight] = useState<number|undefined>(undefined);
-  const [keyboardHeight, setKeyboardHeight] = useState<number|undefined>(undefined);
+  const [itemHeight, setItemHeight] = useState<number | undefined>(undefined);
+  const [keyboardHeight, setKeyboardHeight] = useState<number | undefined>(undefined);
   const addEditSubmitted = useRef<boolean>(false);
   const dispatch = useDispatch();
 
@@ -48,6 +48,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
       show = Keyboard.addListener('keyboardWillShow', ({ endCoordinates }) => handleKeyboardHeight(endCoordinates.screenY));
       hide = Keyboard.addListener('keyboardWillHide', ({ endCoordinates }) => handleKeyboardHeight(endCoordinates.screenY));
     }
+    // cleanup
     return () => {
       if (Platform.OS === 'ios') {
         show.remove();
@@ -71,13 +72,14 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
 
   // Ensure that we have valid entries
   useEffect(() => {
-    const validText = taskName.length > 0;
+    const validText = taskName.length > 0 || (taskName !== item.title && taskName.length);
+
     const validDuration = Number(duration) > 0;
     const changedText = item.title !== taskName;
     const changedDuration = String(item.amount) !== duration;
 
     // is valid if text AND duration is valid AND either the text AND/OR the duration changed
-    const isValid = (validText && validDuration) && (changedText || changedDuration);
+    const isValid = !!(validText && validDuration) && (changedText || changedDuration);
     setEntriesAreValid(isValid);
   }, [taskName, duration]);
 
@@ -108,7 +110,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
     }).start();
   }
 
-  function animateClosed(callback:() => void) {
+  function animateClosed(callback: () => void) {
     Animated.timing(opacityTextInput, {
       toValue: 0,
       duration: 350,
@@ -172,9 +174,11 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
 
   function handleUpdateTask() {
     haptic.success();
-    const update:TaskUpdate = {
+    const completed = editTask.isEdit ? Math.min(Number(duration), item.completed) : 0;
+    const update: TaskUpdate = {
       title: taskName,
       amount: Number(duration),
+      completed,
     };
     dispatch(updateTask({ id, taskId: item.id, update }));
     addEditSubmitted.current = true;
@@ -188,7 +192,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   // **************************************
   // **** Controlled Component Methods ****
   // **************************************
-  function handleUpdateDuration(value:string) {
+  function handleUpdateDuration(value: string) {
     if (+value > 0) {
       setDuration(value);
     } else {
@@ -199,11 +203,11 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   // **************************************
   // ***** List Item//Keyboard Height *****
   // **************************************
-  function handleItemHeight(y:number) {
+  function handleItemHeight(y: number) {
     setItemHeight(y);
   }
 
-  function handleKeyboardHeight(y:number) {
+  function handleKeyboardHeight(y: number) {
     setKeyboardHeight(y);
   }
 
@@ -211,7 +215,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
     <View
       ref={contentRef}
       onLayout={() => {
-        contentRef.current.measureInWindow((_x:number, y:number) => handleItemHeight(y));
+        contentRef.current.measureInWindow((_x: number, y: number) => handleItemHeight(y));
       }}
       style={[editDialogStyles(mode).container]}
     >
@@ -232,8 +236,8 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             callback={setTaskName}
             screenMode={mode}
             inputStyle={{
-              backgroundColor:colors.playEditInputBG[mode],
-              color:colors.inputText[mode],
+              backgroundColor: colors.playEditInputBG[mode],
+              color: colors.inputText[mode],
               borderColor: colors.inputBorder[mode],
             }}
           />
@@ -248,8 +252,8 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             screenMode={mode}
             maxLength={3}
             inputStyle={{
-              backgroundColor:colors.playEditInputBG[mode],
-              color:colors.inputText[mode],
+              backgroundColor: colors.playEditInputBG[mode],
+              color: colors.inputText[mode],
               borderColor: colors.inputBorder[mode],
             }}
           />
@@ -263,9 +267,11 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             label="Cancel"
             size="md"
             action={handleCancelEdit}
-            colors={{ text: colors.inputText[mode],
+            colors={{
+              text: colors.inputText[mode],
               background: '#00000000',
-              border: colors.inputText[mode]}}
+              border: colors.inputText[mode],
+            }}
           />
         </View>
         <View style={editDialogStyles().button}>
@@ -274,9 +280,11 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
             size="md"
             action={handleUpdateTask}
             disabled={!entriesAreValid}
-            colors={{ text: !entriesAreValid ? colors.createNewTaskText[mode] : colors.createNewTaskText[mode],
-              background: !entriesAreValid ? colors.inputText[mode] : colors.inputText[mode],
-              border: colors.inputBorder[mode] }}
+            colors={{
+              text: !entriesAreValid ? colors.createNewTaskText[mode] : colors.createNewTaskText[mode],
+              background: entriesAreValid ? colors.confirmBtn[mode] : colors.disabled[mode],
+              border: colors.inputBorder[mode],
+            }}
           />
         </View>
       </Animated.View>
@@ -284,7 +292,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   );
 }
 
-const editDialogStyles = (mode?:string) => StyleSheet.create({
+const editDialogStyles = (mode?: string) => StyleSheet.create({
   container: {
     backgroundColor: colors.taskListItemBG[mode!],
     marginTop: -64,

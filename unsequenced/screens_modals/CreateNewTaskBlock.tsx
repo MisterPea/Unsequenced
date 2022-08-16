@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, Text } from 'react-native';
 import { colors, font } from '../constants/GlobalStyles';
 import InputField from '../components/InputField';
@@ -7,7 +7,8 @@ import CheckBoxGroup from '../components/CheckBoxGroup';
 import PillButton from '../components/PillButton';
 import { TaskBlockRouteProps, ScreenProp, MainTaskBlocksNavProps, TaskBlock } from '../constants/types';
 import haptic from '../components/helpers/haptic';
-
+import { useAppSelector } from '../redux/hooks';
+import validTextCheck from '../components/helpers/validTextCheck';
 
 type Nav = MainTaskBlocksNavProps;
 type Route = TaskBlockRouteProps;
@@ -24,12 +25,30 @@ type ButtonOptions = {
   autoplay: boolean,
 };
 
-
 export default function CreateNewTaskBlock({ route, navigation: { goBack, navigate, reset } }: { navigation: Nav, route: Route; }) {
   const { mode }: ScreenProp = route.params!;
+  const { blocks } = useAppSelector((state) => state.taskBlocks);
+  const blockTitles: string[] = blocks.map((block) => block.title);
   const { title, id, autoplay, breaks }: SwipeRouteProps = route.params;
   const [input, setInput] = useState<string>(title || '');
   const [option, setOption] = useState<ButtonOptions>({ breaks: breaks || false, autoplay: autoplay || false });
+  const [validInput, setValidInput] = useState<boolean>(false);
+
+  // Check for the validity of input
+  useEffect(() => {
+    const isValidTitle = validTextCheck(input, blockTitles, title);
+    const hasLength = input.length > 0;
+    // If we're editing
+    if (title) {
+      const diffTitle = (input !== title) && hasLength;
+      const diffOptionPlay = autoplay !== option.autoplay;
+      const diffOptionBreak = breaks !== option.breaks;
+      const isValid = (diffTitle || diffOptionBreak || diffOptionPlay) && isValidTitle;
+      setValidInput(isValid);
+    } else {
+      setValidInput(isValidTitle && hasLength);
+    }
+  }, [input, option.autoplay, option.breaks]);
 
   function handleCreateTaskBlock() {
     const taskBlock: TaskBlock = {
@@ -111,8 +130,8 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
               label={title ? 'Edit Block' : 'Create Block'}
               colors={{
                 text: colors.confirmText[mode],
-                background: input.length ? colors.confirmBtn[mode] : colors.disabled[mode],
-                border: 'rgba(0,0,0,0)'
+                background: validInput ? colors.confirmBtn[mode] : colors.disabled[mode],
+                border: 'rgba(0,0,0,0)',
               }}
               size="md"
               action={id ? handleUpdateTaskBlock : handleCreateTaskBlock}
@@ -125,7 +144,7 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
               colors={{
                 text: colors.cancelButton[mode],
                 background: 'rgba(0,0,0,0)',
-                border: colors.cancelButton[mode]
+                border: colors.cancelButton[mode],
               }}
               size="md"
               action={handleCancel}
