@@ -5,7 +5,7 @@ import taskBlockReducer, { duplicateTask, markTaskComplete, addTaskBlock, remove
 import { Task, TaskBlock } from '../../constants/types';
 import DATA from '../../constants/DATA';
 
-const dataOne:TaskBlock = {
+const dataOne: TaskBlock = {
   id: 'abcdef',
   title: 'Test One',
   breaks: false,
@@ -26,7 +26,7 @@ const dataOne:TaskBlock = {
   ],
 };
 
-const dataTwo:TaskBlock = {
+const dataTwo: TaskBlock = {
   id: 'aabbcc',
   title: 'Test Two',
   breaks: true,
@@ -47,7 +47,7 @@ const dataTwo:TaskBlock = {
   ],
 };
 
-const dataThree:TaskBlock = {
+const dataThree: TaskBlock = {
   id: 'dataThreeId',
   title: 'Test Two',
   breaks: true,
@@ -134,14 +134,14 @@ describe('taskBlocks redux state tests', () => {
   it('Should remove a taskBlock via id and leave the store with 1', () => {
     store.dispatch(removeTaskBlock({ id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba' }));
     const { blocks } = store.getState().taskBlocks;
-    expect(blocks[0].id).toBe('3ac68afc-c605-48d3-a4f8-fbd91aa97f63');
+    expect(blocks[3].id).toBe('3ac68afc-c605-48d3-a4f8-fbd91aa97f63');
   });
 
   it('Should replace the information of the appropriate record - title', () => {
     store.dispatch(addTaskBlock(dataOne));
     store.dispatch(updateTaskBlock({ id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63', update: { title: 'New Title' } }));
     const { blocks } = store.getState().taskBlocks;
-    expect(blocks[0].title).toBe('New Title');
+    expect(blocks[4].title).toBe('New Title');
   });
 
   it('Should replace the information of the appropriate record - breaks', () => {
@@ -161,7 +161,7 @@ describe('taskBlocks.tasks redux state tests', () => {
   it('Should add a task to the taskBlock', () => {
     mockStoreInstance.dispatch(addTask({ id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63', task: addedTaskOne }));
     const { blocks } = mockStoreInstance.getState().taskBlocks;
-    expect(blocks[1].tasks[0]).toMatchObject(addedTaskOne);
+    expect(blocks[2].tasks[0]).toMatchObject(addedTaskOne);
   });
 
   // it('Should remove a task from the taskBlock', () => {
@@ -185,7 +185,7 @@ describe('taskBlocks.tasks redux state tests', () => {
     const id = '3ac68afc-c605-48d3-a4f8-fbd91aa97f63';
     mockStoreInstance.dispatch(reorderTasks({ id, updatedOrder: reorderedTasks }));
     const { blocks } = mockStoreInstance.getState().taskBlocks;
-    expect(blocks[1].tasks).toMatchObject(reorderedTasks);
+    expect(blocks[2].tasks).toMatchObject(reorderedTasks);
   });
 });
 

@@ -3,10 +3,10 @@
 ___Todo/Inventory___
 
 **Cases/Needs**
-* [ ] When adding Task Block ensure name is unique, and consists of valid characters (non-space).
-* [ ] Check for Task edit to see if change has been made.
-* [ ] CTA for no Task Blocks.
-* [ ] Changed task time to value less than completed. Right now, if we go from ```30 min of 50 min complete```, to a total of 20 min it will be ```30 min of 20 min complete```, which is impossible.
+* [x] When adding Task Block ensure name is unique, and consists of valid characters (non-space).
+* [x] For Task edits, check to see if a change has been made.
+* [x] CTA for no Task Blocks.
+* [x] Change task time to value less than completed. Right now, if we go from ```30 min of 50 min complete```, to a total of 20 min it will be ```30 min of 20 min complete```, which is impossible.
 * [ ] A way to reset a timer that is partially completed.
 * [ ] Swipe to delete for Tasks
 * [ ] Close swipe on Task Blocks if another action (edit/add Task Block) is initiated.

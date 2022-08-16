@@ -6,7 +6,6 @@ const haptic = {
   select: () => Haptics.selectionAsync(),
   light: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
   medium: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
-
 };
 
 export default haptic;
