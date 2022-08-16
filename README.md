@@ -13,6 +13,7 @@ ___Todo/Inventory___
 * [x] Convert Create New Task Block button to a plus (+) sign.
 * [ ] Sounds
 * [ ] Logic for playing.
+* [ ] Figure our testing for useFocusEffect.
 
 ----
 |  Screens  | UI  | Logic  | | Sub-Screens  | UI  | Logic  |
