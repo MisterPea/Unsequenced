@@ -41,7 +41,7 @@ export default function ProgressListItem({ mode, title, time }:ProgressListItemP
       <View style={listItem(mode).textWrapper}>
         <View>
           <Text numberOfLines={1} style={listItem(mode).title}>{title}</Text>
-          {time.total > 0 && <Text style={listItem(mode).timeInfo}>{`${time.completed} min of ${time.total} min complete`}</Text>}
+          {time.total > 0 && <Text style={listItem(mode).timeInfo}>{`${Math.round(time.completed)} min of ${time.total} min complete`}</Text>}
         </View>
         <View>
           <EvilIcons name="chevron-right" size={30} color={colors.disabled[mode]} />

@@ -5,13 +5,14 @@ import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 import { colors, font } from '../constants/GlobalStyles';
 import { MainTaskBlocksNavProps, TaskBlockRouteProps, UseSelectorProps, ScreenProp, Task, RenderItemProps, EditingTask } from '../constants/types';
 import haptic from '../components/helpers/haptic';
 import { reorderTasks, addTask } from '../redux/taskBlocks';
 import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
 import ProgressBar from '../components/NowPlaying/ProgressBar';
+import playTasks from '../components/NowPlaying/playTasks';
+
 
 type Route = TaskBlockRouteProps;
 type MainNav = MainTaskBlocksNavProps;
@@ -43,6 +44,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const [editTask, setEditTask] = useState<EditingTask | undefined>(undefined);
   const swipeRef = useRef<SlideObj | undefined>();
   const keyboardOffsetAnimation = useRef(new Animated.Value(0)).current;
+
 
   const dispatch = useDispatch();
 
@@ -103,6 +105,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
 
   function handlePlay() {
     haptic.select();
+    playTasks(id, tasksLocal)
   }
 
   /**
