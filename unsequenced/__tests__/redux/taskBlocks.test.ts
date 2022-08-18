@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { configureStore } from '@reduxjs/toolkit';
 import store from '../../redux/store';
-import taskBlockReducer, { duplicateTask, markTaskComplete, addTaskBlock, removeTaskBlock, updateTaskBlock, addTask, removeTask, updateTask, toggleAutoplay, toggleBreak, reorderTasks } from '../../redux/taskBlocks';
+import taskBlockReducer, { duplicateTask, markTaskComplete, addTaskBlock, removeTaskBlock, updateTaskBlock, addTask, removeTask, updateTask, toggleAutoplay, toggleBreak, reorderTasks, decrementTask } from '../../redux/taskBlocks';
 import { Task, TaskBlock } from '../../constants/types';
 import DATA from '../../constants/DATA';
 
@@ -110,6 +110,10 @@ function mockStore() {
 }
 
 const mockStoreInstance = mockStore();
+
+function blockIndex(taskBlockId: string, taskBlocks: any): number {
+  return taskBlocks.findIndex((taskBlock: Task) => taskBlock.id === taskBlockId);
+}
 
 describe('taskBlocks redux state tests', () => {
   it('Should initially see taskBlocks as an empty array', () => {
@@ -232,7 +236,8 @@ describe('Methods pertaining to Now Playing screen', () => {
     ];
     nowPlayingStore.dispatch(removeTask({ id, taskId }));
     const { blocks } = nowPlayingStore.getState().taskBlocks;
-    expect(blocks[2].tasks).toMatchObject(expected);
+    const { tasks } = blocks[blockIndex(id, blocks)];
+    expect(tasks).toMatchObject(expected);
   });
 
   it('Should mark a task as done (completed equals amount)', () => {
@@ -260,5 +265,25 @@ describe('Methods pertaining to Now Playing screen', () => {
     const { blocks } = nowPlayingStore.getState().taskBlocks;
     const { title, amount } = blocks[2].tasks[1];
     expect(title === 'Rest' && amount === 5).toBeTruthy();
+  });
+});
+
+describe('Methods pertaining to playing task', () => {
+  it('Should decrement the time (amount) by the value passed in', () => {
+    const taskBlockId = '3ac68afc-c605-48d3-a4f8-fbd91aa97f63';
+    const taskId = 'taskOne';
+    store.dispatch(decrementTask({ taskBlockId, taskId, decrementAmount: 1 }));
+    const { blocks } = store.getState().taskBlocks;
+    const { tasks } = blocks[blockIndex(taskBlockId, blocks)];
+    expect(tasks[0].completed).toBe(1);
+  });
+  it('Should not decrement if the completed value is equal to or less than the amount', () => {
+    const taskBlockId = '3ac68afc-c605-48d3-a4f8-fbd91aa97f63';
+    const taskId = 'taskThree';
+    store.dispatch(decrementTask({ taskBlockId, taskId, decrementAmount: 1 }));
+    store.dispatch(decrementTask({ taskBlockId, taskId, decrementAmount: 1 }));
+    const { blocks } = store.getState().taskBlocks;
+    const { tasks } = blocks[blockIndex(taskBlockId, blocks)];
+    expect(tasks[2].completed).toBe(60);
   });
 });

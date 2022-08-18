@@ -19,8 +19,6 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
   const { swipeAnimatedValue, item, id, closeRow, setEditTask } = props;
   const dispatch = useDispatch();
 
-
-
   function deleteScale() {
     return swipeAnimatedValue!.interpolate({
       inputRange: [30, 75],
@@ -74,7 +72,7 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
               { opacity: deleteScale() },
               {
                 transform: [{ scale: deleteScale() },
-                { translateX: widthMax() }]
+                  { translateX: widthMax() }],
               },
             ]}
             >
@@ -120,11 +118,7 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
  * Root of list item
  */
 export default function NowPlayingItem(props: RenderItemProps) {
-
-
   const { item, drag, isActive, swipeRef, setEnableScroll, mode, id, setEditTask, editTask } = props;
-
- 
 
   useEffect(() => {
     // We check to see if we're in add/edit mode. If so, we call the close method incase any slider is open.

@@ -13,7 +13,10 @@ ___Todo/Inventory___
 * [x] Convert Create New Task Block button to a plus (+) sign.
 * [ ] Sounds
 * [ ] Logic for playing.
+* [ ] -Android- Grey screen on modal - need to fix.
+* [ ] -Android- Add/Edit task - buttons not showing on dark mode - flashing hidden content
 * [ ] Figure our testing for useFocusEffect.
+
 
 ----
 |  Screens  | UI  | Logic  | | Sub-Screens  | UI  | Logic  |

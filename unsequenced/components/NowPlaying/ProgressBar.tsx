@@ -12,14 +12,14 @@ interface ProgressBarProps {
   progress: ProgressObject;
 }
 
-export default function ProgressBar({ mode, progress }:ProgressBarProps) {
+export default function ProgressBar({ mode, progress }: ProgressBarProps) {
   const progressBar = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     updateBar(progress.completed);
   }, [progress]);
 
-  function updateBar(amount:number) {
+  function updateBar(amount: number) {
     Animated.timing(progressBar, {
       toValue: amount,
       duration: 300,
@@ -40,7 +40,7 @@ export default function ProgressBar({ mode, progress }:ProgressBarProps) {
         <Animated.View style={[styles(mode).completeAmt, { width: widthPercent }]} />
       </View>
       <View>
-        <Text style={styles(mode).completeText}>{`${progress.completed} of ${progress.total} minutes completed`}</Text>
+        <Text style={styles(mode).completeText}>{`${Math.round(progress.completed)} of ${progress.total} minutes completed`}</Text>
       </View>
     </>
   );

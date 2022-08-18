@@ -58,7 +58,6 @@ const DATA:TaskBlock[] = [
         title: 'Active',
         amount: 25,
         completed: 0,
-
       },
     ],
   },
