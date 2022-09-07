@@ -3,10 +3,10 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Task, TaskBlock, TaskBlockUpdate, TaskUpdate } from '../constants/types';
 import DATA from '../constants/DATA';
 
-// const initialState = [] as TaskBlock[];
+const initialState = [] as TaskBlock[];
 type minutes = number;
 
-const initialState = DATA;
+// const initialState = [];
 
 const taskBlockSlice = createSlice({
   name: 'taskBlocks',
