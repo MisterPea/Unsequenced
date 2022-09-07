@@ -3,6 +3,7 @@ import taskBlockReducer from './taskBlocks';
 import screenModeReducer from './screenMode';
 import quietModeReducer from './quietMode';
 import keyboardOffsetReducer from './keyboardOffset';
+import logger from './middleware/logger';
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     quietMode: quietModeReducer,
     keyboardOffset: keyboardOffsetReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger)
 });
 
 export default store;

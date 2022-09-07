@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import NowPlaying from './screens/NowPlaying';
 import Settings from './screens/Settings';
 import { useAppSelector } from './redux/hooks';
 import CreateNewTaskBlock from './screens_modals/CreateNewTaskBlock';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function AppEntry() {
   const { screenMode, keyboardOffset } = useAppSelector((state) => state);
@@ -16,6 +17,10 @@ export default function AppEntry() {
   const { offset } = keyboardOffset;
   const statusBarStyle = mode === 'dark' ? 'light' : 'dark';
   const Stack = createNativeStackNavigator();
+
+  useEffect(() => {
+    /// Look at local storage on start---populate state
+  }, []);
 
   function TaskBlocksNavigator() {
     return (
