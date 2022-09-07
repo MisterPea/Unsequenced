@@ -18,6 +18,7 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
   const { mode } = screenMode;
   const { blocks } = taskBlocks;
 
+  // This handles the adding and updating of Task Blocks and is only run on layout change: i.e. Task Block add or change
   // The reason behind this is that if we perform the update in the modal, the state
   // changes on this screen and causes a re-render. When we do the update after navigation
   // to this screen, we avoid that.
@@ -38,10 +39,6 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
     haptic.medium();
     navigation.navigate('createNewTaskBlock');
   }
-
-  const onLeftActionStatusChange = () => {
-    console.log('>>>>>>>>>fff>>');
-  };
 
   function handleSettingsPress() {
     haptic.select();
@@ -76,7 +73,6 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
           <SwipeList
             data={blocks}
             mode={mode}
-            leftStatusChg={onLeftActionStatusChange}
           />
         )}
 
