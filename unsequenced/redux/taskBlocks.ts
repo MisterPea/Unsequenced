@@ -1,7 +1,8 @@
 /* eslint-disable max-len */
 import { createSlice } from '@reduxjs/toolkit';
-import { Task, TaskBlock, TaskBlockUpdate, TaskUpdate } from '../constants/types';
+import { Task, TaskBlock, TaskBlockUpdate, TaskUpdate, Blocks } from '../constants/types';
 import DATA from '../constants/DATA';
+
 
 const initialState = [] as TaskBlock[];
 type minutes = number;
@@ -13,7 +14,12 @@ const taskBlockSlice = createSlice({
   initialState: {
     blocks: initialState,
   },
+
   reducers: {
+    populateBlocks: (state: { blocks: TaskBlock[]; }, action: { payload: Blocks; }) => {
+      const { blocks } = action.payload;
+      state.blocks.push(...blocks);
+    },
     addTaskBlock: (state: { blocks: TaskBlock[]; }, action: { payload: TaskBlock; }) => {
       state.blocks.unshift(action.payload);
     },
@@ -140,4 +146,5 @@ export const {
   markTaskComplete,
   duplicateTask,
   decrementTask,
+  populateBlocks,
 } = taskBlockSlice.actions;
