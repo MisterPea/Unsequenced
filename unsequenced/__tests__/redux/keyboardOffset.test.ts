@@ -1,9 +1,12 @@
 import store from '../../redux/store';
 import { setKeyboardOffset } from '../../redux/keyboardOffset';
+import mockStore from '../../jest/testHelpers/mockStore';
 
 describe('Keyboard Offset redux tests', () => {
+  const storeRef = mockStore();
+
   it('Should return 0 on the initial run', () => {
-    const { offset } = store.getState().keyboardOffset;
+    const { offset } = storeRef.store.getState().keyboardOffset;
     expect(offset).toBe(0);
   });
 

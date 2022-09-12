@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
-import { configureStore } from '@reduxjs/toolkit';
-import taskBlockReducer, { duplicateTask, markTaskComplete, addTaskBlock, removeTaskBlock, updateTaskBlock, addTask, removeTask, updateTask, toggleAutoplay, toggleBreak, reorderTasks, decrementTask } from '../../redux/taskBlocks';
+import { duplicateTask, markTaskComplete, addTaskBlock, removeTaskBlock, updateTaskBlock, addTask, removeTask, updateTask, toggleAutoplay, toggleBreak, reorderTasks, decrementTask } from '../../redux/taskBlocks';
 import { Task, TaskBlock } from '../../constants/types';
 import DATA from '../../constants/DATA';
+import mockStore from '../../jest/testHelpers/mockStore';
 
 const dataOne: TaskBlock = {
   id: 'abcdef',
@@ -92,23 +92,6 @@ const reorderedTasks = [
     completed: 0,
   },
 ];
-
-type REF_OBJ = {
-  store?: any;
-};
-
-function mockStore() {
-  const refObj: REF_OBJ = {};
-  beforeEach(() => {
-    const tempStore = configureStore({
-      reducer: {
-        taskBlocks: taskBlockReducer,
-      },
-    });
-    refObj.store = tempStore;
-  });
-  return refObj;
-}
 
 function blockIndex(taskBlockId: string, taskBlocks: any): number {
   return taskBlocks.findIndex((taskBlock: Task) => taskBlock.id === taskBlockId);

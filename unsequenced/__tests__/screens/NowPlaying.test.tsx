@@ -2,12 +2,13 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react-native';
 import NowPlaying from '../../screens/NowPlaying';
-import store from '../../redux/store';
-import DATA from '../../constants/DATA';
 
-const stumpNav:any = {
+import DATA from '../../constants/DATA';
+import mockStore from '../../jest/testHelpers/mockStore';
+
+const stumpNav: any = {
   navigation: {
-    navigate: () => {},
+    navigate: () => { },
   },
   route: {
     params: {
@@ -18,12 +19,22 @@ const stumpNav:any = {
 };
 
 describe('Now Playing.tsx', () => {
+  const storeRef = mockStore();
+
   it('Renders the component', () => {
-    render(<Provider store={store}><NowPlaying route={stumpNav.route} navigation={stumpNav.navigation} /></Provider>);
+    render(
+      <Provider store={storeRef.store}>
+        <NowPlaying route={stumpNav.route} navigation={stumpNav.navigation} />
+      </Provider>,
+    );
   });
 
   it('Renders the appropriate tile', () => {
-    render(<Provider store={store}><NowPlaying route={stumpNav.route} navigation={stumpNav.navigation} /></Provider>);
+    render(
+      <Provider store={storeRef.store}>
+        <NowPlaying route={stumpNav.route} navigation={stumpNav.navigation} />
+      </Provider>,
+    );
     const correctTitle = DATA[0].title;
     const title = screen.findAllByText(correctTitle);
     expect(title).toBeTruthy();

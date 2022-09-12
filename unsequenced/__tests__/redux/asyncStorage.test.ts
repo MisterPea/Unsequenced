@@ -4,7 +4,7 @@ import { populateBlocks } from '../../redux/taskBlocks';
 import { populateQuietMode } from '../../redux/quietMode';
 import { populateScreenMode } from '../../redux/screenMode';
 
-const mockBlocks = { key: 'blocks', item: [{ id: '058mb3yp0qwt', title: 'TestHello', breaks: true, autoplay: false, tasks: [{ id: 'Hello0flvbnu5047o', title: 'Two', amount: 2, completed: 0 }, { id: 'Hello0ejht8b9hj1e', title: 'One', amount: 1, completed: 0 }] }] };
+const mockBlocks = { key: 'blocks', item: [{ id: '058mb3yp0qwt', title: 'TestHello', breaks: true, autoplay: false, tasks: [{ id: 'Hello05047o', title: 'Two', amount: 2, completed: 0 }, { id: 'Hello0ej8b9hj1e', title: 'One', amount: 1, completed: 0 }] }] };
 const mockScreenMode = { key: 'mode', item: 'dark' };
 const mockQuietMode = { key: 'isQuiet', item: false };
 
