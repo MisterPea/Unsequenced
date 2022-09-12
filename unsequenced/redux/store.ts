@@ -4,6 +4,7 @@ import screenModeReducer from './screenMode';
 import quietModeReducer from './quietMode';
 import keyboardOffsetReducer from './keyboardOffset';
 import logger from './middleware/logger';
+import asyncStorage from './middleware/asyncStorage';
 
 const store = configureStore({
   reducer: {
@@ -12,7 +13,7 @@ const store = configureStore({
     quietMode: quietModeReducer,
     keyboardOffset: keyboardOffsetReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(asyncStorage, logger),
 });
 
 export default store;

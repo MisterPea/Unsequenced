@@ -1,25 +1,63 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import TaskBlocks from './screens/TaskBlocks';
 import NowPlaying from './screens/NowPlaying';
 import Settings from './screens/Settings';
-import { useAppSelector } from './redux/hooks';
+import { useAppSelector, useAppDispatch } from './redux/hooks';
 import CreateNewTaskBlock from './screens_modals/CreateNewTaskBlock';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { populateBlocks } from './redux/taskBlocks';
+import { populateQuietMode } from './redux/quietMode';
+import { populateScreenMode } from './redux/screenMode';
 
 export default function AppEntry() {
   const { screenMode, keyboardOffset } = useAppSelector((state) => state);
+  const dispatch = useAppDispatch();
   const { mode } = screenMode;
   const { offset } = keyboardOffset;
   const statusBarStyle = mode === 'dark' ? 'light' : 'dark';
   const Stack = createNativeStackNavigator();
+  const firstRun = useRef(true);
+
+  function setBlocks(blocks: string | null) {
+    if (blocks) {
+      dispatch(populateBlocks({ blocks: JSON.parse(blocks) }));
+    }
+  }
+
+  function setQuietMode(isQuiet: string | null) {
+    if (isQuiet) {
+      dispatch(populateQuietMode({ isQuiet: JSON.parse(isQuiet) }));
+    }
+  }
+
+  function setScreenMode(modeString: string | null) {
+    if (modeString) {
+      dispatch(populateScreenMode({ mode: modeString }));
+    }
+  }
 
   useEffect(() => {
-    /// Look at local storage on start---populate state
+    async function getLocalStorage() {
+      const keys = await AsyncStorage.getAllKeys();
+      if (keys.length === 3 && firstRun.current === true) {
+        const blocks: string | null = await AsyncStorage.getItem('blocks');
+        setBlocks(blocks);
+
+        const isQuiet: string | null = await AsyncStorage.getItem('isQuiet');
+        setQuietMode(isQuiet);
+
+        const screenModeString: string | null = await AsyncStorage.getItem('mode');
+        setScreenMode(screenModeString);
+        firstRun.current = false;
+      }
+    }
+
+    getLocalStorage();
   }, []);
 
   function TaskBlocksNavigator() {
