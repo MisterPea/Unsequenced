@@ -2,13 +2,37 @@ import React from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 /**
+ * Task Blocks
+ */
+export interface Task {
+  id: string;
+  title: string;
+  amount: number;
+  completed: number;
+}
+
+export interface TaskUpdate {
+  title?: string;
+  amount?: number;
+  completed?: number;
+}
+
+export interface TaskBlock {
+  id: string;
+  title: string;
+  breaks: boolean;
+  autoplay: boolean;
+  tasks: Task[];
+}
+
+/**
  * React Navigator
  * Navigation Props
  */
 type Params = {
-    id?: string;
-    title?: string;
-    taskBlock?: TaskBlock;
+  id?: string;
+  title?: string;
+  taskBlock?: TaskBlock;
 };
 
 type RootStackParamList = {
@@ -40,28 +64,8 @@ export interface ScreenModeProps {
   callback: (screenMode: ScreenElements) => void;
 }
 
-/**
- * Task Blocks
- */
-export interface Task {
-  id: string;
-  title: string;
-  amount: number;
-  completed: number;
-}
-
-export interface TaskUpdate {
-  title?: string;
-  amount?: number;
-  completed?: number;
-}
-
-export interface TaskBlock {
-  id: string;
-  title: string;
-  breaks: boolean;
-  autoplay: boolean;
-  tasks: Task[];
+export interface Blocks {
+  blocks: TaskBlock[];
 }
 
 export interface TaskBlockUpdate {
@@ -88,16 +92,13 @@ export interface PillBtnFilledProps {
   disabled?: boolean;
 }
 
-type QuiteProp = {
+export type QuietProp = {
   isQuiet: boolean,
 };
+
 export type ScreenProp = {
   mode: string,
 };
-
-interface Blocks {
-  blocks: TaskBlock[];
-}
 
 type KeyboardOffset = {
   offset: number,
@@ -106,7 +107,7 @@ type KeyboardOffset = {
 export interface UseSelectorProps {
   screenMode?: ScreenProp;
   taskBlocks?: Blocks;
-  quietMode?: QuiteProp;
+  quietMode?: QuietProp;
   keyboardOffset?: KeyboardOffset;
 }
 
