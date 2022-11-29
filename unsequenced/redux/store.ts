@@ -13,7 +13,7 @@ const store = configureStore({
     quietMode: quietModeReducer,
     keyboardOffset: keyboardOffsetReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(asyncStorage, logger),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(asyncStorage),
 });
 
 export default store;

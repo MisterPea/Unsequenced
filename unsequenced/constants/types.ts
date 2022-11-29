@@ -100,7 +100,7 @@ export type ScreenProp = {
   mode: string,
 };
 
-type KeyboardOffset = {
+interface KeyboardOffset {
   offset: number,
 };
 
@@ -139,6 +139,7 @@ export interface RenderItemProps {
   editTaskId: string | undefined;
   setEditTask: (value: string | undefined) => void;
   editTask: EditingTask;
+  playSoundOne?: () => void;
 }
 
 type Interpolate = {

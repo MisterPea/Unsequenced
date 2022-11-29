@@ -12,7 +12,7 @@ import { reorderTasks, addTask } from '../redux/taskBlocks';
 import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
 import ProgressBar from '../components/NowPlaying/ProgressBar';
 import playTasks from '../components/NowPlaying/playTasks';
-
+import SoundWrapper from '../components/NowPlaying/SoundWrapper';
 
 type Route = TaskBlockRouteProps;
 type MainNav = MainTaskBlocksNavProps;
@@ -44,14 +44,14 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const [editTask, setEditTask] = useState<EditingTask | undefined>(undefined);
   const swipeRef = useRef<SlideObj | undefined>();
   const keyboardOffsetAnimation = useRef(new Animated.Value(0)).current;
-
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
     if (index > -1) {
-      // afik having the layout animation here allows it to 
+      // afik having the layout animation here allows it to work on all elements
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setTasksLocal(taskBlocks!.blocks[index].tasks);
     }
@@ -64,8 +64,20 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     if (index > -1) {
       calculateProgress(taskBlocks!.blocks[index].tasks);
     }
+    if (isPlaying) {
+      playTasks.update(tasksLocal);
+    }
   }, [tasksLocal, taskBlocks]);
 
+  useEffect(() => {
+    setIsPlaying(false);
+    return () => {
+      if (isPlaying) {
+        playTasks.end();
+        setIsPlaying(false);
+      }
+    };
+  }, []);
   useEffect(() => {
     animateKeyboardOffset(offset);
   }, [offset]);
@@ -91,6 +103,9 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
 
   function handleBackButtonPress() {
     haptic.select();
+    if (isPlaying) {
+      playTasks.end();
+    }
     navigation.navigate('TaskBlocksNavigator', { screen: 'Task Blocks' });
   }
 
@@ -105,7 +120,10 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
 
   function handlePlay() {
     haptic.select();
-    playTasks(id, tasksLocal)
+    if (!isPlaying && !editTask) {
+      playTasks.play(id, tasksLocal, setIsPlaying);
+      setIsPlaying(true);
+    }
   }
 
   /**
@@ -113,6 +131,10 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
    */
   function handleAddTask() {
     haptic.select();
+    if (isPlaying) {
+      playTasks.end();
+      setIsPlaying(false);
+    }
 
     const taskId = `${title}${Math.random().toString(36).replace(/[^\w\s']|_/g, '')}`;
     const task = { id: taskId, title: '', amount: 0, completed: 0 };
@@ -122,6 +144,10 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
 
   function handleStop() {
     haptic.warning();
+    if (isPlaying) {
+      playTasks.end();
+      setIsPlaying(false);
+    }
   }
 
   function onDragEnd({ data }: { data: Task[]; }) {
@@ -195,14 +221,23 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       {/* Three Navigation Buttons */}
       <View style={styles(mode).navWrapper}>
         <Pressable
-          onPress={handlePlay}
+          onPress={isPlaying ? handleStop : handlePlay}
         >
-          <View style={[styles(mode).navButton, mode === 'light' && shadow.on, { paddingLeft: 2 }]}>
-            <Ionicons
-              name="play-outline"
-              size={24}
-              color={colors.roundButtonIcon[mode]}
-            />
+          <View style={[styles(mode).navButton, mode === 'light' && shadow.on, { paddingLeft: 5 }]}>
+            {isPlaying ? (
+              <Ionicons
+                name="stop"
+                size={24}
+                color={colors.roundButtonIcon[mode]}
+                style={{ paddingRight: 2 }}
+              />
+            ) : (
+              <Ionicons
+                name="play-outline"
+                size={24}
+                color={colors.roundButtonIcon[mode]}
+              />
+            )}
           </View>
         </Pressable>
         <Pressable
@@ -216,18 +251,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
             />
           </View>
         </Pressable>
-        <Pressable
-          onPress={handleStop}
-        >
-          <View style={[
-            styles(mode).navButton,
-            styles(mode).navClose,
-            mode === 'dark' && shadow.on,
-          ]}
-          >
-            <AntDesign name="close" size={24} color={colors.roundCloseBtnIcon[mode]} />
-          </View>
-        </Pressable>
+
       </View>
 
       {/* This is our component to render the draggable list
@@ -349,7 +373,7 @@ const styles = (mode: string) => StyleSheet.create({
   navWrapper: {
     alignSelf: 'center',
     flexDirection: 'row',
-    width: '50%',
+    width: '30%',
     justifyContent: 'space-between',
     marginBottom: 20,
   },

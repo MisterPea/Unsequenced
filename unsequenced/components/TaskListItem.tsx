@@ -7,7 +7,6 @@ import totalTime from './helpers/totalTime';
 
 interface TaskListItemProps extends Task {
   mode: string;
-
 }
 
 export default function TaskListItem({ item, mode, dataLength }) {
@@ -20,7 +19,6 @@ export default function TaskListItem({ item, mode, dataLength }) {
         (dataLength - 1) === item.index && styles(mode).last,
       ]}
       testID="taskBlockListItem"
-
     >
       <View style={styles(mode).leftSide}>
         <Text style={styles(mode).title}>{title}</Text>

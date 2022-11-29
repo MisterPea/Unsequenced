@@ -57,6 +57,19 @@ const taskBlockSlice = createSlice({
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1);
       }
     },
+    resetTaskTime: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string, taskId: string; }; }) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
+        const newRecord = {
+          id: action.payload.taskId,
+          title: state.blocks[taskBlockIndex].tasks[taskIndex].title,
+          amount: state.blocks[taskBlockIndex].tasks[taskIndex].amount,
+          completed: 0,
+        };
+        state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
+      }
+    },
     updateTask: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string, taskId: string, update: TaskUpdate; }; }) => {
       const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (taskBlockIndex > -1) {
@@ -122,7 +135,7 @@ const taskBlockSlice = createSlice({
               title,
               amount,
               id,
-              completed: completed + action.payload.decrementAmount,
+              completed: Number((completed + action.payload.decrementAmount).toFixed(3)),
             };
             state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
           }
@@ -140,6 +153,7 @@ export const {
   addTask,
   removeTask,
   updateTask,
+  resetTaskTime,
   toggleAutoplay,
   toggleBreak,
   reorderTasks,

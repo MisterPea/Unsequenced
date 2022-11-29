@@ -1,36 +1,59 @@
+/* eslint-disable no-underscore-dangle */
 // import BackgroundTimer from 'react-native-background-timer';
 import { Task } from '../../constants/types';
+import store from '../../redux/store';
 import { decrementTask } from '../../redux/taskBlocks';
-import { useAppDispatch } from '../../redux/hooks';
 
-export default function playTasks(taskBlockId: string, taskList: Task[]) {
-  const dispatch = useAppDispatch();
-  // find the first useable task - something where completed is less than amount
+let _timer: undefined | NodeJS.Timer;
+let _taskList: undefined | Task[];
+let _taskBlockId: undefined | string;
+let _isEndedCallback: undefined | ((value: boolean) => void);
+let j = 0;
 
-  function findFirstTask() {
-    for (let i = 0; i < taskList.length; i += 1) {
-      const { completed, amount, id } = taskList[i];
-      if (completed < amount) {
-        return id;
-      }
-    }
-    // no uncompleted tasks
-    return null;
-  }
-
-  function end() {
-    // BackgroundTimer.stopBackgroundTimer();
-  }
-
-  // BackgroundTimer.runBackgroundTimer(() => {
+function _decrement() {
+  console.log(j++);
   const taskId = findFirstTask();
-  if (taskId) {
-    dispatch(decrementTask({ taskBlockId, taskId, decrementAmount: 0.25 })); // 15sec
+  const _10sec = 0.010;
+  if (taskId && _taskBlockId) {
+    store.dispatch(decrementTask({ taskBlockId: _taskBlockId, taskId, decrementAmount: _10sec }));
   } else {
-    end();
+    _isEndedCallback!(false);
+    playTasks.end();
   }
-  // }, 15000);
 }
 
-// call decrement.
-// if none, check next index. If last index then call stop
+function findFirstTask(): string | null {
+  for (let i = 0; i < _taskList!.length; i += 1) {
+    const { completed, amount, id } = _taskList![i];
+    if (completed < amount) {
+      // return the first id that is incomplete
+      return id;
+    }
+  }
+  // All tasks completed
+  return null;
+}
+
+interface PlayTaskModule {
+  play: (taskBlockId: string, taskList: Task[], isEndedCallback: (value: boolean) => void) => void;
+  update: (taskList: Task[]) => void;
+  end: () => void;
+}
+
+const playTasks: PlayTaskModule = {
+  play(taskBlockId, taskList, isEndedCallback) {
+    _taskBlockId = taskBlockId;
+    _taskList = taskList;
+    _timer = setInterval(_decrement, 600);
+    _isEndedCallback = isEndedCallback;
+  },
+  update(taskList) {
+    _taskList = taskList;
+  },
+  end() {
+    clearInterval(_timer);
+    _timer = undefined;
+  },
+};
+
+export default playTasks;
