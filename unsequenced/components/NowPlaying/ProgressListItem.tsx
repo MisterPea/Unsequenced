@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, Animated } from 'react-native';
+import { Text, View, StyleSheet, Animated, Easing } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { colors, font } from '../../constants/GlobalStyles';
 
@@ -9,23 +9,31 @@ interface TimeProp {
 }
 
 interface ProgressListItemProps {
-  mode:string;
-  title:string;
+  mode: string;
+  title: string;
   time: TimeProp;
 }
 
-export default function ProgressListItem({ mode, title, time }:ProgressListItemProps) {
+// This component is the progress bar attached to the list item.
+// export default function ProgressListItem({ mode, title, time }: ProgressListItemProps) {
+export default function ProgressListItem(props) {
+  const { mode, title, time, playSoundOne } = props;
   const percentage = useRef(new Animated.Value(time.completed)).current;
+
+  if (time.total === time.completed) {
+    playSoundOne();
+  }
 
   useEffect(() => {
     load(time.completed);
   }, [time.completed]);
 
-  function load(count:number) {
+  function load(count: number) {
     Animated.timing(percentage, {
       toValue: count,
-      duration: 300,
+      duration: 600,
       useNativeDriver: false,
+      easing: Easing.linear,
     }).start();
   }
 
@@ -51,7 +59,7 @@ export default function ProgressListItem({ mode, title, time }:ProgressListItemP
   );
 }
 
-const listItem = (mode:string) => StyleSheet.create({
+const listItem = (mode: string) => StyleSheet.create({
   container: {
     height: 62,
     backgroundColor: colors.progressBackground[mode],

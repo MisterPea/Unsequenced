@@ -22,7 +22,7 @@ export default function ProgressBar({ mode, progress }: ProgressBarProps) {
   function updateBar(amount: number) {
     Animated.timing(progressBar, {
       toValue: amount,
-      duration: 300,
+      duration: 600,
       useNativeDriver: false,
     }).start();
   }
@@ -32,6 +32,9 @@ export default function ProgressBar({ mode, progress }: ProgressBarProps) {
     outputRange: ['0%', '100%'],
     extrapolate: 'clamp',
   });
+
+  // console.log(widthPercent);
+
 
   return (
     <>

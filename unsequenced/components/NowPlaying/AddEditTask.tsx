@@ -37,8 +37,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   const animateTextInput = useRef(new Animated.Value(0)).current;
   const opacityTextInput = useRef(new Animated.Value(0)).current;
   const animatedButtons = useRef(new Animated.Value(0)).current;
-
-  const contentRef = useRef();
+  const contentRef = useRef<undefined | any>();
 
   useEffect(() => {
     animateOpen();
@@ -215,7 +214,9 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
     <View
       ref={contentRef}
       onLayout={() => {
-        contentRef.current.measureInWindow((_x: number, y: number) => handleItemHeight(y));
+        if (contentRef.current) {
+          contentRef.current.measureInWindow((_x: number, y: number) => handleItemHeight(y));
+        }
       }}
       style={[editDialogStyles(mode).container]}
     >

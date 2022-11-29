@@ -4,14 +4,15 @@ import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, View, Animated, LayoutAnimation, UIManager } from 'react-native';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { SwipeRow } from 'react-native-swipe-list-view';
-import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { RefProps, RenderItemProps, HiddenRowNowPlayingProps } from '../../constants/types';
 import ProgressListItem from './ProgressListItem';
 import haptic from '../helpers/haptic';
 import { colors } from '../../constants/GlobalStyles';
-import { markTaskComplete, duplicateTask, removeTask } from '../../redux/taskBlocks';
+import { markTaskComplete, duplicateTask, removeTask, resetTaskTime } from '../../redux/taskBlocks';
 import AddEditTask from './AddEditTask';
+import SoundWrapper from './SoundWrapper';
 
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
@@ -38,6 +39,12 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
     haptic.success();
     closeRow();
     dispatch(markTaskComplete({ id, taskId: item.id }));
+  }
+
+  function handleResetTime() {
+    haptic.success();
+    closeRow();
+    dispatch(resetTaskTime({ id, taskId: item.id }));
   }
 
   function handleDuplicateTask() {
@@ -71,8 +78,7 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
             <Animated.View style={[
               { opacity: deleteScale() },
               {
-                transform: [{ scale: deleteScale() },
-                  { translateX: widthMax() }],
+                transform: [{ scale: deleteScale() }, { translateX: widthMax() }],
               },
             ]}
             >
@@ -81,8 +87,18 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
           </Animated.View>
         </Pressable>
       </View>
-
+      {/* HIDDEN ELEMENTS ON RIGHT SIDE */}
       <View style={styles().rightBank}>
+        {item.completed !== 0 && (
+          <Pressable
+            style={[styles().iconWrapper]}
+            onPress={handleResetTime}
+          >
+            <View style={[styles().icon, styles().resetTime]}>
+              <SimpleLineIcons name="refresh" size={24} color="#ffffff" />
+            </View>
+          </Pressable>
+        )}
         <Pressable
           style={[styles().iconWrapper]}
           onPress={handleOpenEdit}
@@ -114,8 +130,12 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
     </View>
   );
 }
-/**
- * Root of list item
+/*
+ *************************************
+ *************************************
+ ********* Root of list item *********
+ *************************************
+ *************************************
  */
 export default function NowPlayingItem(props: RenderItemProps) {
   const { item, drag, isActive, swipeRef, setEnableScroll, mode, id, setEditTask, editTask } = props;
@@ -126,6 +146,7 @@ export default function NowPlayingItem(props: RenderItemProps) {
       closeRowAction();
     }
   }, [editTask]);
+
   // This allows us to store the reference for the closeRow() at the top-est level for where we need it.
   let ref: RefProps;
 
@@ -176,8 +197,8 @@ export default function NowPlayingItem(props: RenderItemProps) {
         ref={onLoad}
         leftOpenValue={editTask ? 0.1 : 75}
         stopLeftSwipe={editTask ? 0.1 : 200}
-        rightOpenValue={editTask ? -0.1 : -135}
-        stopRightSwipe={editTask ? -0.1 : -135}
+        rightOpenValue={editTask ? -0.1 : -180}
+        stopRightSwipe={editTask ? -0.1 : -180}
         closeOnRowPress
         swipeGestureBegan={postRow}
         swipeGestureEnded={resumeScroll}
@@ -194,7 +215,14 @@ export default function NowPlayingItem(props: RenderItemProps) {
           setEditTask={setEditTask}
         />
         <Pressable onLongPress={drag} disabled={isActive}>
-          <ProgressListItem title={item.title} time={{ total: item.amount, completed: item.completed }} mode={mode} />
+          {/* THIS IS THE ACTUAL INNARDS OF THE LI PROGRESS BAR */}
+          <SoundWrapper>
+            <ProgressListItem
+              title={item.title}
+              time={{ total: item.amount, completed: item.completed }}
+              mode={mode}
+            />
+          </SoundWrapper>
           {editTask?.itemId === item.id && (
             <AddEditTask
               setEditTask={setEditTask}
@@ -229,7 +257,7 @@ const styles = () => StyleSheet.create({
     marginRight: 2,
     marginTop: 2,
     justifyContent: 'flex-end',
-    width: 137,
+    width: 182,
   },
   iconWrapper: {
     flexDirection: 'row',
@@ -252,6 +280,10 @@ const styles = () => StyleSheet.create({
   options: {
     paddingLeft: 4,
     backgroundColor: 'hsl(208, 50%, 50%)',
+  },
+  resetTime: {
+    backgroundColor: 'hsl(208, 60%, 70%)',
+    paddingLeft: 4,
   },
   delete: {
     backgroundColor: 'red',
