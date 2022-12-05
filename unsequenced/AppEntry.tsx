@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import TaskBlocks from './screens/TaskBlocks';
 import NowPlaying from './screens/NowPlaying';
 import Settings from './screens/Settings';
@@ -22,6 +23,7 @@ export default function AppEntry() {
   const statusBarStyle = mode === 'dark' ? 'light' : 'dark';
   const Stack = createNativeStackNavigator();
   const firstRun = useRef(true);
+  // const [currAppState, setCurrAppState] = useState();
 
   function setBlocks(blocks: string | null) {
     if (blocks) {
@@ -41,6 +43,25 @@ export default function AppEntry() {
     }
   }
 
+  async function allowNotifications() {
+    const settings = await Notifications.getPermissionsAsync();
+    return (
+      settings.granted
+      || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+    );
+  }
+
+  async function requestPermissions() {
+    return Notifications.requestPermissionsAsync({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+        allowAnnouncements: true,
+      },
+    });
+  }
+
   useEffect(() => {
     async function getLocalStorage() {
       const keys = await AsyncStorage.getAllKeys();
@@ -58,6 +79,16 @@ export default function AppEntry() {
     }
 
     getLocalStorage();
+  }, []);
+
+  useEffect(() => {
+    async function checkNotificationPermissions() {
+      const hasNotificationsPermissionsGranted = await allowNotifications();
+      if (!hasNotificationsPermissionsGranted) {
+        await requestPermissions();
+      }
+    }
+    checkNotificationPermissions();
   }, []);
 
   function TaskBlocksNavigator() {
