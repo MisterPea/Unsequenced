@@ -11,8 +11,7 @@ import haptic from '../components/helpers/haptic';
 import { reorderTasks, addTask } from '../redux/taskBlocks';
 import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
 import ProgressBar from '../components/NowPlaying/ProgressBar';
-import playTasks from '../components/NowPlaying/playTasks';
-import SoundWrapper from '../components/NowPlaying/SoundWrapper';
+import { playTasks, appState } from '../components/NowPlaying/playTasks';
 
 type Route = TaskBlockRouteProps;
 type MainNav = MainTaskBlocksNavProps;
@@ -70,14 +69,23 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   }, [tasksLocal, taskBlocks]);
 
   useEffect(() => {
-    setIsPlaying(false);
+    appState.init();
     return () => {
-      if (isPlaying) {
-        playTasks.end();
-        setIsPlaying(false);
-      }
+      appState.removeListener();
     };
   }, []);
+  // useEffect(() => {
+  //   console.log('<<BASE useEffect in NowPlaying>>')
+  //   setIsPlaying(false);
+  //   return () => {
+  //     if (isPlaying) {
+  //       console.log("BASE useEFFECT CALLED");
+  //       playTasks.end();
+  //       setIsPlaying(false);
+  //     }
+  //   };
+  // }, []);
+
   useEffect(() => {
     animateKeyboardOffset(offset);
   }, [offset]);
@@ -97,14 +105,15 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     const totalTime = tasks.reduce((prev: number, curr: Task) => curr.amount + prev, 0);
     const completedTime = tasks.reduce((prev: number, curr: Task) => curr.completed + prev, 0);
     const barPercentage = (((completedTime / totalTime) - 1) * 100) + 100;
-
     setProgress({ total: totalTime, completed: completedTime, percent: barPercentage });
   }
 
+  // We stop playing when we go back to main screen.
   function handleBackButtonPress() {
     haptic.select();
     if (isPlaying) {
-      playTasks.end();
+      console.log('END CALLED FROM BACK BUTTON');
+      playTasks.pause();
     }
     navigation.navigate('TaskBlocksNavigator', { screen: 'Task Blocks' });
   }
@@ -132,7 +141,8 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   function handleAddTask() {
     haptic.select();
     if (isPlaying) {
-      playTasks.end();
+      console.log('END CALLED FROM ADD TASK');
+      playTasks.pause();
       setIsPlaying(false);
     }
 
@@ -145,7 +155,8 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   function handleStop() {
     haptic.warning();
     if (isPlaying) {
-      playTasks.end();
+      console.log('END CALLED FROM HANDLE STOP');
+      playTasks.pause();
       setIsPlaying(false);
     }
   }
@@ -170,6 +181,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
    */
   function RenderItem({ drag, item, isActive }: RenderItemProps) {
     return (
+
       <NowPlayingItem
         item={item}
         drag={drag}
@@ -182,6 +194,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
         setEditTask={setEditTask}
         editTask={editTask}
       />
+
     );
   }
 
@@ -261,6 +274,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
         {tasksLocal.length === 0
           ? <Text style={styles(mode).addTasksText}>Add some tasks</Text>
           : (
+
             <DraggableFlatList
               data={tasksLocal}
               extraData={taskBlocks}
@@ -271,6 +285,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
               activationDistance={20}
               scrollEnabled={enableScroll}
             />
+
           )}
       </GestureHandlerRootView>
     </Animated.View>

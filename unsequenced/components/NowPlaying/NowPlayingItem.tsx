@@ -12,7 +12,6 @@ import haptic from '../helpers/haptic';
 import { colors } from '../../constants/GlobalStyles';
 import { markTaskComplete, duplicateTask, removeTask, resetTaskTime } from '../../redux/taskBlocks';
 import AddEditTask from './AddEditTask';
-import SoundWrapper from './SoundWrapper';
 
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
@@ -216,13 +215,11 @@ export default function NowPlayingItem(props: RenderItemProps) {
         />
         <Pressable onLongPress={drag} disabled={isActive}>
           {/* THIS IS THE ACTUAL INNARDS OF THE LI PROGRESS BAR */}
-          <SoundWrapper>
-            <ProgressListItem
-              title={item.title}
-              time={{ total: item.amount, completed: item.completed }}
-              mode={mode}
-            />
-          </SoundWrapper>
+          <ProgressListItem
+            title={item.title}
+            time={{ total: item.amount, completed: item.completed }}
+            mode={mode}
+          />
           {editTask?.itemId === item.id && (
             <AddEditTask
               setEditTask={setEditTask}
