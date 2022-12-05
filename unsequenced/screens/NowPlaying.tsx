@@ -36,7 +36,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const { id, title }: RouteParamsProps = route.params!;
   const { screenMode, taskBlocks, keyboardOffset }: UseSelectorProps = useSelector((state) => state!);
   const { mode }: ScreenProp = screenMode!;
-  const { offset } = keyboardOffset;
+  const { offset } = keyboardOffset!;
   const [tasksLocal, setTasksLocal] = useState<Task[]>([]);
   const [progress, setProgress] = useState({ total: 0, completed: 0, percent: 0 });
   const [enableScroll, setEnableScroll] = useState(true);
@@ -112,7 +112,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   function handleBackButtonPress() {
     haptic.select();
     if (isPlaying) {
-      console.log('END CALLED FROM BACK BUTTON');
       playTasks.pause();
     }
     navigation.navigate('TaskBlocksNavigator', { screen: 'Task Blocks' });
@@ -141,7 +140,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   function handleAddTask() {
     haptic.select();
     if (isPlaying) {
-      console.log('END CALLED FROM ADD TASK');
       playTasks.pause();
       setIsPlaying(false);
     }
@@ -155,7 +153,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   function handleStop() {
     haptic.warning();
     if (isPlaying) {
-      console.log('END CALLED FROM HANDLE STOP');
       playTasks.pause();
       setIsPlaying(false);
     }

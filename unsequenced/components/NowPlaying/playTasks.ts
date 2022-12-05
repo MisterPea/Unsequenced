@@ -165,7 +165,7 @@ function executeBackgroundStateNonstop() {
   for (let i = backgroundNotifications.length - 1; i >= 0; i -= 1) {
     const { taskTitle, expiration } = backgroundNotifications[i];
     const titleOne = `${taskTitle} has ended`;
-    const titleTwo = previousTitle ? `→ r${previousTitle} is beginning.` : '';
+    const titleTwo = previousTitle ? `→ begin ${previousTitle}.` : '';
     previousTitle = taskTitle;
     createBackgroundNotification(expiration, titleOne + titleTwo);
   }

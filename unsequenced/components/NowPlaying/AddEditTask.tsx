@@ -11,14 +11,14 @@ import haptic from '../helpers/haptic';
 
 type EditTask = {
   isEdit: boolean,
-  id: string,
+  id?: string,
 };
 
 interface AddEditTaskProps {
   setEditTask: (value: undefined | string) => void;
   editTask: EditTask;
   item: Task;
-  mode: string;
+  mode: 'light'|'dark';
   id: string;
 }
 

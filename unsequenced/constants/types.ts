@@ -97,10 +97,10 @@ export type QuietProp = {
 };
 
 export type ScreenProp = {
-  mode: string,
+  mode: 'light'|'dark',
 };
 
-interface KeyboardOffset {
+type KeyboardOffset = {
   offset: number,
 };
 
@@ -133,13 +133,11 @@ export interface RenderItemProps {
   isActive: boolean;
   swipeRef: UseRefProp;
   setEnableScroll: (bool: boolean) => void;
-  mode: string;
-  id?: string;
+  mode: 'light'|'dark';
+  id: string;
   closeSwipeBar?: () => void;
-  editTaskId: string | undefined;
-  setEditTask: (value: string | undefined) => void;
-  editTask: EditingTask;
-  playSoundOne?: () => void;
+  setEditTask: (value: any) => void;
+  editTask: EditingTask | undefined;
 }
 
 type Interpolate = {
@@ -162,5 +160,5 @@ export interface HiddenRowNowPlayingProps {
   swipeAnimatedValue?: SwipeAnimatedValue;
   mode: string;
   closeRow: () => void;
-  setEditTask: (value: EditingTask | undefined) => void;
+  setEditTask: (value: any) => void;
 }

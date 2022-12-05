@@ -3,15 +3,15 @@ import { View, Text, TextInput, StyleSheet, ViewStyle } from 'react-native';
 import { colors, font } from '../constants/GlobalStyles';
 
 interface InputStyle extends ViewStyle {
-  color?:string
+  color?: string;
 }
 
 interface InputProps {
-  screenMode: string;
-  label:string;
-  placeholder?:string;
-  value: undefined|string;
-  callback:React.Dispatch<React.SetStateAction<string>>;
+  screenMode: 'light' | 'dark';
+  label: string;
+  placeholder?: string;
+  value: undefined | string;
+  callback: React.Dispatch<React.SetStateAction<string>>;
   inputStyle?: InputStyle;
   viewStyle?: ViewStyle;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad' | 'decimal-pad';
@@ -28,7 +28,7 @@ export default function InputField({
   viewStyle,
   keyboardType,
   maxLength,
-}:InputProps) {
+}: InputProps) {
   return (
     <View style={[styles(screenMode).container, viewStyle]}>
       <Text style={styles(screenMode).ctaText}>{label}</Text>
@@ -47,7 +47,7 @@ export default function InputField({
   );
 }
 
-const styles = (screenMode :string) => StyleSheet.create({
+const styles = (screenMode: string) => StyleSheet.create({
   container: {
     marginHorizontal: 20,
   },
