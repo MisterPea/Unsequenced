@@ -1,10 +1,11 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react-native';
-import NowPlaying from '../../screens/NowPlaying';
-
-import DATA from '../../constants/DATA';
 import mockStore from '../../jest/testHelpers/mockStore';
+import NowPlaying from '../../screens/NowPlaying';
+import DATA from '../../constants/DATA';
+
+jest.useFakeTimers();
 
 const stumpNav: any = {
   navigation: {
@@ -30,12 +31,13 @@ describe('Now Playing.tsx', () => {
   });
 
   it('Renders the appropriate tile', () => {
+    const correctTitle = DATA[0].title;
     render(
       <Provider store={storeRef.store}>
         <NowPlaying route={stumpNav.route} navigation={stumpNav.navigation} />
       </Provider>,
     );
-    const correctTitle = DATA[0].title;
+
     const title = screen.findAllByText(correctTitle);
     expect(title).toBeTruthy();
   });
