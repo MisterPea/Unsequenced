@@ -17,12 +17,8 @@ interface ProgressListItemProps {
 // This component is the progress bar attached to the list item.
 // export default function ProgressListItem({ mode, title, time }: ProgressListItemProps) {
 export default function ProgressListItem(props) {
-  const { mode, title, time, playSoundOne } = props;
+  const { mode, title, time } = props;
   const percentage = useRef(new Animated.Value(time.completed)).current;
-
-  if (time.total === time.completed) {
-    playSoundOne();
-  }
 
   useEffect(() => {
     load(time.completed);

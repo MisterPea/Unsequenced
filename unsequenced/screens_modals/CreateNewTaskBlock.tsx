@@ -31,7 +31,7 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
   const blockTitles: string[] = blocks.map((block) => block.title);
   const { title, id, autoplay, breaks }: SwipeRouteProps = route.params;
   const [input, setInput] = useState<string>(title || '');
-  const [option, setOption] = useState<ButtonOptions>({ breaks: breaks || false, autoplay: autoplay || false });
+  const [option, setOption] = useState<ButtonOptions>({ breaks: breaks || false, autoplay: autoplay || true });
   const [validInput, setValidInput] = useState<boolean>(false);
 
   // Check for the validity of input
@@ -116,9 +116,9 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
             testID="breakCheckbox"
           />
           <CheckBoxGroup
-            title="Autoplay on launch"
+            title="Stop between tasks/breaks"
             screenMode={mode}
-            value={option.autoplay}
+            value={!option.autoplay}
             toggleFunc={handleToggleAutoplay}
             testID="autoplayCheckbox"
             extraStyle={{ marginTop: 12 }}
