@@ -8,6 +8,7 @@ const initialState = [] as TaskBlock[];
 type minutes = number;
 
 // const initialState = [];
+const generateId = (title: string) => `${title}${Math.random().toString(36).replace(/[^\w\s']|_/g, '')}`;
 
 const taskBlockSlice = createSlice({
   name: 'taskBlocks',
@@ -91,6 +92,61 @@ const taskBlockSlice = createSlice({
         state.blocks[taskBlockIndex].tasks.splice(0, deleteAmount, ...action.payload.updatedOrder);
       }
     },
+    /**
+     * The basic idea for this is we have to place breaks between each task. In the event of a reorder, where
+     * spacing may have become uneven, we remove all the breaks and store them for possible use later.
+     */
+    addBreaks: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; amount: number; }; }) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const newTasks: Task[] = [];
+        const previousBreaks: Task[] | any = [];
+        const { tasks } = state.blocks[taskBlockIndex];
+        for (let ti = 0; ti < tasks.length; ti += 1) {
+          if (tasks[ti].break) {
+            // this is for reorder remove previous breaks
+            previousBreaks.push(tasks.splice(ti, 1)[0]);
+          }
+        }
+        for (let i = 0; i < tasks.length; i += 1) {
+          if (i === 0) {
+            newTasks.push(tasks[i]);
+          } else {
+            if (previousBreaks.length > 0) {
+              newTasks.push(previousBreaks.pop());
+            } else {
+              newTasks.push({
+                id: generateId('break'),
+                title: `${action.payload.amount} minute break.`,
+                amount: action.payload.amount,
+                completed: 0,
+                break: true,
+              });
+            }
+            newTasks.push(tasks[i]);
+          }
+        }
+        const deleteAmount = state.blocks[taskBlockIndex].tasks.length;
+        state.blocks[taskBlockIndex].tasks.splice(0, deleteAmount, ...newTasks);
+      }
+    },
+    /**
+     * Method to remove all the breaks from a list of Tasks
+     */
+    removeBreaks: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; }; }) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        const newTasks: Task[] = [];
+        const { tasks } = state.blocks[taskBlockIndex];
+        for (let i = 0; i < tasks.length; i += 1) {
+          if (!tasks[i].break) {
+            newTasks.push(tasks[i]);
+          }
+        }
+        const deleteAmount = state.blocks[taskBlockIndex].tasks.length;
+        state.blocks[taskBlockIndex].tasks.splice(0, deleteAmount, ...newTasks);
+      }
+    },
     toggleBreak: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; }; }) => {
       const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (taskBlockIndex > -1) {
@@ -118,9 +174,9 @@ const taskBlockSlice = createSlice({
       const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (taskBlockIndex > -1) {
         const { title } = state.blocks[taskBlockIndex];
-        const newId = `${title}${Math.random().toString(36).replace(/[^\w\s']|_/g, '')}`;
+        const id = generateId(title);
         const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
-        const duplicateRecord = { ...state.blocks[taskBlockIndex].tasks[taskIndex], id: newId, completed: 0 };
+        const duplicateRecord = { ...state.blocks[taskBlockIndex].tasks[taskIndex], id, completed: 0 };
         state.blocks[taskBlockIndex].tasks.unshift(duplicateRecord);
       }
     },
@@ -147,6 +203,8 @@ const taskBlockSlice = createSlice({
 
 export default taskBlockSlice.reducer;
 export const {
+  addBreaks,
+  removeBreaks,
   addTaskBlock,
   removeTaskBlock,
   updateTaskBlock,
