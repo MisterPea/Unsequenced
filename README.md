@@ -7,15 +7,16 @@ ___Todo/Inventory___
 * [x] For Task edits, check to see if a change has been made.
 * [x] CTA for no Task Blocks.
 * [x] Change task time to value less than completed. Right now, if we go from ```30 min of 50 min complete```, to a total of 20 min it will be ```30 min of 20 min complete```, which is impossible.
-* [ ] A way to reset a timer that is partially completed.
+* [x] A way to reset a timer that is partially completed.
 * [ ] Swipe to delete for Tasks
-* [ ] Close swipe on Task Blocks if another action (edit/add Task Block) is initiated.
+* [x] Close swipe on Task Blocks if another action (edit/add Task Block) is initiated.
 * [x] Convert Create New Task Block button to a plus (+) sign.
-* [ ] Sounds
-* [ ] Logic for playing.
+* [x] Notifications for completion
+* [x] Logic for playing.
 * [ ] -Android- Grey screen on modal - need to fix.
 * [ ] -Android- Add/Edit task - buttons not showing on dark mode - flashing hidden content
-* [ ] Figure our testing for useFocusEffect.
+* [ ] Figure out testing for useFocusEffect.
+* [ ] Update total time on Task Block when automatic task breaks are added.
 
 
 ----
@@ -24,12 +25,15 @@ ___Todo/Inventory___
 | Task Blocks  | ✓  | ✓ || Edit Task Block  | ✓ | ✓ |
 | Create New Task Block  | ✓ | ✓  || Edit Task Block > Confirm Delete  | ✓ | ✓ |
 |  Now Playing  | ✓  | ✓ ||  Add Task  | ✓ | ✓ |
-|  Settings: *Light/Dark Mode*  |  ✓ | ✓ || Edit Task |  ✓  | ✓ |
-|  Settings: *Quiet Mode* |  ✓ | ✓ || Delete Task | ✓  | ✓  |
-||||											 | Duplicate Task | ✓| ✓|
-||||											 | Mark Task Complete | ✓| ✓|
-||||                       | Reset Time For Task |  |  |
+| Settings: *Light/Dark Mode*  |  ✓ | ✓ || Edit Task |  ✓  | ✓ |
+| Settings: *Quiet Mode* |  ✓ | ✓ || Delete Task | ✓  | ✓  |
+| Settings: *Show Notifications*|||											 | Duplicate Task | ✓| ✓|
+| Settings: *Allow Sounds* |||											 | Mark Task Complete | ✓| ✓|
+| Settings: *About Me*  |||                       | Reset Time For Task | ✓| ✓|
 ||||                       | Swipe To Delete Task | ✓ |  |
+||||                        | Notifications - While App is Active | | |
+||||                        | Notifications - While App is in Background | ✓ | ✓|
+||||                        | Automatically Add/Remove Task Breaks | | ✓|
 
 | Component | Complete |
 | :--------  | :------:|
@@ -39,8 +43,9 @@ ___Todo/Inventory___
 | Round Buttons - Now Playing | ✓ |
 | Progress Bar - Now Playing | ✓ |
 | Progress Bar on Task Bars | ✓ |
-| Timer for Tasks |  |
+| Timer for Tasks | ✓ |
 | Activity Loaders |  |
-| Connection to SQLite |  |
+| Async Storage | ✓ |
+| Loading Screen | |
 
 
