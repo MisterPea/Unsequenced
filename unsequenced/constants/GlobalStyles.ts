@@ -20,7 +20,7 @@ const definitions = [
   'barCompleteAmt', 'listItemBorder',
   'editOpenBG', 'editOpenInputBg',
   'editOpenCancelBtn', 'editOpenConfirmBG',
-  'editOpenConfirmText',
+  'editOpenConfirmText', 'breakContainer', 'breakText',
 ];
 
 const { fontScale } = Dimensions.get('window');
@@ -42,6 +42,7 @@ export const colors: { [key: string]: any; } = {
   // Task Blocks
   taskListItemBG: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
   taskListItemText: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
+  taskListItemTextBreak: { light: '#000000', dark: 'rgb(255,255,255)' },
   createNewTaskBtn: { light: 'rgb(63,150,93)', dark: 'hsl(187, 73%, 45%)' },
   createNewTaskText: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
 
@@ -99,6 +100,8 @@ export const colors: { [key: string]: any; } = {
   slideEditTask: { light: 'hsl(42, 20%, 80%)', dark: 'hsl(210, 13%, 20%)' },
   slideEditTaskText: { light: 'hsl(210, 13%, 20%)', dark: 'rgb(71,209,226)' },
 
+  breakContainer: { light: 'hsl(42, 50%, 99%)', dark: 'rgb(0,0,0)' },
+  breakText: { light: 'rgb(255,255,255)', dark: 'rgb(255,255,255)' },
 };
 
 interface FamilySize {
@@ -117,6 +120,10 @@ export const font: { [key: string]: FamilySize; } = {
   },
   liTitle: {
     fontSize: Math.ceil(18 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
+  liBreak: {
+    fontSize: Math.ceil(16 * fontAdj),
     fontFamily: 'Rubik_400Regular',
   },
   liSubTitle: {

@@ -1,14 +1,73 @@
 /* eslint-disable max-len */
 import { createSlice } from '@reduxjs/toolkit';
 import { Task, TaskBlock, TaskBlockUpdate, TaskUpdate, Blocks } from '../constants/types';
-import DATA from '../constants/DATA';
-
+// import DATA from '../constants/DATA';
 
 const initialState = [] as TaskBlock[];
 type minutes = number;
 
 // const initialState = [];
 const generateId = (title: string) => `${title}${Math.random().toString(36).replace(/[^\w\s']|_/g, '')}`;
+
+/**
+ * This method is used to add/remove the automatically added task breaks.
+ * The general idea is that we have to remove them all and add them back in whenever a
+ * change to the Tasks Array is made. This is easier than keeping explicit track of the breaks.
+ * We first check for existing tasks breaks and (if there are any) we remove them and store them.
+ * If we need to reuse them, we retrieve them in the order they were added last-in/last-out.
+ */
+function executeBreaks(state: any, index: number, breakAmount: number) {
+  const { tasks }: { tasks: Task[]; } = state.blocks[index];
+  if (state.blocks[index].breaks === true) {
+    const newTasks: Task[] = [];
+    const previousBreaks: Task[] | any = [];
+
+    /**
+     * Because of a strange lag in the update of tasks:Task[], we have to continuously check
+     * for breaks until none are found: Hence, the while loop with Array.some.
+     */
+    const removeBreak = () => {
+      const curIndex = tasks.findIndex((element) => element.break === true);
+      previousBreaks.push(tasks.splice(curIndex, 1)[0]);
+    };
+
+    while (tasks.some((element) => element.break === true)) {
+      removeBreak();
+    }
+
+    for (let i = 0; i < tasks.length; i += 1) {
+      if (i === 0) {
+        newTasks.push(tasks[i]);
+      } else {
+        if (previousBreaks.length > 0) {
+          newTasks.push(previousBreaks.shift());
+        } else {
+          newTasks.push({
+            id: generateId('break'),
+            title: `${breakAmount} minute break.`,
+            amount: breakAmount,
+            completed: 0,
+            break: true,
+          });
+        }
+        newTasks.push(tasks[i]);
+      }
+    }
+    // console.log("NEW TASKS:", newTasks);
+    const deleteAmount = state.blocks[index].tasks.length;
+    state.blocks[index].tasks.splice(0, deleteAmount, ...newTasks);
+  } else {
+    const newTasks: Task[] = [];
+    const { tasks } = state.blocks[index];
+    for (let i = 0; i < tasks.length; i += 1) {
+      if (!tasks[i].break) {
+        newTasks.push(tasks[i]);
+      }
+    }
+    const deleteAmount = state.blocks[index].tasks.length;
+    state.blocks[index].tasks.splice(0, deleteAmount, ...newTasks);
+  }
+}
 
 const taskBlockSlice = createSlice({
   name: 'taskBlocks',
@@ -45,6 +104,12 @@ const taskBlockSlice = createSlice({
         state.blocks.splice(index, 1, newRecord);
       }
     },
+    init: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; }; }) => {
+      const index = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (index > -1) {
+        executeBreaks(state, index, 5);
+      }
+    },
     addTask: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string, task: Task; }; }) => {
       const index = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (index > -1) {
@@ -56,6 +121,7 @@ const taskBlockSlice = createSlice({
       if (taskBlockIndex > -1) {
         const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1);
+        executeBreaks(state, taskBlockIndex, 5);
       }
     },
     resetTaskTime: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string, taskId: string; }; }) => {
@@ -66,6 +132,7 @@ const taskBlockSlice = createSlice({
           id: action.payload.taskId,
           title: state.blocks[taskBlockIndex].tasks[taskIndex].title,
           amount: state.blocks[taskBlockIndex].tasks[taskIndex].amount,
+          break: state.blocks[taskBlockIndex].tasks[taskIndex].break || false,
           completed: 0,
         };
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
@@ -79,10 +146,14 @@ const taskBlockSlice = createSlice({
         const newRecord = {
           id: action.payload.taskId,
           title: title || state.blocks[taskBlockIndex].tasks[taskIndex].title,
+          break: state.blocks[taskBlockIndex].tasks[taskIndex].break || false,
           amount: amount || state.blocks[taskBlockIndex].tasks[taskIndex].amount,
           completed: completed || state.blocks[taskBlockIndex].tasks[taskIndex].completed,
         };
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
+        if (state.blocks[taskBlockIndex].breaks !== null) {
+          executeBreaks(state, taskBlockIndex, 5);
+        }
       }
     },
     reorderTasks: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string, updatedOrder: Task[]; }; }) => {
@@ -90,68 +161,18 @@ const taskBlockSlice = createSlice({
       if (taskBlockIndex > -1) {
         const deleteAmount = state.blocks[taskBlockIndex].tasks.length;
         state.blocks[taskBlockIndex].tasks.splice(0, deleteAmount, ...action.payload.updatedOrder);
-      }
-    },
-    /**
-     * The basic idea for this is we have to place breaks between each task. In the event of a reorder, where
-     * spacing may have become uneven, we remove all the breaks and store them for possible use later.
-     */
-    addBreaks: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; amount: number; }; }) => {
-      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
-      if (taskBlockIndex > -1) {
-        const newTasks: Task[] = [];
-        const previousBreaks: Task[] | any = [];
-        const { tasks } = state.blocks[taskBlockIndex];
-        for (let ti = 0; ti < tasks.length; ti += 1) {
-          if (tasks[ti].break) {
-            // this is for reorder remove previous breaks
-            previousBreaks.push(tasks.splice(ti, 1)[0]);
-          }
-        }
-        for (let i = 0; i < tasks.length; i += 1) {
-          if (i === 0) {
-            newTasks.push(tasks[i]);
-          } else {
-            if (previousBreaks.length > 0) {
-              newTasks.push(previousBreaks.pop());
-            } else {
-              newTasks.push({
-                id: generateId('break'),
-                title: `${action.payload.amount} minute break.`,
-                amount: action.payload.amount,
-                completed: 0,
-                break: true,
-              });
-            }
-            newTasks.push(tasks[i]);
-          }
-        }
-        const deleteAmount = state.blocks[taskBlockIndex].tasks.length;
-        state.blocks[taskBlockIndex].tasks.splice(0, deleteAmount, ...newTasks);
+        executeBreaks(state, taskBlockIndex, 5);
       }
     },
     /**
      * Method to remove all the breaks from a list of Tasks
      */
-    removeBreaks: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; }; }) => {
-      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
-      if (taskBlockIndex > -1) {
-        const newTasks: Task[] = [];
-        const { tasks } = state.blocks[taskBlockIndex];
-        for (let i = 0; i < tasks.length; i += 1) {
-          if (!tasks[i].break) {
-            newTasks.push(tasks[i]);
-          }
-        }
-        const deleteAmount = state.blocks[taskBlockIndex].tasks.length;
-        state.blocks[taskBlockIndex].tasks.splice(0, deleteAmount, ...newTasks);
-      }
-    },
     toggleBreak: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; }; }) => {
       const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (taskBlockIndex > -1) {
         const currentBlock = state.blocks[taskBlockIndex];
         currentBlock.breaks = !currentBlock.breaks;
+        executeBreaks(state, taskBlockIndex, 5);
       }
     },
     toggleAutoplay: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; }; }) => {
@@ -185,13 +206,15 @@ const taskBlockSlice = createSlice({
       if (taskBlockIndex > -1) {
         const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
         if (taskIndex > -1) {
-          const { completed, amount, title, id } = state.blocks[taskBlockIndex].tasks[taskIndex];
-          if (completed < amount) {
+          const nextTask: Task = state.blocks[taskBlockIndex].tasks[taskIndex];
+
+          if (nextTask.completed < nextTask.amount) {
             const newRecord = {
-              title,
-              amount,
-              id,
-              completed: Number((completed + action.payload.decrementAmount).toFixed(3)),
+              title: nextTask.title,
+              amount: nextTask.amount,
+              break: nextTask.break,
+              id: nextTask.id,
+              completed: Number((nextTask.completed + action.payload.decrementAmount).toFixed(3)),
             };
             state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
           }
@@ -203,8 +226,7 @@ const taskBlockSlice = createSlice({
 
 export default taskBlockSlice.reducer;
 export const {
-  addBreaks,
-  removeBreaks,
+  init,
   addTaskBlock,
   removeTaskBlock,
   updateTaskBlock,

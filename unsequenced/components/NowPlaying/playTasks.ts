@@ -36,17 +36,27 @@ function _decrement() {
   }
 }
 
+let localCurrent: string | undefined;
 function findFirstTask(): Task | null {
   for (let i = 0; i < taskVars._taskList!.length; i += 1) {
     const { completed, amount } = taskVars._taskList![i];
     if (completed < amount) {
+      localCurrent = taskVars._currentId;
       // update the first task
       taskVars._firstTask = taskVars._taskList![i];
       // return the first id that is incomplete
       return taskVars._taskList![i];
     }
+    if (completed >= amount && localCurrent !== taskVars._currentId) {
+      if (localCurrent !== undefined && localCurrent?.length > 0) {
+        createForegroundNotification(taskVars._firstTask!.title);
+        localCurrent = '';
+      }
+    }
   }
   // All tasks completed
+  createForegroundNotification(taskVars._firstTask!.title);
+  localCurrent = undefined;
   return null;
 }
 
@@ -58,14 +68,12 @@ interface PlayTaskModule {
   end: () => void;
 }
 
-let calledLocally: boolean = false;
 const playTasks: PlayTaskModule = {
   play(taskBlockId, taskList, isEndedCallback) {
     taskVars._taskBlockId = taskBlockId;
     taskVars._taskList = taskList;
     taskVars._isEndedCallback = isEndedCallback;
     taskVars._timer = setInterval(_decrement, 600);
-    calledLocally = findFirstTask() === null;
   },
   update(taskList) {
     taskVars._taskList = taskList;
@@ -77,10 +85,6 @@ const playTasks: PlayTaskModule = {
   end() {
     clearInterval(taskVars._timer);
     taskVars._timer = undefined;
-    if (calledLocally === false) {
-      createForegroundNotification();
-    }
-    calledLocally = false;
   },
 };
 
@@ -179,7 +183,6 @@ function executeActiveStateNonstop() {
   for (let i = 0; i < backgroundNotifications.length; i += 1) {
     const { taskId, utcStart, utcEnd, totalAmount } = backgroundNotifications[i];
     if (currentTime > utcEnd) { // if we completed the task-mark it so.
-      calledLocally = true;
       store.dispatch(markTaskComplete({
         id: taskVars._taskBlockId,
         taskId,
@@ -230,7 +233,6 @@ function executeActiveState() {
     playTasks.play(taskVars._taskBlockId, taskVars._taskList, taskVars._isEndedCallback);
   } else {
     // if time has elapsed
-    calledLocally = true;
     store.dispatch(markTaskComplete({
       id: taskVars!._taskBlockId,
       taskId: taskVars._firstTask!.id,
@@ -239,6 +241,24 @@ function executeActiveState() {
 }
 
 // NOTIFICATIONS //
+
+interface PrefTypes {
+  allowSounds: boolean;
+  allowBanners: boolean | string;
+}
+const prefs: PrefTypes = {
+  allowSounds: true,
+  allowBanners: true,
+};
+// console.log(prefs)
+
+store.subscribe(() => {
+  const p = store.getState().notificationPrefs;
+  prefs.allowBanners = p.allowBanners;
+  prefs.allowSounds = p.allowSounds;
+});
+// const { allowBanners, allowSounds } = prefsSelector();
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: true,
@@ -247,26 +267,75 @@ Notifications.setNotificationHandler({
   }),
 });
 
+interface NotificationContent {
+  title?: string;
+  body?: string;
+  sound?: boolean | string;
+  vibrate?: number[];
+}
+
 async function createBackgroundNotification(time: number, message: string): Promise<any> {
+  const tailoredContent: NotificationContent = {
+    title: 'Unsequenced',
+    body: message,
+    sound: true,
+    vibrate: [100, 9, 299, 2, 100],
+  };
+
+  const { allowBanners, allowSounds } = prefs;
+  if (allowBanners === false && allowSounds) {
+    delete tailoredContent.title;
+    delete tailoredContent.body;
+  }
+  if (allowBanners && allowSounds === false) {
+    // add empty sound
+  }
+  if (allowBanners === false && allowSounds === false) {
+    return;
+  }
+
   Notifications.scheduleNotificationAsync({
     content: {
       title: 'Unsequenced',
       body: message,
-      sound: true,
+      sound: prefs.allowSounds,
       vibrate: [200, 0, 200, 0, 200, 0],
-      data: { test: 'TESTING' },
     },
     trigger: { seconds: time },
   });
 }
 
-async function createForegroundNotification(): Promise<any> {
+async function createForegroundNotification(message: string): Promise<any> {
+  const tailoredContent: NotificationContent = {
+    title: 'Unsequenced',
+    body: `${message} has completed`,
+    sound: true,
+    vibrate: [100, 9, 299, 2, 100],
+  };
+
+  const { allowBanners, allowSounds } = prefs;
+  if ((allowBanners === false || allowBanners === 'background_only') && allowSounds) {
+    delete tailoredContent.title;
+    delete tailoredContent.body;
+  }
+  if (allowBanners && !allowSounds) {
+    // add empty sound
+  }
+  if (!allowBanners && !allowSounds) {
+    return;
+  }
+
   Notifications.scheduleNotificationAsync({
-    content: {
-      sound: true,
-    },
+    content: tailoredContent,
     trigger: null,
   });
 }
 
-export { appState, playTasks };
+export {
+  appState,
+  playTasks,
+  executeBackgroundState,
+  executeActiveState,
+  executeBackgroundStateNonstop,
+  executeActiveStateNonstop,
+};

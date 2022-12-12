@@ -4,12 +4,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors, font } from '../constants/GlobalStyles';
 
 interface Settings {
-  mode: string;
+  mode: 'light' | 'dark';
   toggle: () => void;
-  isQuiet?: boolean;
+  allowSounds?: boolean;
 }
 
-export function DarkMode({ mode, toggle }:Settings) {
+export function DarkMode({ mode, toggle }: Settings) {
   return (
     <View style={styles(mode).section}>
       <View style={styles(mode).textWrap}>
@@ -42,32 +42,32 @@ export function DarkMode({ mode, toggle }:Settings) {
   );
 }
 
-export function QuietMode({ mode, toggle, isQuiet }:Settings) {
+export function SoundSettings({ mode, toggle, allowSounds }: Settings) {
   return (
-    <View style={[styles(mode).section, { marginTop: 25 }]}>
+    <View style={[styles(mode).section, { marginTop: 5 }]}>
       <View style={styles(mode).textWrap}>
-        <Text style={styles(mode).title}>Quiet Mode</Text>
+        <Text style={styles(mode).title}>Allow Sounds</Text>
       </View>
-      {/* Quiet Mode Off */}
+      {/* Allow Sounds On */}
       <Pressable
         onPress={toggle}
-        testID="quietModeBtn"
+        testID="toggleSoundsBtn"
       >
         <View style={styles(mode).textWrap}>
           <View style={styles(mode).textSide}>
-            <Text style={[styles(mode).option, !isQuiet && styles(mode).select]}>Off</Text>
+            <Text style={[styles(mode).option, allowSounds && styles(mode).select]}>Yes</Text>
           </View>
           <View style={styles(mode).checkSide}>
-            {!isQuiet && <MaterialIcons name="done" size={25} color={colors.settingsCheck[mode]} />}
+            {allowSounds && <MaterialIcons name="done" size={25} color={colors.settingsCheck[mode]} />}
           </View>
         </View>
-        {/* Quiet Mode On */}
+        {/* Allow Sounds Off */}
         <View style={[styles(mode).textWrap, { borderBottomWidth: 0 }]}>
           <View style={styles(mode).textSide}>
-            <Text style={[styles(mode).option, isQuiet && styles(mode).select]}>On</Text>
+            <Text style={[styles(mode).option, !allowSounds && styles(mode).select]}>No</Text>
           </View>
           <View style={styles(mode).checkSide}>
-            {isQuiet && <MaterialIcons name="done" size={25} color={colors.settingsCheck[mode]} />}
+            {!allowSounds && <MaterialIcons name="done" size={25} color={colors.settingsCheck[mode]} />}
           </View>
         </View>
       </Pressable>
@@ -75,7 +75,70 @@ export function QuietMode({ mode, toggle, isQuiet }:Settings) {
   );
 }
 
-const styles = (mode:string) => StyleSheet.create({
+interface BannerSettings {
+  mode: 'light' | 'dark';
+  allowBanners: boolean | string;
+  setAllowBanners: (value: boolean | string) => void;
+}
+export function Banners({ mode, allowBanners, setAllowBanners }: BannerSettings) {
+  return (
+    <View style={[styles(mode).section, { marginTop: 5 }]}>
+      <View style={styles(mode).textWrap}>
+        <Text style={styles(mode).title}>Allow Banners</Text>
+      </View>
+
+      <Pressable
+        onPress={setAllowBanners.bind(this, true)}
+      >
+        <View style={styles(mode).textWrap}>
+          <View style={styles(mode).textSide}>
+            <Text
+              style={[styles(mode).option, allowBanners === true && styles(mode).select]}
+            >
+              Yes
+
+            </Text>
+          </View>
+          <View style={styles(mode).checkSide}>
+            {allowBanners === true && <MaterialIcons name="done" size={25} color={colors.settingsCheck[mode]} />}
+          </View>
+        </View>
+      </Pressable>
+
+      <Pressable
+        onPress={setAllowBanners.bind(this, false)}
+      >
+        <View style={styles(mode).textWrap}>
+          <View style={styles(mode).textSide}>
+            <Text style={[styles(mode).option, allowBanners === false && styles(mode).select]}>No</Text>
+          </View>
+          <View style={styles(mode).checkSide}>
+            {allowBanners === false && <MaterialIcons name="done" size={25} color={colors.settingsCheck[mode]} />}
+          </View>
+        </View>
+      </Pressable>
+
+      <Pressable
+        onPress={setAllowBanners.bind(this, 'background_only')}
+      >
+        <View style={[styles(mode).textWrap, { borderBottomWidth: 0 }]}>
+          <View style={styles(mode).textSide}>
+            <Text
+              style={[styles(mode).option, allowBanners === 'background_only' && styles(mode).select]}
+            >
+              Only when app is in background
+            </Text>
+          </View>
+          <View style={styles(mode).checkSide}>
+            {allowBanners === 'background_only' && <MaterialIcons name="done" size={25} color={colors.settingsCheck[mode]} />}
+          </View>
+        </View>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = (mode: string) => StyleSheet.create({
   section: {
     backgroundColor: colors.settingsBoxes[mode],
     paddingHorizontal: 23,

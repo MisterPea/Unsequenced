@@ -10,7 +10,7 @@ const keyboardOffsetSlice = createSlice({
   name: 'keyboardOffset',
   initialState,
   reducers: {
-    setKeyboardOffset: (state: {offset:number;}, action:{payload: {offset: number}}) => (
+    setKeyboardOffset: (state: { offset: number; }, action: { payload: { offset: number; }; }) => (
       { ...state, offset: action.payload.offset }
     ),
   },

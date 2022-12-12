@@ -198,14 +198,14 @@ describe('Test the toggling of 5 min breaks and autoplay', () => {
     expect(breaks).toBe(true);
   });
 
-  it('Has the value of false for autoplay', () => {
+  it('Has the value of true for autoplay', () => {
     storeRef.store.dispatch(addTaskBlock(DATA[0]));
     storeRef.store.dispatch(addTaskBlock(DATA[1]));
     storeRef.store.dispatch(addTaskBlock(DATA[2]));
     const { blocks } = storeRef.store.getState().taskBlocks;
     const currentIndex = blocks.findIndex(({ id }: { id: string; }) => id === '3ac68afc-c605-48d3-a4f8-fbd91aa97f63');
     const { autoplay } = blocks[currentIndex];
-    expect(autoplay).toBe(false);
+    expect(autoplay).toBe(true);
   });
 
   it('Toggles autoplay from false to true', () => {
@@ -216,7 +216,7 @@ describe('Test the toggling of 5 min breaks and autoplay', () => {
     const { blocks } = storeRef.store.getState().taskBlocks;
     const currentIndex = blocks.findIndex(({ id }: { id: string; }) => id === '3ac68afc-c605-48d3-a4f8-fbd91aa97f63');
     const { autoplay } = blocks[currentIndex];
-    expect(autoplay).toBe(true);
+    expect(autoplay).toBe(false);
   });
 });
 

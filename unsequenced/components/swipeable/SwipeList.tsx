@@ -18,7 +18,7 @@ interface HiddenItemProps {
 
 interface SwipeListProps {
   data: TaskBlock[];
-  mode: string;
+  mode: 'light' | 'dark';
   leftStatusChg: () => void;
 }
 
@@ -160,7 +160,7 @@ export default function SwipeList({ data, mode, leftStatusChg }: SwipeListProps)
   );
 }
 
-const styles = (mode: string) => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',

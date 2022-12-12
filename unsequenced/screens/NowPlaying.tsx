@@ -2,16 +2,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation } from 'react-native';
 import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
-import { useSelector, useDispatch } from 'react-redux';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { colors, font } from '../constants/GlobalStyles';
 import { MainTaskBlocksNavProps, TaskBlockRouteProps, UseSelectorProps, ScreenProp, Task, RenderItemProps, EditingTask } from '../constants/types';
 import haptic from '../components/helpers/haptic';
-import { reorderTasks, addTask } from '../redux/taskBlocks';
+import { reorderTasks, addTask, init } from '../redux/taskBlocks';
 import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
 import ProgressBar from '../components/NowPlaying/ProgressBar';
 import { playTasks, appState } from '../components/NowPlaying/playTasks';
+// import { setCurrentBlock } from '../redux/currentBlock';
+import NowPlayingItemBreak from '../components/NowPlaying/NowPlayingItemBreak';
 
 type Route = TaskBlockRouteProps;
 type MainNav = MainTaskBlocksNavProps;
@@ -34,7 +36,7 @@ interface SlideObj {
 
 export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const { id, title }: RouteParamsProps = route.params!;
-  const { screenMode, taskBlocks, keyboardOffset }: UseSelectorProps = useSelector((state) => state!);
+  const { screenMode, taskBlocks, keyboardOffset }: UseSelectorProps = useAppSelector((state) => state!);
   const { mode }: ScreenProp = screenMode!;
   const { offset } = keyboardOffset!;
   const [tasksLocal, setTasksLocal] = useState<Task[]>([]);
@@ -45,10 +47,12 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const keyboardOffsetAnimation = useRef(new Animated.Value(0)).current;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // Pick appropriate Tasks via id.
     const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
+
     if (index > -1) {
       // afik having the layout animation here allows it to work on all elements
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -69,6 +73,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   }, [tasksLocal, taskBlocks]);
 
   useEffect(() => {
+    dispatch(init({ id }));
     appState.init();
     return () => {
       appState.removeListener();
@@ -145,7 +150,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     }
 
     const taskId = `${title}${Math.random().toString(36).replace(/[^\w\s']|_/g, '')}`;
-    const task = { id: taskId, title: '', amount: 0, completed: 0 };
+    const task: Task = { id: taskId, title: '', amount: 0, completed: 0, break: false };
     dispatch(addTask({ id, task }));
     setEditTask({ isEdit: false, itemId: taskId });
   }
@@ -177,6 +182,22 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
    * to the NowPlayingItem, which is a list item component.
    */
   function RenderItem({ drag, item, isActive }: RenderItemProps) {
+    if (item.break === true) {
+      return (
+        <NowPlayingItemBreak
+          item={item}
+          drag={drag}
+          swipeRef={swipeRef}
+          setEnableScroll={setEnableScroll}
+          isActive={isActive}
+          mode={mode}
+          id={id}
+          closeSwipeBar={onDragStart}
+          setEditTask={setEditTask}
+          editTask={editTask}
+        />
+      );
+    }
     return (
 
       <NowPlayingItem
@@ -289,7 +310,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   );
 }
 
-const styles = (mode: string) => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   container: {
     backgroundColor: colors.background[mode],
     flex: 1,

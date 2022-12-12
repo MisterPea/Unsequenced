@@ -12,8 +12,9 @@ import Settings from './screens/Settings';
 import { useAppSelector, useAppDispatch } from './redux/hooks';
 import CreateNewTaskBlock from './screens_modals/CreateNewTaskBlock';
 import { populateBlocks } from './redux/taskBlocks';
-import { populateQuietMode } from './redux/quietMode';
+// import { populateQuietMode } from './redux/quietMode';
 import { populateScreenMode } from './redux/screenMode';
+import { populateAllowBanners, populateAllowSounds } from './redux/notificationPrefs';
 
 export default function AppEntry() {
   const { screenMode, keyboardOffset } = useAppSelector((state) => state);
@@ -23,7 +24,6 @@ export default function AppEntry() {
   const statusBarStyle = mode === 'dark' ? 'light' : 'dark';
   const Stack = createNativeStackNavigator();
   const firstRun = useRef(true);
-  // const [currAppState, setCurrAppState] = useState();
 
   function setBlocks(blocks: string | null) {
     if (blocks) {
@@ -31,9 +31,14 @@ export default function AppEntry() {
     }
   }
 
-  function setQuietMode(isQuiet: string | null) {
-    if (isQuiet) {
-      dispatch(populateQuietMode({ isQuiet: JSON.parse(isQuiet) }));
+  function setAllowSounds(allowSounds: string | null) {
+    if (allowSounds) {
+      dispatch(populateAllowSounds({ preference: JSON.parse(allowSounds) }));
+    }
+  }
+  function setAllowBanners(allowBanners: string | null) {
+    if (allowBanners) {
+      dispatch(populateAllowBanners({ preference: JSON.parse(allowBanners) }));
     }
   }
 
@@ -65,12 +70,15 @@ export default function AppEntry() {
   useEffect(() => {
     async function getLocalStorage() {
       const keys = await AsyncStorage.getAllKeys();
-      if (keys.length === 3 && firstRun.current === true) {
+      if (keys.length === 4 && firstRun.current === true) {
         const blocks: string | null = await AsyncStorage.getItem('blocks');
         setBlocks(blocks);
 
-        const isQuiet: string | null = await AsyncStorage.getItem('isQuiet');
-        setQuietMode(isQuiet);
+        const allowSoundsString: string | null = await AsyncStorage.getItem('allowSounds');
+        setAllowSounds(allowSoundsString);
+
+        const allowBannersString: string | null = await AsyncStorage.getItem('allowBanners');
+        setAllowBanners(allowBannersString);
 
         const screenModeString: string | null = await AsyncStorage.getItem('mode');
         setScreenMode(screenModeString);

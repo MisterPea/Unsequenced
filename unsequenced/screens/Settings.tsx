@@ -1,19 +1,20 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Pressable, SafeAreaView } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { colors, font } from '../constants/GlobalStyles';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { toggleScreenMode } from '../redux/screenMode';
-import { toggleQuietMode } from '../redux/quietMode';
 import { SettingsNavProps } from '../constants/types';
-import { DarkMode, QuietMode } from '../components/SettingsGroups';
+import { DarkMode, SoundSettings, Banners } from '../components/SettingsGroups';
 import haptic from '../components/helpers/haptic';
+import { selectAllowBanners, toggleAllowSounds } from '../redux/notificationPrefs';
 
-export default function Settings({ navigation, route }:{navigation:SettingsNavProps}) {
-  const { screenMode, quietMode } = useAppSelector((state) => state);
+export default function Settings({ navigation }: { navigation: SettingsNavProps; }) {
+  const { screenMode, notificationPrefs } = useAppSelector((state) => state);
   const { mode } = screenMode;
-  const { isQuiet } = quietMode;
+
+  const { allowBanners, allowSounds } = notificationPrefs;
   const dispatch = useAppDispatch();
 
   function handleScreenModeToggle() {
@@ -21,9 +22,14 @@ export default function Settings({ navigation, route }:{navigation:SettingsNavPr
     dispatch(toggleScreenMode());
   }
 
-  function handleQuietModeToggle() {
+  function handleAllowSoundsToggle() {
     haptic.select();
-    dispatch(toggleQuietMode());
+    dispatch(toggleAllowSounds());
+  }
+
+  function handleSetAllowBanners(button: string | boolean) {
+    haptic.select();
+    dispatch(selectAllowBanners({ preference: button }));
   }
 
   function handleBackButtonPress() {
@@ -48,12 +54,28 @@ export default function Settings({ navigation, route }:{navigation:SettingsNavPr
 
       </View>
       <DarkMode mode={mode} toggle={handleScreenModeToggle} />
-      <QuietMode mode={mode} toggle={handleQuietModeToggle} isQuiet={isQuiet} />
+      <Text style={styles(mode).sectionHeader}>NOTIFICATIONS</Text>
+      <SoundSettings mode={mode} toggle={handleAllowSoundsToggle} allowSounds={allowSounds} />
+      <Banners mode={mode} allowBanners={allowBanners} setAllowBanners={handleSetAllowBanners} />
+      <SafeAreaView style={styles(mode).bottomContainer}>
+        <Text style={styles(mode).bottomText}>Version: 1.0.0</Text>
+      </SafeAreaView>
     </View>
   );
 }
 
-const styles = (mode:string) => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
+  bottomContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  bottomText: {
+    alignSelf: 'flex-end',
+    color: colors.settingsTextMain[mode],
+    fontFamily: font.settingsTextOne.fontFamily,
+    fontSize: font.settingsTextOne.fontSize,
+  },
   container: {
     backgroundColor: colors.background[mode],
     flex: 1,
@@ -63,6 +85,14 @@ const styles = (mode:string) => StyleSheet.create({
     marginTop: 35,
     marginHorizontal: 20,
     marginBottom: 18,
+  },
+  sectionHeader: {
+    marginLeft: 25,
+    marginBottom: 0,
+    marginTop: 20,
+    fontSize: font.settingsTitle.fontSize,
+    fontFamily: font.header.fontFamily,
+    color: colors.title[mode],
   },
   headerText: {
     marginTop: 10,

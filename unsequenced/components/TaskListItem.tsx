@@ -6,7 +6,7 @@ import { colors, font } from '../constants/GlobalStyles';
 import totalTime from './helpers/totalTime';
 
 interface TaskListItemProps extends Task {
-  mode: string;
+  mode: 'light' | 'dark';
 }
 
 export default function TaskListItem({ item, mode, dataLength }) {
@@ -31,7 +31,7 @@ export default function TaskListItem({ item, mode, dataLength }) {
   );
 }
 
-const styles = (mode:string) => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   container: {
     height: 62,
     backgroundColor: colors.taskListItemBG[mode],

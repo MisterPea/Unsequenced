@@ -1,22 +1,21 @@
 import { configureStore } from '@reduxjs/toolkit';
 import taskBlockReducer from './taskBlocks';
 import screenModeReducer from './screenMode';
-import quietModeReducer from './quietMode';
 import keyboardOffsetReducer from './keyboardOffset';
 import logger from './middleware/logger';
 import asyncStorage from './middleware/asyncStorage';
-import taskBreak from './middleware/break';
 import currentBlockReducer from './currentBlock';
+import notificationPrefsReducer from './notificationPrefs';
 
 const store = configureStore({
   reducer: {
+    currentBlock: currentBlockReducer,
     taskBlocks: taskBlockReducer,
     screenMode: screenModeReducer,
-    quietMode: quietModeReducer,
     keyboardOffset: keyboardOffsetReducer,
-    currentBlock: currentBlockReducer,
+    notificationPrefs: notificationPrefsReducer
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(taskBreak, asyncStorage),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(asyncStorage),
 });
 
 export default store;

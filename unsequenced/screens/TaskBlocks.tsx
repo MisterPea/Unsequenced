@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View, SafeAreaView, LayoutAnimation } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
@@ -11,10 +11,11 @@ import { colors, font } from '../constants/GlobalStyles';
 import SwipeList from '../components/swipeable/SwipeList';
 import haptic from '../components/helpers/haptic';
 import { addTaskBlock, updateTaskBlock } from '../redux/taskBlocks';
+import { setCurrentBlock } from '../redux/currentBlock';
 
 export default function TaskBlocks({ route, navigation }: { navigation: TaskBlockNavProps; }) {
   const dispatch = useDispatch();
-  const { screenMode, taskBlocks } = useAppSelector((state) => state);
+  const { screenMode, taskBlocks, currentBlock } = useAppSelector((state) => state);
   const { mode } = screenMode;
   const { blocks } = taskBlocks;
 
@@ -90,7 +91,7 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
   );
 }
 
-const styles = (mode: string) => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   container: {
     backgroundColor: colors.background[mode],
     flex: 1,

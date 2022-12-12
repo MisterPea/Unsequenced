@@ -4,14 +4,15 @@ const asyncStorage = (store: { getState: () => any; }) => (next: (arg0: any) => 
   const result = next(action);
   const reducer = action.type.split('/');
   if (reducer[0] === 'taskBlocks') {
-    const { taskBlocks, screenMode, quietMode } = store.getState();
+    const { taskBlocks, screenMode, notificationPrefs } = store.getState();
     const { blocks } = taskBlocks;
     const { mode } = screenMode;
-    const { isQuiet } = quietMode;
+    const { allowBanners, allowSounds } = notificationPrefs;
     AsyncStorage.multiSet([
       ['blocks', JSON.stringify(blocks)],
       ['mode', mode],
-      ['isQuiet', JSON.stringify(isQuiet)],
+      ['allowBanners', JSON.stringify(allowBanners)],
+      ['allowSounds', JSON.stringify(allowSounds)],
     ]);
   }
   return result;

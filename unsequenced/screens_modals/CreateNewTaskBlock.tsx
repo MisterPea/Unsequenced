@@ -156,7 +156,7 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
   );
 }
 
-const styles = (mode: string) => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',

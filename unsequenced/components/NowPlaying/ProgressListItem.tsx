@@ -8,11 +8,6 @@ interface TimeProp {
   total: number;
 }
 
-interface ProgressListItemProps {
-  mode: string;
-  title: string;
-  time: TimeProp;
-}
 
 // This component is the progress bar attached to the list item.
 // export default function ProgressListItem({ mode, title, time }: ProgressListItemProps) {
@@ -55,7 +50,7 @@ export default function ProgressListItem(props) {
   );
 }
 
-const listItem = (mode: string) => StyleSheet.create({
+const listItem = (mode: 'light' | 'dark') => StyleSheet.create({
   container: {
     height: 62,
     backgroundColor: colors.progressBackground[mode],

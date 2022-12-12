@@ -9,6 +9,7 @@ export interface Task {
   title: string;
   amount: number;
   completed: number;
+  break?: boolean;
 }
 
 export interface TaskUpdate {
@@ -25,6 +26,9 @@ export interface TaskBlock {
   tasks: Task[];
 }
 
+export interface CurrentBlock {
+  block: string | null;
+}
 /**
  * React Navigator
  * Navigation Props
@@ -97,18 +101,20 @@ export type QuietProp = {
 };
 
 export type ScreenProp = {
-  mode: 'light'|'dark',
+  mode: 'light' | 'dark',
 };
 
 type KeyboardOffset = {
   offset: number,
 };
 
+
 export interface UseSelectorProps {
-  screenMode?: ScreenProp;
+  screenMode: ScreenProp;
   taskBlocks?: Blocks;
   quietMode?: QuietProp;
   keyboardOffset?: KeyboardOffset;
+  currentBlock?: CurrentBlock;
 }
 
 /**
@@ -133,7 +139,7 @@ export interface RenderItemProps {
   isActive: boolean;
   swipeRef: UseRefProp;
   setEnableScroll: (bool: boolean) => void;
-  mode: 'light'|'dark';
+  mode: 'light' | 'dark';
   id: string;
   closeSwipeBar?: () => void;
   setEditTask: (value: any) => void;
@@ -158,7 +164,7 @@ export interface HiddenRowNowPlayingProps {
   rightActionActivated?: boolean;
   rightActionState?: boolean;
   swipeAnimatedValue?: SwipeAnimatedValue;
-  mode: string;
+  mode: 'light' | 'dark';
   closeRow: () => void;
   setEditTask: (value: any) => void;
 }

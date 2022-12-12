@@ -9,7 +9,7 @@ interface TimeProp {
 }
 
 interface ProgressListItemProps {
-  mode: string;
+  mode: 'light' | 'dark';
   title: string;
   time: TimeProp;
 }
@@ -55,7 +55,7 @@ export default function ProgressListItemBreak(props) {
   );
 }
 
-const listItemBreak = (mode: string) => StyleSheet.create({
+const listItemBreak = (mode: 'light' | 'dark') => StyleSheet.create({
   container: {
     height: 50,
     backgroundColor: colors.progressBackground[mode],

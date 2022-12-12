@@ -8,7 +8,7 @@ type ProgressObject = {
 };
 
 interface ProgressBarProps {
-  mode: string;
+  mode: 'light' | 'dark';
   progress: ProgressObject;
 }
 
@@ -49,7 +49,7 @@ export default function ProgressBar({ mode, progress }: ProgressBarProps) {
   );
 }
 
-const styles = (mode: string) => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   progressWrapper: {
     marginHorizontal: 40,
   },

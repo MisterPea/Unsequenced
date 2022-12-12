@@ -1,11 +1,12 @@
 import { configureStore, Store } from '@reduxjs/toolkit';
 import taskBlockReducer from '../../redux/taskBlocks';
-import quietModeReducer from '../../redux/quietMode';
+import notificationPrefsReducer from '../../redux/notificationPrefs';
 import screenModeReducer from '../../redux/screenMode';
 import keyboardOffsetReducer from '../../redux/keyboardOffset';
+import currentBlockReducer from '../../redux/currentBlock';
 
 interface MockStore extends Store {
-  getState: () => {}
+  getState: () => {};
 }
 
 type REF_OBJ = {
@@ -17,9 +18,10 @@ export default function mockStore() {
   beforeEach(() => {
     const tempStore = configureStore({
       reducer: {
+        currentBlock: currentBlockReducer,
         taskBlocks: taskBlockReducer,
         screenMode: screenModeReducer,
-        quietMode: quietModeReducer,
+        notificationPrefs: notificationPrefsReducer,
         keyboardOffset: keyboardOffsetReducer,
       },
     });

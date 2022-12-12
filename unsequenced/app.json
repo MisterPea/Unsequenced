@@ -30,8 +30,11 @@
       "supportsTablet": false,
       "buildNumber": "1.0.0",
       "infoPlist": {
-        "UIBackgroundModes": "remote-notification"
-      }
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      },
+      "bundleIdentifier": "com.misterpea.unsequenced"
     },
     "android": {
       "versionCode": 1,
@@ -42,6 +45,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cdf43d42-648c-42c9-ba88-b0059d5fd4ff"
+      }
     }
   }
 }
