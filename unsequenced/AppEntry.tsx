@@ -1,53 +1,31 @@
+/* eslint-disable camelcase */
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
+// import { useFonts, Rubik_700Bold, Rubik_400Regular, Rubik_500Medium } from '@expo-google-fonts/rubik';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import TaskBlocks from './screens/TaskBlocks';
 import NowPlaying from './screens/NowPlaying';
 import Settings from './screens/Settings';
-import { useAppSelector, useAppDispatch } from './redux/hooks';
+import SplashScreen from './screens/SplashScreen';
+import { useAppSelector } from './redux/hooks';
 import CreateNewTaskBlock from './screens_modals/CreateNewTaskBlock';
-import { populateBlocks } from './redux/taskBlocks';
-// import { populateQuietMode } from './redux/quietMode';
-import { populateScreenMode } from './redux/screenMode';
-import { populateAllowBanners, populateAllowSounds } from './redux/notificationPrefs';
+// import { populateBlocks } from './redux/taskBlocks';
+// import { populateScreenMode } from './redux/screenMode';
+// import { populateAllowBanners, populateAllowSounds } from './redux/notificationPrefs';
 
 export default function AppEntry() {
   const { screenMode, keyboardOffset } = useAppSelector((state) => state);
-  const dispatch = useAppDispatch();
   const { mode } = screenMode;
   const { offset } = keyboardOffset;
   const statusBarStyle = mode === 'dark' ? 'light' : 'dark';
   const Stack = createNativeStackNavigator();
-  const firstRun = useRef(true);
 
-  function setBlocks(blocks: string | null) {
-    if (blocks) {
-      dispatch(populateBlocks({ blocks: JSON.parse(blocks) }));
-    }
-  }
-
-  function setAllowSounds(allowSounds: string | null) {
-    if (allowSounds) {
-      dispatch(populateAllowSounds({ preference: JSON.parse(allowSounds) }));
-    }
-  }
-  function setAllowBanners(allowBanners: string | null) {
-    if (allowBanners) {
-      dispatch(populateAllowBanners({ preference: JSON.parse(allowBanners) }));
-    }
-  }
-
-  function setScreenMode(modeString: string | null) {
-    if (modeString) {
-      dispatch(populateScreenMode({ mode: modeString }));
-    }
-  }
-
+  // Notifications Permissions
   async function allowNotifications() {
     const settings = await Notifications.getPermissionsAsync();
     return (
@@ -66,28 +44,6 @@ export default function AppEntry() {
       },
     });
   }
-
-  useEffect(() => {
-    async function getLocalStorage() {
-      const keys = await AsyncStorage.getAllKeys();
-      if (keys.length === 4 && firstRun.current === true) {
-        const blocks: string | null = await AsyncStorage.getItem('blocks');
-        setBlocks(blocks);
-
-        const allowSoundsString: string | null = await AsyncStorage.getItem('allowSounds');
-        setAllowSounds(allowSoundsString);
-
-        const allowBannersString: string | null = await AsyncStorage.getItem('allowBanners');
-        setAllowBanners(allowBannersString);
-
-        const screenModeString: string | null = await AsyncStorage.getItem('mode');
-        setScreenMode(screenModeString);
-        firstRun.current = false;
-      }
-    }
-
-    getLocalStorage();
-  }, []);
 
   useEffect(() => {
     async function checkNotificationPermissions() {
@@ -146,11 +102,18 @@ export default function AppEntry() {
           }}
         >
           <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+            options={{
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
             name="TaskBlocksNavigator"
             component={TaskBlocksNavigator}
             options={{
               title: 'Task Blocks',
-
+              animation: 'fade',
             }}
           />
           <Stack.Screen
