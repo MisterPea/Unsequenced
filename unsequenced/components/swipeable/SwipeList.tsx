@@ -7,10 +7,10 @@ import TaskBlockListItem from '../TaskBlockListItem';
 import { TaskBlock } from '../../constants/types';
 import { colors } from '../../constants/GlobalStyles';
 import haptic from '../helpers/haptic';
-import { useDispatch } from 'react-redux';
 import { removeTaskBlock } from '../../redux/taskBlocks';
+import { useAppDispatch } from '../../redux/hooks';
 
-let screenMode: string;
+let screenMode: 'light' | 'dark';
 
 interface HiddenItemProps {
   [key: string]: any;
@@ -23,10 +23,9 @@ interface SwipeListProps {
 }
 
 function HiddenItemWithActions(props: HiddenItemProps) {
-
   const { data, rowMap, swipeAnimatedValue } = props;
   const navigation = useNavigation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   function handleEditTaskBlock() {
     haptic.select();
@@ -38,7 +37,7 @@ function HiddenItemWithActions(props: HiddenItemProps) {
         id: data.item.id,
         autoplay: data.item.autoplay,
         breaks: data.item.breaks,
-      }
+      },
     });
   }
 

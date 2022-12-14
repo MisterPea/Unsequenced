@@ -34,7 +34,7 @@ export default function CheckBoxGroup({ title, screenMode, toggleFunc, value, te
         settingsScreen.componentWrapper,
         {
           backgroundColor: fill,
-          borderColor: border
+          borderColor: border,
         },
         extraStyle,
       ]}

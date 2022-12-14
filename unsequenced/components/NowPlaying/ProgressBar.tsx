@@ -33,9 +33,6 @@ export default function ProgressBar({ mode, progress }: ProgressBarProps) {
     extrapolate: 'clamp',
   });
 
-  // console.log(widthPercent);
-
-
   return (
     <>
       <View style={styles(mode).progressWrapper}>
@@ -43,7 +40,7 @@ export default function ProgressBar({ mode, progress }: ProgressBarProps) {
         <Animated.View style={[styles(mode).completeAmt, { width: widthPercent }]} />
       </View>
       <View>
-        <Text style={styles(mode).completeText}>{`${Math.round(progress.completed)} of ${progress.total} minutes completed`}</Text>
+        <Text style={styles(mode).completeText}>{`${Math.floor(progress.completed)} of ${progress.total} minutes completed`}</Text>
       </View>
     </>
   );

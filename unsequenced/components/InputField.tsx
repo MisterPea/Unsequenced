@@ -62,11 +62,7 @@ const styles = (screenMode: string) => StyleSheet.create({
     fontFamily: font.input.fontFamily,
     fontSize: font.input.fontSize,
     borderWidth: 0.5,
-    // borderColor: colors.textBoxBorder[screenMode],
     padding: 7,
-    // backgroundColor: colors.textBox[screenMode],
-    // maxWidth: 250,
     borderRadius: 4,
-    // color: colors.textOne[screenMode],
   },
 });

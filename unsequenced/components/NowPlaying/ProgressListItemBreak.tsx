@@ -3,17 +3,6 @@ import { Text, View, StyleSheet, Animated, Easing } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { colors, font } from '../../constants/GlobalStyles';
 
-interface TimeProp {
-  completed: number;
-  total: number;
-}
-
-interface ProgressListItemProps {
-  mode: 'light' | 'dark';
-  title: string;
-  time: TimeProp;
-}
-
 // This component is the progress bar attached to the list item.
 // export default function ProgressListItem({ mode, title, time }: ProgressListItemProps) {
 export default function ProgressListItemBreak(props) {

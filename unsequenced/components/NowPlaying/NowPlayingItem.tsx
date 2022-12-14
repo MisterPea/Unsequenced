@@ -12,6 +12,7 @@ import haptic from '../helpers/haptic';
 import { colors } from '../../constants/GlobalStyles';
 import { markTaskComplete, duplicateTask, removeTask, resetTaskTime } from '../../redux/taskBlocks';
 import AddEditTask from './AddEditTask';
+import { middlewearActions } from './playTasks';
 
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
@@ -37,12 +38,14 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
   function handleMarkTaskComplete() {
     haptic.success();
     closeRow();
+    middlewearActions.markCompletedCalled();
     dispatch(markTaskComplete({ id, taskId: item.id }));
   }
 
   function handleResetTime() {
     haptic.success();
     closeRow();
+    middlewearActions.markCompletedCalled();
     dispatch(resetTaskTime({ id, taskId: item.id }));
   }
 

@@ -1,38 +1,23 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
-import { Pressable, StyleSheet, View, Animated, UIManager } from 'react-native';
+import { Pressable, StyleSheet, View, UIManager } from 'react-native';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { SwipeRow } from 'react-native-swipe-list-view';
-import { AntDesign, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
+import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { RefProps, RenderItemProps, HiddenRowNowPlayingProps } from '../../constants/types';
 import ProgressListItemBreak from './ProgressListItemBreak';
 import haptic from '../helpers/haptic';
 import { colors } from '../../constants/GlobalStyles';
-import { markTaskComplete, duplicateTask, removeTask, resetTaskTime } from '../../redux/taskBlocks';
+import { markTaskComplete, resetTaskTime } from '../../redux/taskBlocks';
 import AddEditTask from './AddEditTask';
 
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 function HiddenRow(props: HiddenRowNowPlayingProps) {
-  const { swipeAnimatedValue, item, id, closeRow, setEditTask } = props;
+  const { item, id, closeRow } = props;
   const dispatch = useDispatch();
-
-  function deleteScale() {
-    return swipeAnimatedValue!.interpolate({
-      inputRange: [30, 75],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
-  }
-
-  function widthMax() {
-    return swipeAnimatedValue!.interpolate({
-      inputRange: [0, 75, 200],
-      outputRange: [-200, -65, 0],
-    });
-  }
 
   function handleMarkTaskComplete() {
     haptic.success();
@@ -46,39 +31,10 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
     dispatch(resetTaskTime({ id, taskId: item.id }));
   }
 
-  function handleDuplicateTask() {
-    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-    haptic.light();
-    closeRow();
-    dispatch(duplicateTask({ id, taskId: item.id }));
-  }
-
-  function handleOpenEdit() {
-    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    haptic.light();
-    closeRow();
-    setEditTask({ isEdit: true, itemId: item.id });
-  }
-
   return (
     <View style={styles().hiddenWrapper}>
-      <View style={styles().leftBank}>
-        {/* <Pressable
-          onPress={handleDelete}
-        >
-          <Animated.View style={[styles().icon, styles().delete]}>
-            <Animated.View style={[
-              { opacity: deleteScale() },
-              {
-                transform: [{ scale: deleteScale() }, { translateX: widthMax() }],
-              },
-            ]}
-            >
-              <MaterialCommunityIcons name="delete" size={26} color="white" />
-            </Animated.View>
-          </Animated.View>
-        </Pressable> */}
-      </View>
+      {/* Hidden Element on Left Side */}
+      <View />
       {/* HIDDEN ELEMENTS ON RIGHT SIDE */}
       <View style={styles().rightBank}>
         {item.completed !== 0 && (
@@ -91,22 +47,6 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
             </View>
           </Pressable>
         )}
-        {/* <Pressable
-          style={[styles().iconWrapper]}
-          onPress={handleOpenEdit}
-        >
-          <View style={[styles().icon, styles().options]}>
-            <Ionicons name="ellipsis-vertical-circle" size={24} color="#ffffff" />
-          </View>
-        </Pressable> */}
-        {/* <Pressable
-          style={[styles().iconWrapper]}
-          onPress={handleDuplicateTask}
-        >
-          <View style={[styles().icon, styles().duplicate]}>
-            <Ionicons name="duplicate-outline" size={24} color="#ffffff" />
-          </View>
-        </Pressable> */}
         {item.completed !== item.amount
           && (
             <Pressable
@@ -232,16 +172,9 @@ const styles = () => StyleSheet.create({
   hiddenWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height: 50,
+    height: 52,
     // flex: 1,
   },
-  // leftBank: {
-  //   marginTop: 2,
-  //   marginLeft: 2,
-  //   alignItems: 'flex-start',
-  //   justifyContent: 'center',
-  //   flex: 1,
-  // },
   rightBank: {
     flexDirection: 'row',
     marginRight: 2,

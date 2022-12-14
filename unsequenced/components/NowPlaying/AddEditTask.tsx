@@ -18,7 +18,7 @@ interface AddEditTaskProps {
   setEditTask: (value: undefined | string) => void;
   editTask: EditTask;
   item: Task;
-  mode: 'light'|'dark';
+  mode: 'light' | 'dark';
   id: string;
 }
 
@@ -191,7 +191,7 @@ export default function AddEditTask(this: any, props: AddEditTaskProps) {
   // **************************************
   // **** Controlled Component Methods ****
   // **************************************
-  function handleUpdateDuration(value: string) {
+  function handleUpdateDuration(value: string | any) {
     if (+value > 0) {
       setDuration(value);
     } else {

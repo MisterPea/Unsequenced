@@ -6,13 +6,15 @@ import store from '../../redux/store';
 import { decrementTask, markTaskComplete, updateTask } from '../../redux/taskBlocks';
 import { Task } from '../../constants/types';
 
+// _taskForTimer is a reference to the previously played task
 interface TaskVars {
   _taskList: Task[];
   _taskBlockId: string;
   _firstTask?: Task;
+  _taskForTimer?: Task | undefined;
   _currentId?: string;
   _isEndedCallback: (value: boolean) => void;
-  _timer?: NodeJS.Timer;
+  _timer?: NodeJS.Timer,
 }
 
 const taskVars: TaskVars = {
@@ -22,6 +24,7 @@ const taskVars: TaskVars = {
   _currentId: undefined,
   _isEndedCallback: () => { },
   _timer: undefined,
+  _taskForTimer: undefined,
 };
 
 function _decrement() {
@@ -36,6 +39,16 @@ function _decrement() {
   }
 }
 
+export const middlewearActions = {
+  _completeCalled: false,
+  markCompletedCalled: () => {
+    middlewearActions._completeCalled = true;
+  },
+  resetResetMarkCompleted: () => {
+    middlewearActions._completeCalled = false;
+  },
+};
+
 let localCurrent: string | undefined;
 function findFirstTask(): Task | null {
   for (let i = 0; i < taskVars._taskList!.length; i += 1) {
@@ -45,18 +58,27 @@ function findFirstTask(): Task | null {
       // update the first task
       taskVars._firstTask = taskVars._taskList![i];
       // return the first id that is incomplete
+      if (taskVars._taskForTimer === undefined) taskVars._taskForTimer = taskVars._taskList[i];
       return taskVars._taskList![i];
     }
     if (completed >= amount && localCurrent !== taskVars._currentId) {
       if (localCurrent !== undefined && localCurrent?.length > 0) {
-        createForegroundNotification(taskVars._firstTask!.title);
+        if (middlewearActions._completeCalled === false && taskVars._taskForTimer?.title) {
+          createForegroundNotification(taskVars._taskForTimer.title);
+        }
         localCurrent = '';
+        taskVars._taskForTimer = undefined;
       }
+      middlewearActions.resetResetMarkCompleted();
     }
   }
   // All tasks completed
-  createForegroundNotification(taskVars._firstTask!.title);
+  if (middlewearActions._completeCalled === false && taskVars._firstTask?.title) {
+    createForegroundNotification(taskVars._firstTask?.title);
+  }
   localCurrent = undefined;
+  taskVars._taskForTimer = undefined;
+  middlewearActions.resetResetMarkCompleted();
   return null;
 }
 
@@ -89,7 +111,6 @@ const playTasks: PlayTaskModule = {
 };
 
 // ************************** AppState ************************** //
-// let expirationTime: number;
 let appStateVar: NativeEventSubscription;
 const appState = {
   init() {
@@ -136,7 +157,6 @@ let individualExpirationTime: number;
  * Further: we actually take that Array and loop through it backwards, so then we can
  * set the title as
  */
-
 // AUTOPLAY
 function executeBackgroundStateNonstop() {
   console.log('AUTO BACKGROUND');
@@ -202,6 +222,8 @@ function executeActiveStateNonstop() {
   if (anyUnfinishedTasks) {
     taskVars._isEndedCallback!(true);
     playTasks.play(taskVars._taskBlockId, taskVars._taskList, taskVars._isEndedCallback);
+  } else {
+    taskVars._isEndedCallback!(false);
   }
   backgroundNotifications.length = 0;
 }
@@ -241,7 +263,6 @@ function executeActiveState() {
 }
 
 // NOTIFICATIONS //
-
 interface PrefTypes {
   allowSounds: boolean;
   allowBanners: boolean | string;
@@ -250,14 +271,12 @@ const prefs: PrefTypes = {
   allowSounds: true,
   allowBanners: true,
 };
-// console.log(prefs)
 
 store.subscribe(() => {
   const p = store.getState().notificationPrefs;
   prefs.allowBanners = p.allowBanners;
   prefs.allowSounds = p.allowSounds;
 });
-// const { allowBanners, allowSounds } = prefsSelector();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

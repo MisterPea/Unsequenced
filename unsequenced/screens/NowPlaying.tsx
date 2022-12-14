@@ -12,7 +12,6 @@ import { reorderTasks, addTask, init } from '../redux/taskBlocks';
 import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
 import ProgressBar from '../components/NowPlaying/ProgressBar';
 import { playTasks, appState } from '../components/NowPlaying/playTasks';
-// import { setCurrentBlock } from '../redux/currentBlock';
 import NowPlayingItemBreak from '../components/NowPlaying/NowPlayingItemBreak';
 
 type Route = TaskBlockRouteProps;
@@ -46,6 +45,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const swipeRef = useRef<SlideObj | undefined>();
   const keyboardOffsetAnimation = useRef(new Animated.Value(0)).current;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [restrictPlay, setRestrictPlay] = useState<boolean>(true);
 
   const dispatch = useAppDispatch();
 
@@ -57,6 +57,12 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       // afik having the layout animation here allows it to work on all elements
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setTasksLocal(taskBlocks!.blocks[index].tasks);
+    }
+    // We're checking for a populated, useable task list in order to enable the play button
+    if (taskBlocks?.blocks[index]?.tasks?.some(({ completed, amount }) => completed < amount)) {
+      restrictPlay === true && setRestrictPlay(false);
+    } else {
+      restrictPlay === false && setRestrictPlay(true);
     }
   }, [taskBlocks]);
 
@@ -176,11 +182,57 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     }
   }
 
+  function AnimateArrow() {
+    const fadeAnimationOne = new Animated.Value(0);
+    useEffect(() => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(fadeAnimationOne, {
+            toValue: 1,
+            duration: 200,
+            easing: Easing.bezier(0.5, 0.15, 0.53, 0.93),
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnimationOne, {
+            toValue: 0,
+            duration: 600,
+            easing: Easing.bezier(0.5, 0.15, 0.53, 0.93),
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    }, []);
+
+    return (
+      <Animated.View style={{
+        justifyContent: 'flex-start',
+        opacity: fadeAnimationOne,
+        height: 11,
+        transform: [{
+          translateX: fadeAnimationOne.interpolate({
+            inputRange: [0, 1],
+            outputRange: [-5, 3],
+          }),
+        }],
+      }}
+      >
+        <Text style={{
+          bottom: 2,
+          transform: [{ scale: 1.25 }],
+          color: colors.title[mode],
+        }}
+        >
+          {' •'}
+        </Text>
+      </Animated.View>
+    );
+  }
+
   /**
-   * Component rendered by the DraggableFlatlist component
-   * This is an intermediary component to allow the passing of other props
-   * to the NowPlayingItem, which is a list item component.
-   */
+ * Component rendered by the DraggableFlatlist component
+ * This is an intermediary component to allow the passing of other props
+ * to the NowPlayingItem, which is a list item component.
+ */
   function RenderItem({ drag, item, isActive }: RenderItemProps) {
     if (item.break === true) {
       return (
@@ -199,7 +251,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       );
     }
     return (
-
       <NowPlayingItem
         item={item}
         drag={drag}
@@ -212,7 +263,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
         setEditTask={setEditTask}
         editTask={editTask}
       />
-
     );
   }
 
@@ -244,7 +294,10 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
           />
         </Pressable>
       </View>
-      <Text style={styles(mode).headerTitle}>NOW PLAYING</Text>
+      <Text style={styles(mode).headerTitle}>
+        NOW PLAYING
+        {isPlaying && <AnimateArrow />}
+      </Text>
       <Text testID="taskBlockTitle" style={styles(mode).headerText} numberOfLines={1}>
         {title && title.toUpperCase()}
       </Text>
@@ -253,6 +306,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       <View style={styles(mode).navWrapper}>
         <Pressable
           onPress={isPlaying ? handleStop : handlePlay}
+          disabled={restrictPlay}
         >
           <View style={[styles(mode).navButton, mode === 'light' && shadow.on, { paddingLeft: 5 }]}>
             {isPlaying ? (
@@ -273,6 +327,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
         </Pressable>
         <Pressable
           onPress={handleAddTask}
+          disabled={!!editTask}
         >
           <View style={[styles(mode).navButton, mode === 'light' && shadow.on]}>
             <AntDesign

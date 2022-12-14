@@ -1,16 +1,14 @@
 /* eslint-disable react/destructuring-assignment */
-import React, { useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, LayoutAnimation } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { colors, font } from '../constants/GlobalStyles';
 import haptic from './helpers/haptic';
-import { useAppDispatch } from '../redux/hooks';
-import { init } from '../redux/taskBlocks';
 
 interface TaskBlockProps {
   item: undefined;
-  mode: 'light'|'dark';
+  mode: 'light' | 'dark';
 }
 
 interface Current {
@@ -18,7 +16,6 @@ interface Current {
 }
 
 export default function TaskBlockListItem(props: TaskBlockProps) {
-
   const navigation = useNavigation();
 
   const { item } = props.item;
@@ -35,16 +32,6 @@ export default function TaskBlockListItem(props: TaskBlockProps) {
     }
     return `${Math.round((timeMinutes / 60) * 10 ** 1) / 10 ** 1} hours`;
   }, [tasks]);
-  // function totalTimeMemoized() {
-  //   const timeMinutes = tasks.reduce((prev: number, curr: Current) => prev + curr.amount, 0) || 0;
-  //   if (timeMinutes <= 60) {
-  //     if (timeMinutes === 60) {
-  //       return '1 hour';
-  //     }
-  //     return `${timeMinutes} minutes`;
-  //   }
-  //   return `${Math.round((timeMinutes / 60) * 10 ** 1) / 10 ** 1} hours`;
-  // }
 
   function handleOnPress() {
     haptic.light();
@@ -71,7 +58,7 @@ export default function TaskBlockListItem(props: TaskBlockProps) {
   );
 }
 
-const styles = (mode: 'light'|'dark') => StyleSheet.create({
+const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   container: {
     height: 62,
     backgroundColor: colors.taskListItemBG[mode],

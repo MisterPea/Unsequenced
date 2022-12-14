@@ -3,12 +3,6 @@ import { Text, View, StyleSheet, Animated, Easing } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { colors, font } from '../../constants/GlobalStyles';
 
-interface TimeProp {
-  completed: number;
-  total: number;
-}
-
-
 // This component is the progress bar attached to the list item.
 // export default function ProgressListItem({ mode, title, time }: ProgressListItemProps) {
 export default function ProgressListItem(props) {
@@ -40,7 +34,7 @@ export default function ProgressListItem(props) {
       <View style={listItem(mode).textWrapper}>
         <View>
           <Text numberOfLines={1} style={listItem(mode).title}>{title}</Text>
-          {time.total > 0 && <Text style={listItem(mode).timeInfo}>{`${Math.round(time.completed)} min of ${time.total} min complete`}</Text>}
+          {time.total > 0 && <Text style={listItem(mode).timeInfo}>{`${Math.floor(time.completed)} min of ${time.total} min complete`}</Text>}
         </View>
         <View>
           <EvilIcons name="chevron-right" size={30} color={colors.disabled[mode]} />

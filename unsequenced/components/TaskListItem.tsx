@@ -1,16 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
-import { Task } from '../constants/types';
 import { colors, font } from '../constants/GlobalStyles';
 import totalTime from './helpers/totalTime';
 
-interface TaskListItemProps extends Task {
-  mode: 'light' | 'dark';
-}
-
-export default function TaskListItem({ item, mode, dataLength }) {
-  const { id, title, amount } = item.item;
+export default function TaskListItem({ item, mode, dataLength }:
+  { item: any, mode: 'light' | 'dark', dataLength: number; }) {
+  const { title, amount } = item.item;
 
   return (
     <View
