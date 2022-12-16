@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View, SafeAreaView, LayoutAnimation } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
@@ -17,6 +17,7 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
   const { screenMode, taskBlocks } = useAppSelector((state) => state);
   const { mode } = screenMode;
   const { blocks } = taskBlocks;
+  const [validWidth, setValidWidth] = useState<number | undefined>(undefined);
 
   // This handles the adding and updating of Task Blocks and is only run on layout change: i.e. Task Block add or change
   // The reason behind this is that if we perform the update in the modal, the state
@@ -45,23 +46,31 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
     navigation.navigate('Settings');
   }
 
+  // We wait until we have a layout so don't have movement when button enters DOM
+  function handleButtonPlacement(e: any) {
+    if (!validWidth) { setValidWidth(e.nativeEvent.layout.width); }
+  }
+
   return (
-    <View style={[styles(mode).container]}>
+    <View onLayout={handleButtonPlacement} style={[styles(mode).container]}>
       <View style={styles(mode).headerView}>
         <View>
           <Text style={styles(mode).header}>TASK BLOCKS</Text>
           <Text style={styles(mode).subHeader}>Choose a Task Block or Create a New One</Text>
         </View>
-        <Pressable
-          testID="settingsBtn"
-          onPress={handleSettingsPress}
-        >
-          <Ionicons
-            name="settings-outline"
-            size={24}
-            color={colors.settingsGear[mode]}
-          />
-        </Pressable>
+        {/* Wait till we have a width before rendering - without this, the button animates to it's position */}
+        {validWidth && (
+          <Pressable
+            testID="settingsBtn"
+            onPress={handleSettingsPress}
+          >
+            <Ionicons
+              name="settings-outline"
+              size={24}
+              color={colors.settingsGear[mode]}
+            />
+          </Pressable>
+        )}
       </View>
       {blocks.length === 0
         ? (
@@ -75,17 +84,21 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
             mode={mode}
           />
         )}
+      {/* Wait till we have a width before rendering - without this, the button animates to it's position */}
+      {validWidth && (
+        <SafeAreaView>
+          {/* Create New Task Block */}
 
-      <SafeAreaView>
-        {/* Create New Task Block */}
-        <Pressable
-          onPress={handleCreateTaskBlockPress}
-          style={styles(mode).safePressable}
-        >
-          <View style={styles(mode).safePressableView} />
-          <Ionicons name="ios-add-circle-sharp" size={68} color={colors.createNewTaskBtn[mode]} />
-        </Pressable>
-      </SafeAreaView>
+          <Pressable
+            onPress={handleCreateTaskBlockPress}
+            style={styles(mode).safePressable}
+          >
+            <View style={styles(mode).safePressableView} />
+            <Ionicons name="ios-add-circle-sharp" size={68} color={colors.createNewTaskBtn[mode]} />
+          </Pressable>
+
+        </SafeAreaView>
+      )}
     </View>
   );
 }
