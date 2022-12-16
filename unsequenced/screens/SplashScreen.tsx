@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
+import { View, StyleSheet, Animated, Easing, useColorScheme } from 'react-native';
 import { useFonts, Rubik_700Bold, Rubik_400Regular, Rubik_500Medium } from '@expo-google-fonts/rubik';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch } from '../redux/hooks';
@@ -17,6 +17,7 @@ export default function SplashScreen({ navigation }) {
   const [localStateReady, setLocalStateReady] = useState<boolean>(false);
   const mountTime = useRef<number | undefined>(undefined);
   const firstRun = useRef<boolean>(true);
+  const colorMode = useColorScheme();
 
   // Methods to populate local state
   function setBlocks(blocks: string | null) {
@@ -93,6 +94,9 @@ export default function SplashScreen({ navigation }) {
     async function prepare() {
       const keys = await AsyncStorage.getAllKeys();
       if (keys.length === 4 && firstRun.current === true) {
+        const screenModeString: string | null = await AsyncStorage.getItem('mode');
+        setScreenMode(screenModeString);
+
         const blocks: string | null = await AsyncStorage.getItem('blocks');
         setBlocks(blocks);
 
@@ -102,12 +106,11 @@ export default function SplashScreen({ navigation }) {
         const allowBannersString: string | null = await AsyncStorage.getItem('allowBanners');
         setAllowBanners(allowBannersString);
 
-        const screenModeString: string | null = await AsyncStorage.getItem('mode');
-        setScreenMode(screenModeString);
         firstRun.current = false;
         setLocalStateReady(true);
       } else if (keys.length === 0) {
         firstRun.current = false;
+        setScreenMode(colorMode);
         setLocalStateReady(true);
       }
     }
@@ -132,10 +135,10 @@ export default function SplashScreen({ navigation }) {
   }, [fontsAreReady, localStateReady]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles(colorMode).container}>
       <Animated.View
         style={[
-          styles.logoStyle,
+          styles(colorMode).logoStyle,
           {
             opacity: logoOpacity,
             transform: [{
@@ -144,19 +147,19 @@ export default function SplashScreen({ navigation }) {
           }]}
       >
         <Animated.View style={{ transform: [{ translateY: logoPosition.y }] }}>
-          <SplashLogo />
+          <SplashLogo color={colors.title[colorMode]} />
         </Animated.View>
       </Animated.View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (colorMode) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background.light,
+    backgroundColor: colors.background[colorMode],
   },
   logoStyle: {
     width: '40%',

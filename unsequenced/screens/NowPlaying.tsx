@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable react/no-unstable-nested-components */
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation } from 'react-native';
@@ -8,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { colors, font } from '../constants/GlobalStyles';
 import { MainTaskBlocksNavProps, TaskBlockRouteProps, UseSelectorProps, ScreenProp, Task, RenderItemProps, EditingTask } from '../constants/types';
 import haptic from '../components/helpers/haptic';
-import { reorderTasks, addTask, init } from '../redux/taskBlocks';
+import { reorderTasks, addTask, init, resetAllTasks, resetTaskTime } from '../redux/taskBlocks';
 import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
 import ProgressBar from '../components/NowPlaying/ProgressBar';
 import { playTasks, appState } from '../components/NowPlaying/playTasks';
@@ -46,6 +47,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const keyboardOffsetAnimation = useRef(new Animated.Value(0)).current;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [restrictPlay, setRestrictPlay] = useState<boolean>(true);
+  const [tasksComplete, setTasksComplete] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -79,6 +81,20 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   }, [tasksLocal, taskBlocks]);
 
   useEffect(() => {
+    // We need to watch the tasksLocal for all tasks being complete.
+    // If/when they are all complete, we can deploy the reset all button.
+    // So, we're saying if amount === 0 (it's an added task) or completed < amount (we're unfinished)
+    const isUnfinished = tasksLocal.some(({ amount, completed }) => (amount > 0 && completed < amount) || amount === 0);
+    if (isUnfinished) {
+      tasksComplete === true && setTasksComplete(false);
+    } else if (tasksLocal.length > 0) {
+      tasksComplete === false && setTasksComplete(true);
+    } else {
+      setTasksComplete(false);
+    }
+  }, [tasksLocal]);
+
+  useEffect(() => {
     dispatch(init({ id }));
     appState.init();
     return () => {
@@ -107,7 +123,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       toValue: offsetValue,
       duration: 300,
       easing: Easing.bezier(0.63, 0.04, 0.35, 0.99),
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
   }
 
@@ -145,6 +161,11 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     }
   }
 
+  // function handleToggleReset(tasksAreDone: boolean) {
+  //   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  //   setTasksComplete(tasksAreDone);
+  // }
+
   /**
    * Method to create a new task. Called from the 'plus' button
    */
@@ -167,6 +188,25 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       playTasks.pause();
       setIsPlaying(false);
     }
+  }
+
+  function handleResetAllTasks() {
+    haptic.warning();
+    let i = 0;
+    let timeOutRef: NodeJS.Timeout;
+    const resetStagger = () => {
+      const taskId = tasksLocal[i].id;
+      dispatch(resetTaskTime({ id, taskId }));
+      timeOutRef = setTimeout(() => {
+        i += 1;
+        if (i < tasksLocal.length) {
+          resetStagger();
+        } else {
+          clearTimeout(timeOutRef);
+        }
+      }, 400);
+    };
+    resetStagger();
   }
 
   function onDragEnd({ data }: { data: Task[]; }) {
@@ -229,10 +269,10 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   }
 
   /**
- * Component rendered by the DraggableFlatlist component
- * This is an intermediary component to allow the passing of other props
- * to the NowPlayingItem, which is a list item component.
- */
+  * Component rendered by the DraggableFlatlist component
+  * This is an intermediary component to allow the passing of other props
+  * to the NowPlayingItem, which is a list item component.
+  */
   function RenderItem({ drag, item, isActive }: RenderItemProps) {
     if (item.break === true) {
       return (
@@ -337,6 +377,20 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
             />
           </View>
         </Pressable>
+        {/* We only deploy this on complete */}
+        {tasksComplete && (
+          <Pressable
+            onPress={handleResetAllTasks}
+          >
+            <View style={[styles(mode).navButton, mode === 'light' && shadow.on]}>
+              <AntDesign
+                name="reload1"
+                size={24}
+                color={colors.roundButtonIcon[mode]}
+              />
+            </View>
+          </Pressable>
+        )}
 
       </View>
 
@@ -461,7 +515,7 @@ const styles = (mode: 'light' | 'dark') => StyleSheet.create({
   navWrapper: {
     alignSelf: 'center',
     flexDirection: 'row',
-    width: '30%',
+    // width: '30%',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
@@ -474,6 +528,7 @@ const styles = (mode: 'light' | 'dark') => StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 10,
   },
   navClose: {
     backgroundColor: colors.roundCloseBtnBG[mode],
