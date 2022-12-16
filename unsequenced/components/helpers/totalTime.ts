@@ -14,5 +14,5 @@ export default function totalTime(tasks:Task[] | number) {
     }
     return `${timeMinutes} minutes`;
   }
-  return `${Math.round((timeMinutes / 60) * 10 ** 1) / 10 ** 1} hours`;
+  return `${Math.floor((timeMinutes / 60) * 10 ** 1) / 10 ** 1} hours`;
 }
