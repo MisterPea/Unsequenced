@@ -10,6 +10,7 @@ export interface Task {
   amount: number;
   completed: number;
   break?: boolean;
+  notified?: boolean;
 }
 
 export interface TaskUpdate {

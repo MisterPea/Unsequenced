@@ -53,7 +53,7 @@ function executeBreaks(state: any, index: number, breakAmount: number) {
         newTasks.push(tasks[i]);
       }
     }
-    // console.log("NEW TASKS:", newTasks);
+
     const deleteAmount = state.blocks[index].tasks.length;
     state.blocks[index].tasks.splice(0, deleteAmount, ...newTasks);
   } else {
@@ -124,6 +124,23 @@ const taskBlockSlice = createSlice({
         executeBreaks(state, taskBlockIndex, 5);
       }
     },
+    resetAllTasks: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string; }; }) => {
+      const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
+      if (taskBlockIndex > -1) {
+        for (let i = 0; i < state.blocks[taskBlockIndex].tasks.length; i += 1) {
+          const { id, title, amount } = state.blocks[taskBlockIndex].tasks[i];
+          const newRecord = {
+            id,
+            title,
+            amount,
+            break: state.blocks[taskBlockIndex].tasks[i].break || false,
+            completed: 0,
+            notified: false,
+          };
+          state.blocks[taskBlockIndex].tasks.splice(i, 1, newRecord);
+        }
+      }
+    },
     resetTaskTime: (state: { blocks: TaskBlock[]; }, action: { payload: { id: string, taskId: string; }; }) => {
       const taskBlockIndex = state.blocks.findIndex((block) => block.id === action.payload.id);
       if (taskBlockIndex > -1) {
@@ -134,6 +151,7 @@ const taskBlockSlice = createSlice({
           amount: state.blocks[taskBlockIndex].tasks[taskIndex].amount,
           break: state.blocks[taskBlockIndex].tasks[taskIndex].break || false,
           completed: 0,
+          notified: false,
         };
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
       }
@@ -149,6 +167,7 @@ const taskBlockSlice = createSlice({
           break: state.blocks[taskBlockIndex].tasks[taskIndex].break || false,
           amount: amount || state.blocks[taskBlockIndex].tasks[taskIndex].amount,
           completed: completed || state.blocks[taskBlockIndex].tasks[taskIndex].completed,
+          notified: state.blocks[taskBlockIndex].tasks[taskIndex].notified || false,
         };
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
         if (state.blocks[taskBlockIndex].breaks !== null) {
@@ -187,7 +206,7 @@ const taskBlockSlice = createSlice({
       if (taskBlockIndex > -1) {
         const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
         const amt = state.blocks[taskBlockIndex].tasks[taskIndex].amount;
-        const newRecord = { ...state.blocks[taskBlockIndex].tasks[taskIndex], completed: amt };
+        const newRecord = { ...state.blocks[taskBlockIndex].tasks[taskIndex], completed: amt, notified: true };
         state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
       }
     },
@@ -199,6 +218,7 @@ const taskBlockSlice = createSlice({
         const taskIndex = state.blocks[taskBlockIndex].tasks.findIndex((task) => task.id === action.payload.taskId);
         const duplicateRecord = { ...state.blocks[taskBlockIndex].tasks[taskIndex], id, completed: 0 };
         state.blocks[taskBlockIndex].tasks.unshift(duplicateRecord);
+        executeBreaks(state, taskBlockIndex, 5);
       }
     },
     decrementTask: (state: { blocks: TaskBlock[]; }, action: { payload: { taskBlockId: string, taskId: string, decrementAmount: minutes; }; }) => {
@@ -214,6 +234,7 @@ const taskBlockSlice = createSlice({
               amount: nextTask.amount,
               break: nextTask.break,
               id: nextTask.id,
+              notified: nextTask.notified || false,
               completed: Number((nextTask.completed + action.payload.decrementAmount).toFixed(3)),
             };
             state.blocks[taskBlockIndex].tasks.splice(taskIndex, 1, newRecord);
@@ -233,6 +254,7 @@ export const {
   addTask,
   removeTask,
   updateTask,
+  resetAllTasks,
   resetTaskTime,
   toggleAutoplay,
   toggleBreak,
