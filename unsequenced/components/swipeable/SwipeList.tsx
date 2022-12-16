@@ -19,7 +19,7 @@ interface HiddenItemProps {
 interface SwipeListProps {
   data: TaskBlock[];
   mode: 'light' | 'dark';
-  leftStatusChg: () => void;
+  leftStatusChg?: () => void;
 }
 
 function HiddenItemWithActions(props: HiddenItemProps) {
