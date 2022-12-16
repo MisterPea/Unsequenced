@@ -6,13 +6,10 @@ import store from '../../redux/store';
 import { decrementTask, markTaskComplete, updateTask } from '../../redux/taskBlocks';
 import { Task } from '../../constants/types';
 
-// _taskForTimer is a reference to the previously played task
 interface TaskVars {
   _taskList: Task[];
   _taskBlockId: string;
   _firstTask?: Task;
-  _taskForTimer?: Task | undefined;
-  _currentId?: string;
   _isEndedCallback: (value: boolean) => void;
   _timer?: NodeJS.Timer,
 }
@@ -21,17 +18,14 @@ const taskVars: TaskVars = {
   _taskList: [],
   _taskBlockId: '',
   _firstTask: undefined,
-  _currentId: undefined,
   _isEndedCallback: () => { },
   _timer: undefined,
-  _taskForTimer: undefined,
 };
 
 function _decrement() {
   const taskId = findFirstTask()?.id;
   const _10sec = 0.010;
   if (taskId && taskVars._taskBlockId) {
-    taskVars._currentId = taskId;
     store.dispatch(decrementTask({ taskBlockId: taskVars._taskBlockId, taskId, decrementAmount: _10sec }));
   } else {
     taskVars._isEndedCallback!(false);
@@ -49,36 +43,25 @@ export const middlewearActions = {
   },
 };
 
-let localCurrent: string | undefined;
+// The premise is that we look for the top-most task on every decrement.
+// If we find that a task ended and we haven't notified about it, we notify
+// and then we dispatch the markTaskComplete reducer which in addition to
+// setting completed to amount, it marks the notified key as true. When we
+// mark it done, we forgo the notification and mark it as notified, when we
+// reset the time to 0, we also mark it as not notified.
 function findFirstTask(): Task | null {
-  for (let i = 0; i < taskVars._taskList!.length; i += 1) {
-    const { completed, amount } = taskVars._taskList![i];
-    if (completed < amount) {
-      localCurrent = taskVars._currentId;
-      // update the first task
-      taskVars._firstTask = taskVars._taskList![i];
-      // return the first id that is incomplete
-      if (taskVars._taskForTimer === undefined) taskVars._taskForTimer = taskVars._taskList[i];
-      return taskVars._taskList![i];
-    }
-    if (completed >= amount && localCurrent !== taskVars._currentId) {
-      if (localCurrent !== undefined && localCurrent?.length > 0) {
-        if (middlewearActions._completeCalled === false && taskVars._taskForTimer?.title) {
-          createForegroundNotification(taskVars._taskForTimer.title);
-        }
-        localCurrent = '';
-        taskVars._taskForTimer = undefined;
+  for (let i = 0; i < taskVars._taskList.length; i += 1) {
+    const { completed, amount } = taskVars._taskList[i];
+    if (completed === amount) {
+      if (!taskVars._taskList[i].notified) {
+        createForegroundNotification(taskVars._taskList[i].title);
+        store.dispatch(markTaskComplete({ id: taskVars._taskBlockId, taskId: taskVars._taskList[i].id }));
       }
-      middlewearActions.resetResetMarkCompleted();
+    } else {
+      taskVars._firstTask = taskVars._taskList[i];
+      return taskVars._taskList[i];
     }
   }
-  // All tasks completed
-  if (middlewearActions._completeCalled === false && taskVars._firstTask?.title) {
-    createForegroundNotification(taskVars._firstTask?.title);
-  }
-  localCurrent = undefined;
-  taskVars._taskForTimer = undefined;
-  middlewearActions.resetResetMarkCompleted();
   return null;
 }
 
@@ -155,7 +138,7 @@ let individualExpirationTime: number;
  * It then takes that info {taskId, totalAmount (total time), expiration (time)} and
  * stores it in an Array until the app is returned to the foreground.
  * Further: we actually take that Array and loop through it backwards, so then we can
- * set the title as
+ * set the title as: 'something ended -> begin something else.'
  */
 // AUTOPLAY
 function executeBackgroundStateNonstop() {
