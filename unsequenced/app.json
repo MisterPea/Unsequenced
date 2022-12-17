@@ -7,16 +7,20 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#16191d"
     },
     "plugins": [
       [
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#ffffff"
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/sounds/BlankSound.wav",
+            "./assets/sounds/FinalSound.wav",
+            "./assets/sounds/IntermediateSound.wav"
+          ]
         }
       ]
     ],
@@ -38,7 +42,7 @@
       "bundleIdentifier": "com.misterpea.unsequenced"
     },
     "android": {
-      "userInterfaceStyle":"automatic",
+      "userInterfaceStyle": "automatic",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

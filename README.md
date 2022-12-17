@@ -16,7 +16,7 @@ ___Todo/Inventory___
 * [ ] -Android- Grey screen on modal - need to fix.
 * [ ] -Android- Add/Edit task - buttons not showing on dark mode - flashing hidden content
 * [ ] Figure out testing for useFocusEffect.
-* [ ] Update total time on Task Block when automatic task breaks are added.
+* [x] Update total time on Task Block when automatic task breaks are added.
 
 
 ----
@@ -27,13 +27,13 @@ ___Todo/Inventory___
 |  Now Playing  | ✓  | ✓ ||  Add Task  | ✓ | ✓ |
 | Settings: *Light/Dark Mode*  |  ✓ | ✓ || Edit Task |  ✓  | ✓ |
 | Settings: *Quiet Mode* |  ✓ | ✓ || Delete Task | ✓  | ✓  |
-| Settings: *Show Notifications*|||											 | Duplicate Task | ✓| ✓|
-| Settings: *Allow Sounds* |||											 | Mark Task Complete | ✓| ✓|
+| Settings: *Show Notifications*|✓|✓|											 | Duplicate Task | ✓| ✓|
+| Settings: *Allow Sounds* |✓|✓|											 | Mark Task Complete | ✓| ✓|
 | Settings: *About Me*  |||                       | Reset Time For Task | ✓| ✓|
 ||||                       | Swipe To Delete Task | ✓ |  |
-||||                        | Notifications - While App is Active | | |
+||||                        | Notifications - While App is Active | ✓| ✓|
 ||||                        | Notifications - While App is in Background | ✓ | ✓|
-||||                        | Automatically Add/Remove Task Breaks | | ✓|
+||||                        | Automatically Add/Remove Task Breaks | n/a| ✓|
 
 | Component | Complete |
 | :--------  | :------:|
@@ -44,8 +44,7 @@ ___Todo/Inventory___
 | Progress Bar - Now Playing | ✓ |
 | Progress Bar on Task Bars | ✓ |
 | Timer for Tasks | ✓ |
-| Activity Loaders |  |
 | Async Storage | ✓ |
-| Loading Screen | |
+| Loading Screen * - *might have to revisit* |✓|
 
 

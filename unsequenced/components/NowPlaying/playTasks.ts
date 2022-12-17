@@ -54,9 +54,11 @@ function findFirstTask(): Task | null {
     const { completed, amount } = taskVars._taskList[i];
     if (completed === amount) {
       if (!taskVars._taskList[i].notified) {
-        createForegroundNotification(taskVars._taskList[i].title);
+        const isFinal = i === taskVars._taskList.length - 1;
+        createForegroundNotification(taskVars._taskList[i].title, isFinal);
         store.dispatch(markTaskComplete({ id: taskVars._taskBlockId, taskId: taskVars._taskList[i].id }));
       }
+      // if completed < amount
     } else {
       taskVars._firstTask = taskVars._taskList[i];
       return taskVars._taskList[i];
@@ -140,7 +142,7 @@ let individualExpirationTime: number;
  * Further: we actually take that Array and loop through it backwards, so then we can
  * set the title as: 'something ended -> begin something else.'
  */
-// AUTOPLAY
+// AUTOPLAY - Play one task after another
 function executeBackgroundStateNonstop() {
   console.log('AUTO BACKGROUND');
   playTasks.pause();
@@ -174,7 +176,8 @@ function executeBackgroundStateNonstop() {
     const titleOne = `${taskTitle} has ended`;
     const titleTwo = previousTitle ? `→ begin ${previousTitle}.` : '';
     previousTitle = taskTitle;
-    createBackgroundNotification(expiration, titleOne + titleTwo);
+    // since we're running backwards through the array, the final task is our first.
+    createBackgroundNotification(expiration, titleOne + titleTwo, previousTitle === null);
   }
 }
 
@@ -276,11 +279,12 @@ interface NotificationContent {
   vibrate?: number[];
 }
 
-async function createBackgroundNotification(time: number, message: string): Promise<any> {
+async function createBackgroundNotification(time: number, message: string, isFinal?: boolean): Promise<any> {
+  const sound = isFinal ? 'FinalSound.wav' : 'IntermediateSound.wav';
   const tailoredContent: NotificationContent = {
     title: 'Unsequenced',
     body: message,
-    sound: true,
+    sound,
     vibrate: [100, 9, 299, 2, 100],
   };
 
@@ -290,28 +294,24 @@ async function createBackgroundNotification(time: number, message: string): Prom
     delete tailoredContent.body;
   }
   if (allowBanners && allowSounds === false) {
-    // add empty sound
+    tailoredContent.sound = 'BlankSound.wav';
   }
   if (allowBanners === false && allowSounds === false) {
     return;
   }
 
   Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Unsequenced',
-      body: message,
-      sound: prefs.allowSounds,
-      vibrate: [200, 0, 200, 0, 200, 0],
-    },
+    content: tailoredContent,
     trigger: { seconds: time },
   });
 }
 
-async function createForegroundNotification(message: string): Promise<any> {
+async function createForegroundNotification(message: string, isFinal?: boolean): Promise<any> {
+  const sound = isFinal ? 'FinalSound.wav' : 'IntermediateSound.wav';
   const tailoredContent: NotificationContent = {
     title: 'Unsequenced',
     body: `${message} has completed`,
-    sound: true,
+    sound,
     vibrate: [100, 9, 299, 2, 100],
   };
 
@@ -321,7 +321,7 @@ async function createForegroundNotification(message: string): Promise<any> {
     delete tailoredContent.body;
   }
   if (allowBanners && !allowSounds) {
-    // add empty sound
+    tailoredContent.sound = 'BlankSound.wav';
   }
   if (!allowBanners && !allowSounds) {
     return;

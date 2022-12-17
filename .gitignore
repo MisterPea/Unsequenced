@@ -3,3 +3,4 @@ Design/Unsequenced_v2.xd
 Design/Unsequenced_v3.xd
 unsequenced/__-TODO/
 .DS_Store
+unsequenced/redux/middleware/logger.ts
