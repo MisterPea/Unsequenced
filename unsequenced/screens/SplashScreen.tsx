@@ -105,14 +105,16 @@ export default function SplashScreen({ navigation }) {
 
         const allowBannersString: string | null = await AsyncStorage.getItem('allowBanners');
         setAllowBanners(allowBannersString);
-
-        firstRun.current = false;
-        setLocalStateReady(true);
       } else if (keys.length === 0) {
-        firstRun.current = false;
         setScreenMode(colorMode);
-        setLocalStateReady(true);
+      } else {
+        // if there's a wrong number of keys - it means they're stale.
+        // So, we'll clear them **** this might have to change in the future ****
+        await AsyncStorage.multiRemove(keys);
+        setScreenMode(colorMode);
       }
+      firstRun.current = false;
+      setLocalStateReady(true);
     }
     prepare();
   }, []);
