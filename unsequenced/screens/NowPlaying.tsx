@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/no-unstable-nested-components */
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation, SafeAreaView } from 'react-native';
 import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -401,18 +401,18 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
         {tasksLocal.length === 0
           ? <Text style={styles(mode).addTasksText}>Add some tasks</Text>
           : (
-
-            <DraggableFlatList
-              data={tasksLocal}
-              extraData={taskBlocks}
-              renderItem={RenderItem}
-              keyExtractor={extractKey}
-              onDragEnd={onDragEnd}
-              onDragBegin={onDragStart}
-              activationDistance={20}
-              scrollEnabled={enableScroll}
-            />
-
+            <SafeAreaView>
+              <DraggableFlatList
+                data={tasksLocal}
+                extraData={taskBlocks}
+                renderItem={RenderItem}
+                keyExtractor={extractKey}
+                onDragEnd={onDragEnd}
+                onDragBegin={onDragStart}
+                activationDistance={20}
+                scrollEnabled={enableScroll}
+              />
+            </SafeAreaView>
           )}
       </GestureHandlerRootView>
     </Animated.View>
