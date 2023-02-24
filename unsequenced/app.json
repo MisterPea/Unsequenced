@@ -2,13 +2,13 @@
   "expo": {
     "name": "unsequenced",
     "slug": "unsequenced",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#16191d"
+      "backgroundColor": "#f2ead8"
     },
     "plugins": [
       [
