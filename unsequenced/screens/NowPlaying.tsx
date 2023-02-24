@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation, S
 import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { colors, font } from '../constants/GlobalStyles';
 import { MainTaskBlocksNavProps, TaskBlockRouteProps, UseSelectorProps, ScreenProp, Task, RenderItemProps, EditingTask } from '../constants/types';
@@ -14,6 +15,7 @@ import NowPlayingItem from '../components/NowPlaying/NowPlayingItem';
 import ProgressBar from '../components/NowPlaying/ProgressBar';
 import { playTasks, appState } from '../components/NowPlaying/playTasks';
 import NowPlayingItemBreak from '../components/NowPlaying/NowPlayingItemBreak';
+import { setOnboarding } from '../redux/firstRun';
 
 type Route = TaskBlockRouteProps;
 type MainNav = MainTaskBlocksNavProps;
@@ -36,8 +38,9 @@ interface SlideObj {
 
 export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const { id, title }: RouteParamsProps = route.params!;
-  const { screenMode, taskBlocks, keyboardOffset }: UseSelectorProps = useAppSelector((state) => state!);
+  const { screenMode, taskBlocks, keyboardOffset, firstRun }: UseSelectorProps = useAppSelector((state) => state!);
   const { mode }: ScreenProp = screenMode!;
+  const { isFirstRun } = firstRun;
   const { offset } = keyboardOffset!;
   const [tasksLocal, setTasksLocal] = useState<Task[]>([]);
   const [progress, setProgress] = useState({ total: 0, completed: 0, percent: 0 });
@@ -48,6 +51,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [restrictPlay, setRestrictPlay] = useState<boolean>(true);
   const [tasksComplete, setTasksComplete] = useState<boolean>(false);
+  const [currentNowPlayingStep, setCurrentNowPlayingStep] = useState<number>(0);
 
   const dispatch = useAppDispatch();
 
@@ -283,7 +287,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
           setEnableScroll={setEnableScroll}
           isActive={isActive}
           mode={mode}
-          id={id}
+          id={id} 
           closeSwipeBar={onDragStart}
           setEditTask={setEditTask}
           editTask={editTask}
@@ -302,6 +306,8 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
         closeSwipeBar={onDragStart}
         setEditTask={setEditTask}
         editTask={editTask}
+        isFirstRun={isFirstRun}
+        firstRunCallback={setCurrentNowPlayingStep} // state update for duplicate press
       />
     );
   }
@@ -344,39 +350,61 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       <ProgressBar mode={mode} progress={progress} />
       {/* Three Navigation Buttons */}
       <View style={styles(mode).navWrapper}>
-        <Pressable
-          onPress={isPlaying ? handleStop : handlePlay}
-          disabled={restrictPlay}
+        <Tooltip
+          isVisible={isFirstRun && currentNowPlayingStep === 5 && tasksLocal[0].amount !== 0}
+          backgroundColor="#00000000"
+          content={<Text style={styles(mode).tooltip}>Now, we can tap this button to play/start our timer</Text>}
+          contentStyle={{ backgroundColor: '#303030', marginTop: 10, width: '100%' }}
+          disableShadow
+          childrenWrapperStyle={{ opacity: 0 }}
+          onClose={() => dispatch(setOnboarding({ isFirstRun: false }))}
+          useInteractionManager
         >
-          <View style={[styles(mode).navButton, mode === 'light' && shadow.on, { paddingLeft: 5 }]}>
-            {isPlaying ? (
-              <Ionicons
-                name="stop"
+          <Pressable
+            onPress={isPlaying ? handleStop : handlePlay}
+            disabled={restrictPlay}
+          >
+            <View style={[styles(mode).navButton, mode === 'light' && shadow.on, { paddingLeft: 5 }]}>
+              {isPlaying ? (
+                <Ionicons
+                  name="stop"
+                  size={24}
+                  color={colors.roundButtonIcon[mode]}
+                  style={{ paddingRight: 2 }}
+                />
+              ) : (
+                <Ionicons
+                  name="play-outline"
+                  size={24}
+                  color={colors.roundButtonIcon[mode]}
+                />
+              )}
+            </View>
+          </Pressable>
+        </Tooltip>
+        <Tooltip
+          isVisible={isFirstRun && currentNowPlayingStep === 0}
+          backgroundColor="#00000000"
+          content={<Text style={styles(mode).tooltip}>Click this one to create a new Task</Text>}
+          contentStyle={{ backgroundColor: '#303030', marginTop: 10, width: '100%' }}
+          disableShadow
+          childrenWrapperStyle={{ opacity: 0 }}
+          onClose={() => setCurrentNowPlayingStep(2)}
+          useInteractionManager
+        >
+          <Pressable
+            onPress={handleAddTask}
+            disabled={!!editTask}
+          >
+            <View style={[styles(mode).navButton, mode === 'light' && shadow.on]}>
+              <AntDesign
+                name="plus"
                 size={24}
                 color={colors.roundButtonIcon[mode]}
-                style={{ paddingRight: 2 }}
               />
-            ) : (
-              <Ionicons
-                name="play-outline"
-                size={24}
-                color={colors.roundButtonIcon[mode]}
-              />
-            )}
-          </View>
-        </Pressable>
-        <Pressable
-          onPress={handleAddTask}
-          disabled={!!editTask}
-        >
-          <View style={[styles(mode).navButton, mode === 'light' && shadow.on]}>
-            <AntDesign
-              name="plus"
-              size={24}
-              color={colors.roundButtonIcon[mode]}
-            />
-          </View>
-        </Pressable>
+            </View>
+          </Pressable>
+        </Tooltip>
         {/* We only deploy this on complete */}
         {tasksComplete && (
           <Pressable
@@ -397,21 +425,76 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       {/* This is our component to render the draggable list
           The addition of GestureHandlerRootView is to fix the inability
           to drag on Android */}
+
       <GestureHandlerRootView style={{ flex: 1, height: '100%', width: '100%' }}>
         {tasksLocal.length === 0
           ? <Text style={styles(mode).addTasksText}>Add some tasks</Text>
           : (
             <SafeAreaView>
-              <DraggableFlatList
-                data={tasksLocal}
-                extraData={taskBlocks}
-                renderItem={RenderItem}
-                keyExtractor={extractKey}
-                onDragEnd={onDragEnd}
-                onDragBegin={onDragStart}
-                activationDistance={20}
-                scrollEnabled={enableScroll}
-              />
+              <Tooltip
+                isVisible={
+                  (isFirstRun && currentNowPlayingStep === 2)
+                  || (isFirstRun && currentNowPlayingStep === 3 && tasksLocal[0].amount > 0)
+                }
+                backgroundColor="#00000000"
+                content={
+                  (currentNowPlayingStep === 2
+                    ? <View style={{ alignSelf: 'center' }}><Text style={styles(mode).tooltip}>Enter a Task name, and duration (in minutes)</Text></View>
+                    : (
+                      <>
+                        <Text style={styles(mode).tooltip}>
+                          Now let&apos;s swipe to the left and tap the
+                          <Text style={styles(mode).tooltipBold}> Duplicate Task (+) </Text>
+                          button.
+                        </Text>
+                        <Text style={styles(mode).tooltip}>
+                          There&apos;s also:
+                        </Text>
+                        <Text style={styles(mode).tooltip}>
+                          • A
+                          <Text style={styles(mode).tooltipBold}> Mark Task Complete </Text>
+                          button.
+                        </Text>
+                        <Text style={styles(mode).tooltip}>
+                          • An
+                          <Text style={styles(mode).tooltipBold}> Edit Task </Text>
+                          button.
+                        </Text>
+                        <Text style={styles(mode).tooltip}>
+                          • A
+                          <Text style={styles(mode).tooltipBold}> Reset Time </Text>
+                          button (once time has elapsed).
+                        </Text>
+                        <Text style={styles(mode).tooltip}>
+                          • A
+                          <Text style={styles(mode).tooltipBold}> Delete Task </Text>
+                          button (when you swipe right).
+                        </Text>
+                      </>
+                    )
+                  )
+                }
+                contentStyle={{ backgroundColor: '#303030', width: '100%' }}
+                disableShadow
+                placement="bottom"
+                childrenWrapperStyle={{ opacity: 0 }}
+                onClose={() => {
+                  currentNowPlayingStep === 2 ? setCurrentNowPlayingStep(3) : setCurrentNowPlayingStep(4);
+                }}
+                useInteractionManager
+                showChildInTooltip={false}
+              >
+                <DraggableFlatList
+                  data={tasksLocal}
+                  extraData={taskBlocks}
+                  renderItem={RenderItem}
+                  keyExtractor={extractKey}
+                  onDragEnd={onDragEnd}
+                  onDragBegin={onDragStart}
+                  activationDistance={20}
+                  scrollEnabled={enableScroll}
+                />
+              </Tooltip>
             </SafeAreaView>
           )}
       </GestureHandlerRootView>
@@ -420,6 +503,17 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
 }
 
 const styles = (mode: 'light' | 'dark') => StyleSheet.create({
+  tooltip: {
+    fontFamily: 'Rubik_400Regular',
+    fontSize: 17,
+    lineHeight: 24,
+    letterSpacing: 0.85,
+    color: '#e9e9e9',
+  },
+  tooltipBold: {
+    fontFamily: 'Rubik_500Medium',
+    color: '#ffffff',
+  },
   container: {
     backgroundColor: colors.background[mode],
     flex: 1,

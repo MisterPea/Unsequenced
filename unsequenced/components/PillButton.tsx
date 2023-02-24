@@ -4,7 +4,15 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { PillBtnFilledProps, PillBtnColors } from '../constants/types';
 import { font } from '../constants/GlobalStyles';
 
-export default function PillButton({ label, size, colors, shadow = false, action, disabled }: PillBtnFilledProps) {
+export default function PillButton(
+  { label,
+    size,
+    colors,
+    shadow = false,
+    action,
+    disabled,
+    bold = false }: PillBtnFilledProps,
+) {
   const sizes = { sm: { h: 40, w: 138 }, md: { h: 40, w: 140 }, lg: { h: 50, w: 260 } };
 
   return (
@@ -16,17 +24,17 @@ export default function PillButton({ label, size, colors, shadow = false, action
     >
       <View
         style={
-          [buttonStyle(colors, sizes[size]).container,
-            shadow && buttonStyle(colors, sizes[size]).shadow]
-          }
+          [buttonStyle(colors, sizes[size], bold).container,
+            shadow && buttonStyle(colors, sizes[size], bold).shadow]
+        }
       >
-        <Text style={buttonStyle(colors, sizes[size]).text}>{label}</Text>
+        <Text style={buttonStyle(colors, sizes[size], bold).text}>{label}</Text>
       </View>
     </Pressable>
   );
 }
 
-const buttonStyle = (colors: PillBtnColors, dimensions: {h:number, w:number}) => StyleSheet.create({
+const buttonStyle = (colors: PillBtnColors, dimensions: { h: number, w: number; }, bold: boolean) => StyleSheet.create({
   container: {
     alignSelf: 'center',
     justifyContent: 'center',
@@ -41,7 +49,7 @@ const buttonStyle = (colors: PillBtnColors, dimensions: {h:number, w:number}) =>
     color: colors.text,
     textAlign: 'center',
     fontSize: dimensions.w === 260 ? font.largeButton.fontSize : font.cancelConfirm.fontSize,
-    fontFamily: font.largeButton.fontFamily,
+    fontFamily: bold ? font.largeButtonBold.fontFamily : font.largeButton.fontFamily,
   },
   shadow: {
     shadowOpacity: 0.2,

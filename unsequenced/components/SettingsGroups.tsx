@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, font } from '../constants/GlobalStyles';
+import PillButton from './PillButton';
 
 interface Settings {
   mode: 'light' | 'dark';
-  toggle: () => void;
+  toggle?: () => void;
   allowSounds?: boolean;
+  launchHowTo?: () => void;
 }
 
 export function DarkMode({ mode, toggle }: Settings) {
@@ -71,6 +73,29 @@ export function SoundSettings({ mode, toggle, allowSounds }: Settings) {
           </View>
         </View>
       </Pressable>
+    </View>
+  );
+}
+
+export function HowTo({ mode, launchHowTo }: Settings) {
+  return (
+    <View style={[styles(mode).section, { marginTop: 5 }]}>
+      <View style={styles(mode).textWrap}>
+        <Text style={styles(mode).title}>View How-To</Text>
+      </View>
+      <View style={styles(mode).buttonWrap}>
+        <PillButton
+          action={launchHowTo}
+          label="Launch"
+          size="md"
+          bold
+          colors={{
+            text: '#ffffff',
+            border: 'green',
+            background: 'rgb(63,150,93)',
+          }}
+        />
+      </View>
     </View>
   );
 }
@@ -165,6 +190,9 @@ const styles = (mode: string) => StyleSheet.create({
     fontFamily: font.settingsTitle.fontFamily,
     marginLeft: 25,
     paddingVertical: 10,
+  },
+  buttonWrap: {
+    marginVertical: 10,
   },
   option: {
     color: colors.settingsTextMain[mode],

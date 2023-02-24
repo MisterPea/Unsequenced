@@ -17,10 +17,11 @@ describe('notificationPrefs reducer', () => {
     )).toEqual({ allowSounds: false, allowBanners: true });
   });
 
-  it('should handle toggleAllowBanners', () => {
-    expect(notificationPrefs(
-      { allowSounds: true, allowBanners: true },
-      toggleAllowBanners(),
-    )).toEqual({ allowSounds: true, allowBanners: false });
-  });
+  // REMOVED FROM REDUCER
+  // it('should handle toggleAllowBanners', () => {
+  //   expect(notificationPrefs(
+  //     { allowSounds: true, allowBanners: true },
+  //     toggleAllowBanners(),
+  //   )).toEqual({ allowSounds: true, allowBanners: false });
+  // });
 });

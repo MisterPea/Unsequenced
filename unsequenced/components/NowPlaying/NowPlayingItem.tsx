@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View, Animated, UIManager } from 'react-native';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { AntDesign, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../redux/hooks';
 import { RefProps, RenderItemProps, HiddenRowNowPlayingProps } from '../../constants/types';
 import ProgressListItem from './ProgressListItem';
 import haptic from '../helpers/haptic';
@@ -17,8 +17,8 @@ import { middlewearActions } from './playTasks';
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 function HiddenRow(props: HiddenRowNowPlayingProps) {
-  const { swipeAnimatedValue, item, id, closeRow, setEditTask } = props;
-  const dispatch = useDispatch();
+  const { swipeAnimatedValue, item, id, closeRow, setEditTask, isFirstRun, firstRunCallback } = props;
+  const dispatch = useAppDispatch();
 
   function deleteScale() {
     return swipeAnimatedValue!.interpolate({
@@ -51,6 +51,7 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
 
   function handleDuplicateTask() {
     // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    isFirstRun && firstRunCallback(5);
     haptic.light();
     closeRow();
     dispatch(duplicateTask({ id, taskId: item.id }));
@@ -90,6 +91,7 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
         </Pressable>
       </View>
       {/* HIDDEN ELEMENTS ON RIGHT SIDE */}
+
       <View style={styles().rightBank}>
         {item.completed !== 0 && (
           <Pressable
@@ -130,6 +132,7 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
           )}
       </View>
     </View>
+
   );
 }
 /*
@@ -140,7 +143,7 @@ function HiddenRow(props: HiddenRowNowPlayingProps) {
  *************************************
  */
 export default function NowPlayingItem(props: RenderItemProps) {
-  const { item, drag, isActive, swipeRef, setEnableScroll, mode, id, setEditTask, editTask } = props;
+  const { item, drag, isActive, swipeRef, setEnableScroll, mode, id, setEditTask, editTask, isFirstRun, firstRunCallback } = props;
 
   useEffect(() => {
     // We check to see if we're in add/edit mode. If so, we call the close method incase any slider is open.
@@ -215,6 +218,8 @@ export default function NowPlayingItem(props: RenderItemProps) {
           id={id!}
           closeRow={closeRowAction}
           setEditTask={setEditTask}
+          isFirstRun={isFirstRun}
+          firstRunCallback={firstRunCallback}
         />
         <Pressable onLongPress={drag} disabled={isActive}>
           {/* THIS IS THE ACTUAL INNARDS OF THE LI PROGRESS BAR */}
@@ -239,6 +244,13 @@ export default function NowPlayingItem(props: RenderItemProps) {
 }
 
 const styles = () => StyleSheet.create({
+  tooltip: {
+    fontFamily: 'Rubik_400Regular',
+    fontSize: 17,
+    lineHeight: 24,
+    letterSpacing: 0.85,
+    color: '#ffffff',
+  },
   hiddenWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',

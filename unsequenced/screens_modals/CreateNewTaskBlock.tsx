@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, Text } from 'react-native';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import { colors, font } from '../constants/GlobalStyles';
 import InputField from '../components/InputField';
 import CheckBoxGroup from '../components/CheckBoxGroup';
@@ -10,15 +11,17 @@ import haptic from '../components/helpers/haptic';
 import { useAppSelector } from '../redux/hooks';
 import validTextCheck from '../components/helpers/validTextCheck';
 
+// import taskBlocks from '../redux/taskBlocks';
+
 type Nav = MainTaskBlocksNavProps;
 type Route = TaskBlockRouteProps;
 
-interface SwipeRouteProps {
-  title?: string | undefined;
-  id?: string | undefined;
-  autoplay?: boolean | undefined;
-  breaks?: boolean | undefined;
-}
+// interface SwipeRouteProps {
+//   title?: string | undefined;
+//   id?: string | undefined;
+//   autoplay?: boolean | undefined;
+//   breaks?: boolean | undefined;
+// }
 
 type ButtonOptions = {
   breaks: boolean,
@@ -26,13 +29,16 @@ type ButtonOptions = {
 };
 
 export default function CreateNewTaskBlock({ route, navigation: { goBack, navigate, reset } }: { navigation: Nav, route: Route; }) {
-  const { mode }: ScreenProp = route.params!;
-  const { blocks } = useAppSelector((state) => state.taskBlocks);
+  const { mode }: Readonly<any> = route.params!;
+  const { taskBlocks, firstRun } = useAppSelector((state) => state);
+  const { isFirstRun } = firstRun;
+  const { blocks } = taskBlocks;
   const blockTitles: string[] = blocks.map((block) => block.title);
-  const { title, id, autoplay, breaks }: SwipeRouteProps = route.params;
+  const { title, id, autoplay, breaks }: Readonly<any | undefined> = route.params;
   const [input, setInput] = useState<string>(title || '');
   const [option, setOption] = useState<ButtonOptions>({ breaks: breaks || false, autoplay: autoplay || true });
   const [validInput, setValidInput] = useState<boolean>(false);
+  const [openFirstRun, setOpenFirstRun] = useState(isFirstRun);
 
   // Check for the validity of input
   useEffect(() => {
@@ -60,7 +66,7 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
     };
 
     // the actual adding of the new task is done in TaskBlocks.tsx
-    navigate('Task Blocks', { addATaskBlock: taskBlock });
+    navigate('Task Blocks', { addATaskBlock: taskBlock, inIntro: true });
   }
 
   function handleCancel() {
@@ -92,9 +98,37 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
       <View style={styles(mode).card}>
         <View>
           <View style={styles(mode).tab} />
-          <Text style={styles(mode).tabText}>Create New Task Block</Text>
+          <View style={{ alignSelf: 'center', width: '100%' }}>
+            <Tooltip
+              isVisible={openFirstRun}
+              onClose={() => setOpenFirstRun(false)}
+              backgroundColor="#00000000"
+              contentStyle={{ marginTop: 10, width: '100%', backgroundColor: '#303030' }}
+              disableShadow
+              useInteractionManager
+              showChildInTooltip={false}
+              content={(
+                <>
+                  <Text style={styles(mode).tooltip}>
+                    1. Let&apos;s name our new Task Block.
+                  </Text>
+                  <Text style={styles(mode).tooltip}>
+                    2. Click &apos;Add 5 min break between tasks&apos;
+                  </Text>
+                  <Text style={styles(mode).tooltip}>
+                    3. Click &apos;Create Block&apos;
+                  </Text>
+                </>
+              )}
+            >
+
+              <Text style={styles(mode).tabText}>Create New Task Block</Text>
+            </Tooltip>
+          </View>
         </View>
+
         <View style={styles(mode).centerHeader} />
+
         <InputField
           screenMode={mode}
           label="TASK BLOCK NAME:"
@@ -107,6 +141,7 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
             color: colors.inputText[mode],
           }}
         />
+
         <View style={styles(mode).checkboxWrapper}>
           <CheckBoxGroup
             title="Add 5 min break between tasks"
@@ -124,6 +159,7 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
             extraStyle={{ marginTop: 12 }}
           />
         </View>
+
         <View style={styles(mode).buttonHolder}>
           <View style={styles(mode).eachButtonWrap}>
             <PillButton
@@ -157,6 +193,13 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
 }
 
 const styles = (mode: 'light' | 'dark') => StyleSheet.create({
+  tooltip: {
+    fontFamily: 'Rubik_400Regular',
+    fontSize: 17,
+    lineHeight: 24,
+    letterSpacing: 0.85,
+    color: '#ffffff',
+  },
   container: {
     flex: 1,
     backgroundColor: 'transparent',
