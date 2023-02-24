@@ -43,7 +43,7 @@ type Params = {
 type RootStackParamList = {
   Settings: undefined,
   'Task Blocks': Params,
-  createNewTaskBlock: undefined,
+  createNewTaskBlock: any;
   TaskBlocksNavigator: { screen: string; },
   'Add a Task': undefined,
 };
@@ -95,6 +95,7 @@ export interface PillBtnFilledProps {
   shadow?: boolean;
   action?: () => void;
   disabled?: boolean;
+  bold?: boolean;
 }
 
 export type QuietProp = {
@@ -102,13 +103,16 @@ export type QuietProp = {
 };
 
 export type ScreenProp = {
-  mode: 'light' | 'dark',
+  mode: 'light' | 'dark' | string,
 };
 
 type KeyboardOffset = {
   offset: number,
 };
 
+type FirstRun = {
+  isFirstRun: boolean;
+};
 
 export interface UseSelectorProps {
   screenMode: ScreenProp;
@@ -116,6 +120,7 @@ export interface UseSelectorProps {
   quietMode?: QuietProp;
   keyboardOffset?: KeyboardOffset;
   currentBlock?: CurrentBlock;
+  firstRun?: FirstRun;
 }
 
 /**
@@ -145,6 +150,8 @@ export interface RenderItemProps {
   closeSwipeBar?: () => void;
   setEditTask: (value: any) => void;
   editTask: EditingTask | undefined;
+  isFirstRun: boolean;
+  firstRunCallback: React.Dispatch<React.SetStateAction<number>>;
 }
 
 type Interpolate = {
@@ -168,4 +175,8 @@ export interface HiddenRowNowPlayingProps {
   mode: 'light' | 'dark';
   closeRow: () => void;
   setEditTask: (value: any) => void;
+  isFirstRun?: boolean;
+  firstRunCallback: React.Dispatch<React.SetStateAction<number>>;
 }
+
+export type FirstRun = boolean;

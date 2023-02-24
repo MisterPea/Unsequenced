@@ -31,18 +31,15 @@ describe('Settings component', () => {
   });
 
   // Quiet Mode
-  it('quietMode has initial value of false', () => {
-    const quietState = store.getState().quietMode.isQuiet;
-    expect(quietState).toBeFalsy();
-  });
 
-  it('Toggles isQuiet mode from false to true', () => {
-    const { getByTestId } = render(component);
-    const isQuietBtn = getByTestId('quietModeBtn');
+  // REMOVED FROM REDUCER
+  // it('Toggles isQuiet mode from false to true', () => {
+  //   const { getByTestId } = render(component);
+  //   const isQuietBtn = getByTestId('quietModeBtn');
 
-    fireEvent(isQuietBtn, 'press');
+  //   fireEvent(isQuietBtn, 'press');
 
-    const quietState = store.getState().quietMode.isQuiet;
-    expect(quietState).toBeTruthy();
-  });
+  //   const quietState = store.getState().quietMode.isQuiet;
+  //   expect(quietState).toBeTruthy();
+  // });
 });

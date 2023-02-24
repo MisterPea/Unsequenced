@@ -4,6 +4,7 @@ import notificationPrefsReducer from '../../redux/notificationPrefs';
 import screenModeReducer from '../../redux/screenMode';
 import keyboardOffsetReducer from '../../redux/keyboardOffset';
 import currentBlockReducer from '../../redux/currentBlock';
+import onboardingReducer from '../../redux/firstRun';
 
 interface MockStore extends Store {
   getState: () => {};
@@ -23,6 +24,7 @@ export default function mockStore() {
         screenMode: screenModeReducer,
         notificationPrefs: notificationPrefsReducer,
         keyboardOffset: keyboardOffsetReducer,
+        firstRun: onboardingReducer,
       },
     });
     refObj.store = tempStore;

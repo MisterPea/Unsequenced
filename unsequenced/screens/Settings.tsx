@@ -4,11 +4,12 @@ import { StyleSheet, View, Text, Pressable, SafeAreaView } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { colors, font } from '../constants/GlobalStyles';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { toggleScreenMode } from '../redux/screenMode';
+// import { toggleScreenMode } from '../redux/screenMode';
 import { SettingsNavProps } from '../constants/types';
-import { DarkMode, SoundSettings, Banners } from '../components/SettingsGroups';
+import { DarkMode, SoundSettings, Banners, HowTo } from '../components/SettingsGroups';
 import haptic from '../components/helpers/haptic';
 import { selectAllowBanners, toggleAllowSounds } from '../redux/notificationPrefs';
+import { setOnboarding } from '../redux/firstRun';
 
 export default function Settings({ navigation }: { navigation: SettingsNavProps; }) {
   const { screenMode, notificationPrefs } = useAppSelector((state) => state);
@@ -17,10 +18,10 @@ export default function Settings({ navigation }: { navigation: SettingsNavProps;
   const { allowBanners, allowSounds } = notificationPrefs;
   const dispatch = useAppDispatch();
 
-  function handleScreenModeToggle() {
-    haptic.select();
-    dispatch(toggleScreenMode());
-  }
+  // function handleScreenModeToggle() {
+  //   haptic.select();
+  //   dispatch(toggleScreenMode());
+  // }
 
   function handleAllowSoundsToggle() {
     haptic.select();
@@ -37,11 +38,18 @@ export default function Settings({ navigation }: { navigation: SettingsNavProps;
     navigation.goBack();
   }
 
+  function handleLaunchHowTo() {
+    haptic.success();
+    dispatch(setOnboarding({ isFirstRun: true }));
+    navigation.replace('TaskBlocksNavigator', { screen: 'Task Blocks' });
+  }
+
   return (
     <View style={styles(mode).container}>
       <View style={styles(mode).headerView}>
         <Pressable
           onPress={handleBackButtonPress}
+          style={{ padding: 10, width: 50 }}
         >
           <EvilIcons
             style={{ marginLeft: -7 }}
@@ -53,12 +61,15 @@ export default function Settings({ navigation }: { navigation: SettingsNavProps;
         <Text style={styles(mode).headerText}>SETTINGS</Text>
 
       </View>
-      <DarkMode mode={mode} toggle={handleScreenModeToggle} />
+      {/* We're removing this for now until a better dark mode scheme can be figured out. */}
+      {/* <DarkMode mode={mode} toggle={handleScreenModeToggle} /> */}
       <Text style={styles(mode).sectionHeader}>NOTIFICATIONS</Text>
       <SoundSettings mode={mode} toggle={handleAllowSoundsToggle} allowSounds={allowSounds} />
       <Banners mode={mode} allowBanners={allowBanners} setAllowBanners={handleSetAllowBanners} />
+      <Text style={styles(mode).sectionHeader}>HOW-TO</Text>
+      <HowTo mode={mode} launchHowTo={handleLaunchHowTo} />
       <SafeAreaView style={styles(mode).bottomContainer}>
-        <Text style={styles(mode).bottomText}>Version: 1.0.0</Text>
+        <Text style={styles(mode).bottomText}>Version: 0.1.0</Text>
       </SafeAreaView>
     </View>
   );
@@ -82,7 +93,7 @@ const styles = (mode: 'light' | 'dark') => StyleSheet.create({
     paddingTop: 25,
   },
   headerView: {
-    marginTop: 35,
+    marginTop: 30,
     marginHorizontal: 20,
     marginBottom: 18,
   },

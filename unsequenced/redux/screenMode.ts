@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ScreenProp } from '../constants/types';
 
-const initialState: 'light' | 'dark' = { mode: 'light' };
+const initialState: { mode: 'light' | 'dark'; } = { mode: 'light' };
 
 const screenModeSlice = createSlice({
   name: 'screenMode',

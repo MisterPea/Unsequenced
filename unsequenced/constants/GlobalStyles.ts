@@ -90,7 +90,7 @@ export const colors: { [key: string]: any; } = {
   // Settings
   settingsTitle: { light: 'rgb(0,0,0)', dark: 'rgb(220,252,52)' },
   settingsTextMain: { light: 'rgb(0,0,0)', dark: 'rgb(255,255,255)' },
-  settingsTextNote: { light: 'rgb(112,112,112)', dark: 'rgb(255,255,255)' },
+  settingsTextNote: { light: 'rgb(112, 112, 112)', dark: 'rgb(255,255,255)' },
   settingsCheck: { light: 'rgb(63,150,193)', dark: 'rgb(220,252,52)' },
   settingsLine: { light: 'rgb(213,213,204)', dark: 'rgb(73,73,70)' },
   settingsBoxes: { light: 'rgb(255,255,255)', dark: 'rgb(0,0,0)' },
@@ -141,6 +141,10 @@ export const font: { [key: string]: FamilySize; } = {
   largeButton: {
     fontSize: Math.ceil(18 * fontAdj),
     fontFamily: 'Rubik_400Regular',
+  },
+  largeButtonBold: {
+    fontSize: Math.ceil(18 * fontAdj),
+    fontFamily: 'Rubik_500Medium',
   },
   optionSelect: {
     fontSize: Math.ceil(15 * fontAdj),
