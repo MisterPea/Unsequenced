@@ -1,5 +1,14 @@
-## Unsequenced ⏲
+## Unsequenced - v1.1.1 ⏲
+#### A Pomodoro technique-inspired app for the iPhone. 
+----
 
+Currently in Beta-testing.<br />
+If you're interested in trying it out, you can download the app via with [this forthcoming link](#) via TestFlight.
+
+This app looks to provide users with a way to organize time associated with tasks.<br />
+As creators, we are all prone to spending too much time on one facet of our work-day, while neglecting others. This app will allow you to set time limits and breaks for anything you wish to accomplish.
+
+----
 ___Todo/Inventory___
 
 **Cases/Needs**

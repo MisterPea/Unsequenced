@@ -69,7 +69,7 @@ export default function Settings({ navigation }: { navigation: SettingsNavProps;
       <Text style={styles(mode).sectionHeader}>HOW-TO</Text>
       <HowTo mode={mode} launchHowTo={handleLaunchHowTo} />
       <SafeAreaView style={styles(mode).bottomContainer}>
-        <Text style={styles(mode).bottomText}>Version: 1.1.0</Text>
+        <Text style={styles(mode).bottomText}>Version: 1.1.1</Text>
       </SafeAreaView>
     </View>
   );
