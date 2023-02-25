@@ -8,6 +8,8 @@ If you're interested in trying it out, you can download the app with [this forth
 This app looks to provide users with a way to organize time associated with tasks.<br />
 As creators, we are all prone to spending too much time on one facet of our work-day, while neglecting others. This app will allow you to set time limits and breaks for anything you wish to accomplish.
 
+To learn more, check out: [https://misterpea.me/works/unsequenced/](https://misterpea.me/works/unsequenced/)
+
 ----
 ___Todo/Inventory___
 
