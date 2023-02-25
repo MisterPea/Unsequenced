@@ -110,6 +110,10 @@ interface FamilySize {
 }
 
 export const font: { [key: string]: FamilySize; } = {
+  largeBodyIntro: {
+    fontSize: Math.ceil(21 * fontAdj),
+    fontFamily: 'Rubik_400Regular',
+  },
   header: {
     fontSize: Math.ceil(26 * fontAdj),
     fontFamily: 'Rubik_700Bold',

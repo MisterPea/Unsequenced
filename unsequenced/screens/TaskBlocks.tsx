@@ -101,7 +101,6 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
                 disableShadow
                 allowChildInteraction
                 closeOnChildInteraction
-                closeOnContentInteraction={false}
                 content={(
                   <Text style={[styles(mode).tooltip]}>
                     Great! Now we can click on our freshly created Task Block and add some Tasks.
@@ -158,8 +157,8 @@ const styles = (mode: 'light' | 'dark') => StyleSheet.create({
     fontFamily: 'Rubik_400Regular',
     fontSize: 17,
     color: '#ffffff',
-    lineHeight: 24,
-    maxWidth: '100%',
+    lineHeight: 26,
+    width: '100%',
   },
   container: {
     position: 'relative',
