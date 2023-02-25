@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import haptic from './helpers/haptic';
 import { setOnboarding } from '../redux/firstRun';
 import { useAppDispatch } from '../redux/hooks';
+import { font } from '../constants/GlobalStyles';
 
 export default function IntroTwo({ introControl }: { introControl: React.Dispatch<React.SetStateAction<number>>; }) {
   const dispatch = useAppDispatch();
@@ -39,7 +40,7 @@ export default function IntroTwo({ introControl }: { introControl: React.Dispatc
             are like the ingredients for the recipe.
           </Text>
           <Text style={[styles.bodyText, styles.bodyTextLast]}>
-            Now, let&apos;s see how we use them — we&apos;ll do this together!
+            Now, let&apos;s see how we use them —we&apos;ll do this together!
           </Text>
 
 
@@ -82,17 +83,14 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     justifyContent: 'center',
-    marginBottom: '20%',
-  },
-  headingMain: {
-    fontSize: 28,
-    lineHeight: 28,
-    textAlign: 'center',
-    fontFamily: 'Rubik_400Regular',
+    // marginBottom: 20,
+    backgroundColor: '#ffffff98',
+    borderRadius: 10,
+    padding: 20,
   },
   bodyText: {
     textAlign: 'left',
-    fontSize: 22,
+    fontSize: font.largeBodyIntro.fontSize,
     marginTop: 10,
     color: '#303030',
     lineHeight: 28,

@@ -84,7 +84,10 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     justifyContent: 'center',
-    marginBottom: '20%',
+    // marginBottom: 20,
+    backgroundColor: '#ffffff98',
+    borderRadius: 10,
+    padding: 30,
   },
   headingMain: {
     fontSize: 28,
@@ -108,7 +111,7 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginTop: 40,
   },
   buttonSkip: {
@@ -135,7 +138,6 @@ const styles = StyleSheet.create({
   },
   asideTextWrapper: {
     marginTop: 50,
-    marginBottom: '10%',
     marginHorizontal: 20,
 
   },

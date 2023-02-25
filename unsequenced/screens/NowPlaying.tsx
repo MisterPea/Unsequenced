@@ -52,6 +52,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const [restrictPlay, setRestrictPlay] = useState<boolean>(true);
   const [tasksComplete, setTasksComplete] = useState<boolean>(false);
   const [currentNowPlayingStep, setCurrentNowPlayingStep] = useState<number>(0);
+  const [showPartingMsg, setShowPartingMsg] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -287,7 +288,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
           setEnableScroll={setEnableScroll}
           isActive={isActive}
           mode={mode}
-          id={id} 
+          id={id}
           closeSwipeBar={onDragStart}
           setEditTask={setEditTask}
           editTask={editTask}
@@ -353,11 +354,14 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
         <Tooltip
           isVisible={isFirstRun && currentNowPlayingStep === 5 && tasksLocal[0].amount !== 0}
           backgroundColor="#00000000"
-          content={<Text style={styles(mode).tooltip}>Now, we can tap this button to play/start our timer</Text>}
+          content={<Text style={styles(mode).tooltip}>Now, we can tap this button to play/start our timer.</Text>}
           contentStyle={{ backgroundColor: '#303030', marginTop: 10, width: '100%' }}
           disableShadow
           childrenWrapperStyle={{ opacity: 0 }}
-          onClose={() => dispatch(setOnboarding({ isFirstRun: false }))}
+          onClose={() => {
+            dispatch(setOnboarding({ isFirstRun: false }));
+            setShowPartingMsg(true);
+          }}
           useInteractionManager
         >
           <Pressable
@@ -439,7 +443,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
                 backgroundColor="#00000000"
                 content={
                   (currentNowPlayingStep === 2
-                    ? <View style={{ alignSelf: 'center' }}><Text style={styles(mode).tooltip}>Enter a Task name, and duration (in minutes)</Text></View>
+                    ? <View style={{ alignSelf: 'center' }}><Text style={styles(mode).tooltip}>Enter a Task name, and duration.</Text></View>
                     : (
                       <>
                         <Text style={styles(mode).tooltip}>
@@ -447,6 +451,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
                           <Text style={styles(mode).tooltipBold}> Duplicate Task (+) </Text>
                           button.
                         </Text>
+                        <Text>{' '}</Text>
                         <Text style={styles(mode).tooltip}>
                           There&apos;s also:
                         </Text>
@@ -474,7 +479,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
                     )
                   )
                 }
-                contentStyle={{ backgroundColor: '#303030', width: '100%' }}
+                contentStyle={{ marginLeft: -5, backgroundColor: '#303030', width: '100%' }}
                 disableShadow
                 placement="bottom"
                 childrenWrapperStyle={{ opacity: 0 }}
@@ -495,6 +500,28 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
                   scrollEnabled={enableScroll}
                 />
               </Tooltip>
+              <Tooltip
+                isVisible={showPartingMsg}
+                contentStyle={{ marginLeft: -10, backgroundColor: '#303030', width: '100%' }}
+                disableShadow
+                placement="bottom"
+                backgroundColor="#00000000"
+                childrenWrapperStyle={{ opacity: 0 }}
+                onClose={() => {
+                  setShowPartingMsg(false);
+                  setCurrentNowPlayingStep(0); // resetting other tooltip states
+                }}
+                content={(
+                  <View style={{ alignSelf: 'center' }}>
+                    <Text style={styles(mode).tooltip}>
+                      ...and that&apos;s the how you create a Task Block, and add, duplicate and play a Task.
+                      If you need to review, you can re-watch from the Settings screen.
+                    </Text>
+                    <Text>{' '}</Text>
+                    <Text style={styles(mode).tooltip}>Tap anywhere to close this dialogue.</Text>
+                  </View>
+                )}
+              />
             </SafeAreaView>
           )}
       </GestureHandlerRootView>
@@ -509,6 +536,7 @@ const styles = (mode: 'light' | 'dark') => StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0.85,
     color: '#e9e9e9',
+    padding: 5,
   },
   tooltipBold: {
     fontFamily: 'Rubik_500Medium',

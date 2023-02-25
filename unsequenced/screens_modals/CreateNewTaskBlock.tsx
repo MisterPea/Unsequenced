@@ -103,20 +103,22 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
               isVisible={openFirstRun}
               onClose={() => setOpenFirstRun(false)}
               backgroundColor="#00000000"
-              contentStyle={{ marginTop: 10, width: '100%', backgroundColor: '#303030' }}
+              contentStyle={{ marginLeft: -10, marginTop: 10, width: '100%', backgroundColor: '#303030' }}
               disableShadow
               useInteractionManager
               showChildInTooltip={false}
+              allowChildInteraction
+              closeOnChildInteraction
               content={(
                 <>
                   <Text style={styles(mode).tooltip}>
                     1. Let&apos;s name our new Task Block.
                   </Text>
                   <Text style={styles(mode).tooltip}>
-                    2. Click &apos;Add 5 min break between tasks&apos;
+                    2. Click &apos;Add 5 min break between tasks&apos; button.
                   </Text>
                   <Text style={styles(mode).tooltip}>
-                    3. Click &apos;Create Block&apos;
+                    3. Click &apos;Create Block&apos;.
                   </Text>
                 </>
               )}
