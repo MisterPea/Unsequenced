@@ -132,8 +132,8 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
               // closeOnContentInteraction={false}
               contentStyle={{ backgroundColor: '#303030' }}
               backgroundColor="#00000000"
-              // topAdjustment={-60}
-              // childrenWrapperStyle={{ marginTop: 60 }}
+              topAdjustment={-120}
+              childrenWrapperStyle={{ marginTop: 120 }}
               disableShadow
             >
               <Pressable
