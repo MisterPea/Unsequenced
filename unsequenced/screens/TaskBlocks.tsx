@@ -117,7 +117,7 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
           )}
         {/* Wait till we have a width before rendering - without this, the button animates to it's position */}
         {validWidth && (
-          <SafeAreaView>
+          <View style={styles(mode).safeAreaView}>
             {/* Create New Task Block '+' button */}
             <Tooltip
               isVisible={isFirstRun && currentIntroStep === 2}
@@ -129,9 +129,11 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
               useInteractionManager
               allowChildInteraction
               closeOnChildInteraction
-              closeOnContentInteraction={false}
+              // closeOnContentInteraction={false}
               contentStyle={{ backgroundColor: '#303030' }}
               backgroundColor="#00000000"
+              // topAdjustment={-60}
+              // childrenWrapperStyle={{ marginTop: 60 }}
               disableShadow
             >
               <Pressable
@@ -142,10 +144,14 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
                   style={styles(mode).safePressableView}
                   ref={addBlockBtn}
                 />
-                <Ionicons name="ios-add-circle-sharp" size={68} color={colors.createNewTaskBtn[mode]} />
+                {/*
+                    The marginLeft: 6 is to center the button
+                    for some reason alignSelf is slightly off
+                */}
+                <Ionicons style={{ marginLeft: 6 }} name="ios-add-circle-sharp" size={68} color={colors.createNewTaskBtn[mode]} />
               </Pressable>
             </Tooltip>
-          </SafeAreaView>
+          </View>
         )}
       </View>
     </>
@@ -166,7 +172,6 @@ const styles = (mode: 'light' | 'dark') => StyleSheet.create({
     flex: 1,
     paddingTop: 25,
     width: '100%',
-
   },
   headerView: {
     marginTop: 35,
@@ -179,17 +184,19 @@ const styles = (mode: 'light' | 'dark') => StyleSheet.create({
     fontSize: font.header.fontSize,
     fontFamily: font.header.fontFamily,
     color: colors.title[mode],
-
   },
   subHeader: {
     fontSize: font.subHead.fontSize,
     fontFamily: font.subHead.fontFamily,
     color: colors.subTitle[mode],
   },
+  safeAreaView: {
+    width: '100%',
+  },
   safePressable: {
     alignSelf: 'center',
-    // bottom: 70,
-    // position: 'absolute',
+    bottom: 60,
+    position: 'absolute',
     zIndex: 10,
   },
   ctaView: {
