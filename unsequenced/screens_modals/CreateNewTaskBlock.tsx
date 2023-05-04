@@ -92,7 +92,7 @@ export default function CreateNewTaskBlock({ route, navigation: { goBack, naviga
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={20}
+      keyboardVerticalOffset={50}
       style={styles(mode).container}
     >
       <View style={styles(mode).card}>
