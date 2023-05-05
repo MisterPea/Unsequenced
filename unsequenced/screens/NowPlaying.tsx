@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation, SafeAreaView } from 'react-native';
 import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -16,6 +16,7 @@ import ProgressBar from '../components/NowPlaying/ProgressBar';
 import { playTasks, appState } from '../components/NowPlaying/playTasks';
 import NowPlayingItemBreak from '../components/NowPlaying/NowPlayingItemBreak';
 import { setOnboarding } from '../redux/firstRun';
+import PlayingArrow from '../components/NowPlaying/PlayingArrow';
 
 type Route = TaskBlockRouteProps;
 type MainNav = MainTaskBlocksNavProps;
@@ -122,6 +123,37 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     animateKeyboardOffset(offset);
   }, [offset]);
 
+  // This bit is setting the number of arrows next to NOW PLAYING
+  // We have an arrow component that performs the animation, and
+  // this side effect handles the timing.
+  const arrowArray = useRef<string[]>([]);
+  const arrowCount = useRef<number>(0);
+  const intervalRef = useRef<any | null>(null);
+  // const fadeIn = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isPlaying) {
+      intervalRef.current = setInterval(() => {
+        if (arrowCount.current < 5) {
+          arrowArray.current.push(' >');
+          arrowCount.current += 1;
+        } else if (arrowCount.current < 8) {
+          arrowCount.current += 1;
+        } else {
+          arrowArray.current = [];
+          arrowCount.current = 0;
+        }
+      }, 1000);
+    } else {
+      clearInterval(intervalRef.current);
+      arrowArray.current = [];
+    }
+
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, [isPlaying]);
+
   // Method to animate keyboard offset
   function animateKeyboardOffset(offsetValue: number) {
     Animated.timing(keyboardOffsetAnimation, {
@@ -227,51 +259,9 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     }
   }
 
-  function AnimateArrow() {
-    const fadeAnimationOne = new Animated.Value(0);
-    useEffect(() => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(fadeAnimationOne, {
-            toValue: 1,
-            duration: 200,
-            easing: Easing.bezier(0.5, 0.15, 0.53, 0.93),
-            useNativeDriver: true,
-          }),
-          Animated.timing(fadeAnimationOne, {
-            toValue: 0,
-            duration: 600,
-            easing: Easing.bezier(0.5, 0.15, 0.53, 0.93),
-            useNativeDriver: true,
-          }),
-        ]),
-      ).start();
-    }, []);
-
-    return (
-      <Animated.View style={{
-        justifyContent: 'flex-start',
-        opacity: fadeAnimationOne,
-        height: 11,
-        transform: [{
-          translateX: fadeAnimationOne.interpolate({
-            inputRange: [0, 1],
-            outputRange: [-5, 3],
-          }),
-        }],
-      }}
-      >
-        <Text style={{
-          bottom: 2,
-          transform: [{ scale: 1.25 }],
-          color: colors.title[mode],
-        }}
-        >
-          {' •'}
-        </Text>
-      </Animated.View>
-    );
-  }
+  // We're wrapping out AnimateArrow in useCallback to insulate it from rerenders
+  // within this component; allowing it to keep track of it's own state.
+  const AnimateArrow = useCallback(() => <PlayingArrow />, [isPlaying]);
 
   /**
   * Component rendered by the DraggableFlatlist component
