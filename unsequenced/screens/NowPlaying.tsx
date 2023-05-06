@@ -61,9 +61,9 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     // Pick appropriate Tasks via id.
     const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
 
-    if (index > -1) {
+    if (index > -1 && tasksLocal.length === 0) {
       // afik having the layout animation here allows it to work on all elements
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setTasksLocal(taskBlocks!.blocks[index].tasks);
     }
     // We're checking for a populated, useable task list in order to enable the play button
@@ -107,17 +107,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
       appState.removeListener();
     };
   }, []);
-  // useEffect(() => {
-  //   console.log('<<BASE useEffect in NowPlaying>>')
-  //   setIsPlaying(false);
-  //   return () => {
-  //     if (isPlaying) {
-  //       console.log("BASE useEFFECT CALLED");
-  //       playTasks.end();
-  //       setIsPlaying(false);
-  //     }
-  //   };
-  // }, []);
 
   useEffect(() => {
     animateKeyboardOffset(offset);
