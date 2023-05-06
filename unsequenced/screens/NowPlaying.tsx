@@ -62,8 +62,9 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
 
     if (index > -1) {
+
       // afik having the layout animation here allows it to work on all elements
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
       setTasksLocal(taskBlocks!.blocks[index].tasks);
     }
     // We're checking for a populated, useable task list in order to enable the play button
@@ -250,9 +251,11 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     haptic.light();
     setTasksLocal(data);
     dispatch(reorderTasks({ id, updatedOrder: data }));
+    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }
 
   function onDragStart() {
+    // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     haptic.medium();
     if (swipeRef.current !== undefined) {
       swipeRef.current.close();
