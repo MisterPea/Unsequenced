@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View, UIManager } from 'react-native';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../redux/hooks';
 import { RefProps, RenderItemProps, HiddenRowNowPlayingProps } from '../../constants/types';
 import ProgressListItemBreak from './ProgressListItemBreak';
 import haptic from '../helpers/haptic';
@@ -17,7 +17,7 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 function HiddenRow(props: HiddenRowNowPlayingProps) {
   const { item, id, closeRow } = props;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   function handleMarkTaskComplete() {
     haptic.success();

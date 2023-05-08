@@ -8,7 +8,7 @@ type ProgressObject = {
 };
 
 interface ProgressBarProps {
-  mode: 'light' | 'dark';
+  mode: 'light' | 'dark' | string;
   progress: ProgressObject;
 }
 

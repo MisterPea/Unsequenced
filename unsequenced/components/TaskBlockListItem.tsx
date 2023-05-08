@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { colors, font } from '../constants/GlobalStyles';
@@ -42,7 +42,7 @@ export default function TaskBlockListItem(props: TaskBlockProps) {
       onPress={handleOnPress}
       testID={`taskBlock-${item.title}`}
     >
-      <Animated.View
+      <View
         style={styles(mode).container}
         testID="taskBlockListItem"
       >
@@ -53,7 +53,7 @@ export default function TaskBlockListItem(props: TaskBlockProps) {
         <View>
           <EvilIcons name="chevron-right" size={30} color={colors.disabled[mode]} />
         </View>
-      </Animated.View>
+      </View>
     </Pressable>
   );
 }

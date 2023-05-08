@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unstable-nested-components */
 import React, { useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View, SafeAreaView, LayoutAnimation } from 'react-native';
+import { Pressable, StyleSheet, Text, View, LayoutAnimation } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import Tooltip from 'react-native-walkthrough-tooltip';
@@ -33,7 +33,6 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
   // changes on this screen and causes a re-render. When we do the update after navigation
   // to this screen, we avoid that.
   useFocusEffect(() => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     if (route.params?.addATaskBlock) {
       const { addATaskBlock } = route.params;
       dispatch(addTaskBlock(addATaskBlock));
@@ -44,7 +43,7 @@ export default function TaskBlocks({ route, navigation }: { navigation: TaskBloc
       navigation.setParams({ editTaskBlock: undefined });
     }
   });
-
+  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   function handleCreateTaskBlockPress() {
     haptic.medium();
     navigation.navigate('createNewTaskBlock');

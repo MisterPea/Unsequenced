@@ -3,6 +3,7 @@ import { View, Animated, StyleSheet, Pressable, Alert, LayoutAnimation } from 'r
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useNavigation } from '@react-navigation/native';
+import ReAnimated, { Layout } from 'react-native-reanimated';
 import TaskBlockListItem from '../TaskBlockListItem';
 import { TaskBlock } from '../../constants/types';
 import { colors } from '../../constants/GlobalStyles';
@@ -125,8 +126,13 @@ function RenderHiddenItem(data: TaskBlock[], rowMap: [key: string]) {
 
 export default function SwipeList({ data, mode, leftStatusChg }: SwipeListProps) {
   screenMode = mode;
+  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   function renderItem(item: any) {
-    return <TaskBlockListItem item={item} mode={mode} />;
+    return (
+      <ReAnimated.View layout={Layout.duration(300)}>
+        <TaskBlockListItem item={item} mode={mode} />
+      </ReAnimated.View>
+    );
   }
 
   function extractKey(item: TaskBlock) {

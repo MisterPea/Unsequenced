@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/no-unstable-nested-components */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Pressable, Animated, Easing, LayoutAnimation, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Animated, Easing, SafeAreaView } from 'react-native';
 import { EvilIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import { Layout } from 'react-native-reanimated';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { colors, font } from '../constants/GlobalStyles';
 import { MainTaskBlocksNavProps, TaskBlockRouteProps, UseSelectorProps, ScreenProp, Task, RenderItemProps, EditingTask } from '../constants/types';
@@ -28,7 +29,7 @@ interface AddTaskProps {
 
 interface RouteParamsProps {
   id: string;
-  mode?: string;
+  mode?: 'light'|'dark' | string ;
   title: string;
 }
 
@@ -56,15 +57,15 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const [showPartingMsg, setShowPartingMsg] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-
+  const timeOutRef = useRef<any>();
   useEffect(() => {
     // Pick appropriate Tasks via id.
     const index: number = taskBlocks!.blocks.findIndex((elem) => elem.id === id);
-
-    if (index > -1 && tasksLocal.length === 0) {
-      // afik having the layout animation here allows it to work on all elements
-      // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      setTasksLocal(taskBlocks!.blocks[index].tasks);
+    if (index > -1) {
+      timeOutRef.current = setTimeout(() => {
+        setTasksLocal(taskBlocks!.blocks[index].tasks);
+        clearTimeout(timeOutRef.current);
+      }, 100);
     }
     // We're checking for a populated, useable task list in order to enable the play button
     if (taskBlocks?.blocks[index]?.tasks?.some(({ completed, amount }) => completed < amount)) {
@@ -118,7 +119,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   const arrowArray = useRef<string[]>([]);
   const arrowCount = useRef<number>(0);
   const intervalRef = useRef<any | null>(null);
-  // const fadeIn = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (isPlaying) {
@@ -238,7 +238,10 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   function onDragEnd({ data }: { data: Task[]; }) {
     haptic.light();
     setTasksLocal(data);
-    dispatch(reorderTasks({ id, updatedOrder: data }));
+    timeOutRef.current = setTimeout(() => {
+      dispatch(reorderTasks({ id, updatedOrder: data }));
+      clearTimeout(timeOutRef.current);
+    }, 0);
   }
 
   function onDragStart() {
@@ -248,7 +251,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
     }
   }
 
-  // We're wrapping out AnimateArrow in useCallback to insulate it from rerenders
+  // We're wrapping out AnimateArrow in useCallback to insulate it from re-renders
   // within this component; allowing it to keep track of it's own state.
   const AnimateArrow = useCallback(() => <PlayingArrow />, [isPlaying]);
 
@@ -402,7 +405,6 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
             </View>
           </Pressable>
         )}
-
       </View>
 
       {/* This is our component to render the draggable list
@@ -477,7 +479,10 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
                   onDragBegin={onDragStart}
                   activationDistance={20}
                   scrollEnabled={enableScroll}
+                  itemLayoutAnimation={Layout.duration(300)}
+                  enableLayoutAnimationExperimental
                 />
+
               </Tooltip>
               <Tooltip
                 isVisible={showPartingMsg}
@@ -508,7 +513,7 @@ export default function NowPlaying({ route, navigation }: AddTaskProps) {
   );
 }
 
-const styles = (mode: 'light' | 'dark') => StyleSheet.create({
+const styles = (mode: 'light' | 'dark' | string) => StyleSheet.create({
   tooltip: {
     fontFamily: 'Rubik_400Regular',
     fontSize: 17,

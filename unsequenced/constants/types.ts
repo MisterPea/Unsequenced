@@ -145,13 +145,13 @@ export interface RenderItemProps {
   isActive: boolean;
   swipeRef: UseRefProp;
   setEnableScroll: (bool: boolean) => void;
-  mode: 'light' | 'dark';
+  mode: 'light' | 'dark' | string;
   id: string;
   closeSwipeBar?: () => void;
   setEditTask: (value: any) => void;
   editTask: EditingTask | undefined;
-  isFirstRun: boolean;
-  firstRunCallback: React.Dispatch<React.SetStateAction<number>>;
+  isFirstRun?: boolean;
+  firstRunCallback?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 type Interpolate = {
