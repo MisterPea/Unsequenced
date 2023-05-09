@@ -33,7 +33,7 @@
     "ios": {
       "userInterfaceStyle": "automatic",
       "supportsTablet": false,
-      "buildNumber": "1.0.0",
+      "buildNumber": "1.0.1",
       "infoPlist": {
         "UIBackgroundModes": [
           "remote-notification"
