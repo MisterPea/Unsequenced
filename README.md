@@ -3,8 +3,11 @@
 ----
 
 Currently in Beta-testing.<br />
-If you're interested in trying it out, you can download the app with [this link](https://testflight.apple.com/join/8x1OiDg1) via TestFlight.
-If you come across any problems or have any imporvements, feel free to open a new issue if you don't already see one.
+
+#### Retooling for iOS 16
+
+~~If you're interested in trying it out, you can download the app with [this link](https://testflight.apple.com/join/8x1OiDg1) via TestFlight.
+If you come across any problems or have any imporvements, feel free to open a new issue if you don't already see one.~~
 
 This app looks to provide users with a way to organize time associated with tasks.<br />
 As creators, we are all prone to spending too much time on one facet of our work-day, while neglecting others. This app will allow you to set time limits and breaks for anything you wish to accomplish.
